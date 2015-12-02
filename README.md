@@ -1,1 +1,3 @@
-# Slicer-Pathology
+# 3D Slicer Pathology Extension
+
+12/2/2015
