@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Examples</category>
+  <title>NucleusSegmentationCLIModule</title>
+  <description><![CDATA[This is a CLI for nucleus segmentation from H&E histopathology images.]]></description>
+  <version>0.0.1</version>
+  <documentation-url>http://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Modules/NucleusSegmentationCLIModule</documentation-url>
+  <license>Slicer</license>
+  <contributor>Yi Gao, Liangjia Zhu, Tahsin Kurc, Allen Tannenbaum, Joel Saltz (Stony Brook University)</contributor>
+  <acknowledgements>.</acknowledgements>
+  <parameters>
+    <label>IO</label>
+    <description><![CDATA[Input/output parameters]]></description>
+    <image>
+      <name>inputImageName</name>
+      <label>Input Image</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description><![CDATA[Input image name]]></description>
+    </image>
+    <image>
+      <name>outputPrefix</name>
+      <label>Output Prefix</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description><![CDATA[Output Prefix]]></description>
+    </image>
+    <double>
+      <name>mpp</name>
+      <label>Mpp</label>
+      <channel>input</channel>
+      <index>2</index>
+      <default>0.25</default>
+    </double>
+    <double>
+      <name>otsuRatio</name>
+      <label>otsuRatio</label>
+      <channel>input</channel>
+      <index>3</index>
+      <default>1.0</default>
+    </double>
+    <double>
+      <name>curvatureWeight</name>
+      <label>curvatureWeight</label>
+      <channel>input</channel>
+      <index>4</index>
+      <default>0.8</default>
+    </double>
+    <double>
+      <name>sizeThldLower</name>
+      <label>sizeThldLower</label>
+      <channel>input</channel>
+      <index>5</index>
+      <default>3.0</default>
+    </double>
+    <double>
+      <name>sizeThldUpper</name>
+      <label>sizeThldUpper</label>
+      <channel>input</channel>
+      <index>6</index>
+      <default>200.0</default>
+    </double>
+  </parameters>
+</executable>

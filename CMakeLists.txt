@@ -20,6 +20,8 @@ include(${Slicer_USE_FILE})
 # Extension modules
 
 add_subdirectory(Segmentation)
+add_subdirectory(LoadTCGAModule)
+add_subdirectory(QuickTCGAEffect)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------
