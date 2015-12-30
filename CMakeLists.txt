@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.0.1)
 
 project(SlicerPathology)
 
@@ -17,11 +17,41 @@ find_package(Slicer REQUIRED)
 include(${Slicer_USE_FILE})
 
 #-----------------------------------------------------------------------------
+set(MODULE_NAME SlicerPathology)
+
+#-----------------------------------------------------------------------------
+set(MODULE_PYTHON_SCRIPTS
+  Util/mixins.py
+  ${MODULE_NAME}.py
+  )
+  
+set(MODULE_PYTHON_RESOURCES
+  Resources/Icons/icon-submission.png
+  Resources/Icons/icon-infoBox.png
+  Resources/Icons/icon-segmentation.png
+  Resources/Icons/icon-imageselection.png
+  Resources/Icons/icon-setup.png
+  Resources/Icons/SlicerPathology-simple-small.png
+  Resources/Icons/SlicerPathologyExtensionLogo.png
+  Resources/Icons/SlicerPathology128px.png
+  )
+
+#-----------------------------------------------------------------------------
+
+ slicerMacroBuildScriptedModule(
+  NAME ${MODULE_NAME}
+  SCRIPTS ${MODULE_PYTHON_SCRIPTS} 
+  RESOURCES ${MODULE_PYTHON_RESOURCES}
+  WITH_GENERIC_TESTS
+  )
+  
+  
+#-----------------------------------------------------------------------------
 # Extension modules
 
-add_subdirectory(Segmentation)
 add_subdirectory(LoadTCGA)
 add_subdirectory(QuickTCGAEffect)
+add_subdirectory(SPsegmentation)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------
