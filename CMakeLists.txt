@@ -21,6 +21,7 @@ set(MODULE_NAME SlicerPathology)
 
 #-----------------------------------------------------------------------------
 set(MODULE_PYTHON_SCRIPTS
+  Util/__init__.py
   Util/mixins.py
   ${MODULE_NAME}.py
   )

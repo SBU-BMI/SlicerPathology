@@ -9,9 +9,6 @@ from Util.mixins import ModuleWidgetMixin
 #
 
 class SlicerPathology(ScriptedLoadableModule):
-  """Uses ScriptedLoadableModule base class, available at:
-  https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
-  """
 
   def __init__(self, parent):
     ScriptedLoadableModule.__init__(self, parent)
@@ -20,7 +17,7 @@ class SlicerPathology(ScriptedLoadableModule):
     self.parent.dependencies = []
     self.parent.contributors = ["John Doe (AnyWare Corp.)"] # replace with "Firstname Lastname (Organization)"
     self.parent.helpText = """
-    This is an example of scripted loadable module bundled in an extension.
+    Put some useful help text in here at some point....
     """
     self.parent.acknowledgementText = """
     This file was originally developed by Jean-Christophe Fillion-Robin, Kitware Inc.
@@ -32,20 +29,22 @@ class SlicerPathology(ScriptedLoadableModule):
 #
 
 class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
-  """Uses ScriptedLoadableModuleWidget base class, available at:
-  https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
-  """
 
   def __init__(self, parent = None):
     ScriptedLoadableModuleWidget.__init__(self, parent)
+    self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName+".py",""), 'Resources')
     self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
+    self.currentStep = 1
   
   def setup(self):
     ScriptedLoadableModuleWidget.setup(self)
     
     self.setupIcons()
     self.setupTabBarNavigation()
+    self.setupsetupUI()
     self.setupimageSelectionUI()
+    self.setupsegmentationUI()
+    self.setupsubmissionUI()
     
     # Instantiate and connect widgets ...
 
@@ -154,7 +153,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     segmentationGroupBox = qt.QGroupBox()
     submissionGroupBox = qt.QGroupBox()
 
-    self.setupGroupBoxLayout = qt.QGridLayout()
+    self.setupGroupBoxLayout = qt.QFormLayout()
     self.imageSelectionGroupBoxLayout = qt.QGridLayout()
     self.segmentationGroupBoxLayout = qt.QGridLayout()
     self.submissionGroupBoxLayout = qt.QFormLayout()
@@ -189,18 +188,40 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
       self.tabWidget.childAt(1, 1).setTabEnabled(index, enabled)
      
   def onStep1Selected(self):
-    if self.checkStep3or4Leave() is True:
-      return
+#if self.checkStep3or4Leave() is True:
+#return
     if self.currentStep == 1:
       return
     self.currentStep = 1
     self.setTabsEnabled([0],True)
     self.setTabsEnabled([1,2,3], False)
     
+  def setupsetupUI(self):
+    self.setupUserName = qt.QLineEdit()
+    self.setupGroupBoxLayout.addRow("Username:", self.setupUserName)
+    self.setupPassword = qt.QLineEdit()
+    self.setupPassword.setEchoMode(2)
+    self.setupGroupBoxLayout.addRow("Password:", self.setupPassword)
+    
   def setupimageSelectionUI(self):
-    self.seriesView, self.seriesModel = self._createListView('SeriesTable', ['Series ID'])
-    self.seriesView.setSelectionMode(qt.QAbstractItemView.ExtendedSelection)
-    self.imageSelectionGroupBoxLayout.addWidget(self.seriesView)
+    self.qaButton = qt.QPushButton("Submit to web")
+    self.imageSelectionGroupBoxLayout.addWidget(self.qaButton)
+    self.saveButton = qt.QPushButton("Save")
+    self.imageSelectionGroupBoxLayout.addWidget(self.saveButton)
+
+  def setupsegmentationUI(self):
+    self.qaButton = qt.QPushButton("Submit to web")
+    self.segmentationGroupBoxLayout.addWidget(self.qaButton)
+    self.saveButton = qt.QPushButton("Save")
+    self.segmentationGroupBoxLayout.addWidget(self.saveButton)
+
+  def setupsubmissionUI(self):
+    self.qaButton = qt.QPushButton("Submit to web")
+    self.submissionGroupBoxLayout.addWidget(self.qaButton)
+    self.saveButton = qt.QPushButton("Save")
+    self.submissionGroupBoxLayout.addWidget(self.saveButton)
+
+    
 #
 # SlicerPathologyLogic
 #
@@ -284,11 +305,6 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
 
 
 class SlicerPathologyTest(ScriptedLoadableModuleTest):
-  """
-  This is the test case for your scripted module.
-  Uses ScriptedLoadableModuleTest base class, available at:
-  https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
-  """
 
   def setUp(self):
     """ Do whatever is needed to reset the state - typically a scene clear will be enough.
