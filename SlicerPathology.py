@@ -14,7 +14,7 @@ class SlicerPathology(ScriptedLoadableModule):
   def __init__(self, parent):
     ScriptedLoadableModule.__init__(self, parent)
     self.parent.title = "SlicerPathology" # TODO make this more human readable by adding spaces
-    self.parent.categories = ["Examples"]
+    self.parent.categories = ["Pathology"]
     self.parent.dependencies = []
     self.parent.contributors = ["John Doe (AnyWare Corp.)"] # replace with "Firstname Lastname (Organization)"
     self.parent.helpText = """
@@ -53,8 +53,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     hbox.addWidget(self.customLUTInfoIcon)
     self.customLUTLabel = qt.QLabel()
     hbox.addWidget(self.customLUTLabel)
-    # end of custom color box section
-    self.checkAndSetLUT()   
+    # end of custom color box section  
     self.setupIcons()
     self.setupTabBarNavigation()
     self.setupsetupUI()
@@ -220,10 +219,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.setupGroupBoxLayout.addRow("Password:", self.setupPassword)
     
   def setupimageSelectionUI(self):
-    self.qaButton = qt.QPushButton("Submit to web")
-    self.imageSelectionGroupBoxLayout.addWidget(self.qaButton)
-    self.saveButton = qt.QPushButton("Save")
-    self.imageSelectionGroupBoxLayout.addWidget(self.saveButton)
+    self.loadDataButton = qt.QPushButton("Load Data")
+    self.imageSelectionGroupBoxLayout.addWidget(self.loadDataButton)
+    self.loadDataButton.connect('clicked()', self.loadTCGAData)
 
   def setupsegmentationUI(self):
     self.qaButton = qt.QPushButton("Submit to web")
@@ -246,15 +244,15 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         self.editorWidget.helper.structureListWidget.merge = None
     except AttributeError:
         pass
-    # setup the color table, make sure tardis LUT is a singleton
+    # setup the color table, make sure SlicerPathology LUT is a singleton
     allColorTableNodes = slicer.util.getNodes('vtkMRMLColorTableNode*').values()
     for ctn in allColorTableNodes:
-        print ">>>"+ctn.GetName()
+        print "color: "+ctn.GetName()
         if ctn.GetName() == 'SlicerPathologyColor':
             slicer.mrmlScene.RemoveNode(ctn)
             break
-    self.tardisColorNode = slicer.vtkMRMLColorTableNode()
-    colorNode = self.tardisColorNode
+    self.SlicerPathologyColorNode = slicer.vtkMRMLColorTableNode()
+    colorNode = self.SlicerPathologyColorNode
     colorNode.SetName('SlicerPathologyColor')
     slicer.mrmlScene.AddNode(colorNode)
     colorNode.SetTypeToUser()
@@ -272,7 +270,44 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             if not success:
                 print "color %s could not be set" % row['Label']
             self.structureNames.append(row['Label'])
-    print colorNode
+    #print colorNode
+    
+  def loadTCGAData(self):
+    slicer.util.openAddVolumeDialog()
+    red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
+    red_cn = red_logic.GetSliceCompositeNode()
+    fgrdVolID = red_cn.GetBackgroundVolumeID()
+    fgrdNode = slicer.util.getNode(fgrdVolID)
+    fMat=vtk.vtkMatrix4x4()
+    fgrdNode.GetIJKToRASDirectionMatrix(fMat)
+    bgrdName = fgrdNode.GetName() + '_gray'
+    # Get dummy grayscale image
+    magnitude = vtk.vtkImageMagnitude()
+    magnitude.SetInputData(fgrdNode.GetImageData())
+    magnitude.Update()  
+    bgrdNode = slicer.vtkMRMLScalarVolumeNode()
+    bgrdNode.SetImageDataConnection(magnitude.GetOutputPort())
+    bgrdNode.SetName(bgrdName)
+    bgrdNode.SetIJKToRASDirectionMatrix(fMat)
+    slicer.mrmlScene.AddNode(bgrdNode)
+    bgrdVolID = bgrdNode.GetID()  
+    # Reset slice configuration
+    red_cn.SetForegroundVolumeID(fgrdVolID)
+    red_cn.SetBackgroundVolumeID(bgrdVolID)
+    red_cn.SetForegroundOpacity(1)   
+    # Start Editor
+    #m = slicer.util.mainWindow()
+    #m.moduleSelector().selectModule('Editor')
+    #print("Load...")
+    self.checkAndSetLUT() 
+    cv = slicer.util.getNode('FA')
+    self.volumesLogic = slicer.modules.volumes.logic()
+    labelName = 'FA-label'
+    refLabel = self.volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene,cv,labelName)
+    refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
+    slicer.modules.EditorWidget.helper.setMergeVolume(refLabel)
+    slicer.util.mainWindow().moduleSelector().selectModule('Editor')
+    print("BOOYAH!...")
     
 #
 # SlicerPathologyLogic
