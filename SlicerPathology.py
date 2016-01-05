@@ -53,6 +53,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     hbox.addWidget(self.customLUTInfoIcon)
     self.customLUTLabel = qt.QLabel()
     hbox.addWidget(self.customLUTLabel)
+    
     # end of custom color box section  
     self.setupIcons()
     self.setupTabBarNavigation()
