@@ -3,6 +3,7 @@ import unittest
 from __main__ import vtk, qt, ctk, slicer
 from slicer.ScriptedLoadableModule import *
 from Util.mixins import ModuleWidgetMixin
+from Editor import EditorWidget
 import PythonQt
 
 #
@@ -53,7 +54,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     hbox.addWidget(self.customLUTInfoIcon)
     self.customLUTLabel = qt.QLabel()
     hbox.addWidget(self.customLUTLabel)
-    
     # end of custom color box section  
     self.setupIcons()
     self.setupTabBarNavigation()
@@ -77,34 +77,34 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     #
     # input volume selector
     #
-    self.inputSelector = slicer.qMRMLNodeComboBox()
-    self.inputSelector.nodeTypes = ( ("vtkMRMLScalarVolumeNode"), "" )
-    self.inputSelector.addAttribute( "vtkMRMLScalarVolumeNode", "LabelMap", 0 )
-    self.inputSelector.selectNodeUponCreation = True
-    self.inputSelector.addEnabled = False
-    self.inputSelector.removeEnabled = False
-    self.inputSelector.noneEnabled = False
-    self.inputSelector.showHidden = False
-    self.inputSelector.showChildNodeTypes = False
-    self.inputSelector.setMRMLScene( slicer.mrmlScene )
-    self.inputSelector.setToolTip( "Pick the input to the algorithm." )
-    parametersFormLayout.addRow("Input Volume: ", self.inputSelector)
+    #self.inputSelector = slicer.qMRMLNodeComboBox()
+    #self.inputSelector.nodeTypes = ( ("vtkMRMLScalarVolumeNode"), "" )
+    #self.inputSelector.addAttribute( "vtkMRMLScalarVolumeNode", "LabelMap", 0 )
+    #self.inputSelector.selectNodeUponCreation = True
+    #self.inputSelector.addEnabled = False
+    #self.inputSelector.removeEnabled = False
+    #self.inputSelector.noneEnabled = False
+    #self.inputSelector.showHidden = False
+    #self.inputSelector.showChildNodeTypes = False
+    #self.inputSelector.setMRMLScene( slicer.mrmlScene )
+    #self.inputSelector.setToolTip( "Pick the input to the algorithm." )
+    #parametersFormLayout.addRow("Input Volume: ", self.inputSelector)
 
     #
     # output volume selector
     #
-    self.outputSelector = slicer.qMRMLNodeComboBox()
-    self.outputSelector.nodeTypes = ( ("vtkMRMLScalarVolumeNode"), "" )
-    self.outputSelector.addAttribute( "vtkMRMLScalarVolumeNode", "LabelMap", 0 )
-    self.outputSelector.selectNodeUponCreation = False
-    self.outputSelector.addEnabled = True
-    self.outputSelector.removeEnabled = True
-    self.outputSelector.noneEnabled = False
-    self.outputSelector.showHidden = False
-    self.outputSelector.showChildNodeTypes = False
-    self.outputSelector.setMRMLScene( slicer.mrmlScene )
-    self.outputSelector.setToolTip( "Pick the output to the algorithm." )
-    parametersFormLayout.addRow("Output Volume: ", self.outputSelector)
+    #self.outputSelector = slicer.qMRMLNodeComboBox()
+    #self.outputSelector.nodeTypes = ( ("vtkMRMLScalarVolumeNode"), "" )
+    #self.outputSelector.addAttribute( "vtkMRMLScalarVolumeNode", "LabelMap", 0 )
+    #self.outputSelector.selectNodeUponCreation = False
+    #self.outputSelector.addEnabled = True
+    #self.outputSelector.removeEnabled = True
+    #self.outputSelector.noneEnabled = False
+    #self.outputSelector.showHidden = False
+    #self.outputSelector.showChildNodeTypes = False
+    #self.outputSelector.setMRMLScene( slicer.mrmlScene )
+    #self.outputSelector.setToolTip( "Pick the output to the algorithm." )
+    #parametersFormLayout.addRow("Output Volume: ", self.outputSelector)
 
     #
     # check box to trigger taking screen shots for later use in tutorials
@@ -128,15 +128,15 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     #
     # Apply Button
     #
-    self.applyButton = qt.QPushButton("Apply")
-    self.applyButton.toolTip = "Run the algorithm."
-    self.applyButton.enabled = False
-    parametersFormLayout.addRow(self.applyButton)
+    #self.applyButton = qt.QPushButton("Apply")
+    #self.applyButton.toolTip = "Run the algorithm."
+    #self.applyButton.enabled = False
+    #parametersFormLayout.addRow(self.applyButton)
 
     # connections
-    self.applyButton.connect('clicked(bool)', self.onApplyButton)
-    self.inputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.onSelect)
-    self.outputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.onSelect)
+    #self.applyButton.connect('clicked(bool)', self.onApplyButton)
+    #self.inputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.onSelect)
+    #self.outputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.onSelect)
 
     # Add vertical spacer
     self.layout.addStretch(1)
@@ -225,11 +225,12 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.loadDataButton.connect('clicked()', self.loadTCGAData)
 
   def setupsegmentationUI(self):
-    self.qaButton = qt.QPushButton("Submit to web")
-    self.segmentationGroupBoxLayout.addWidget(self.qaButton)
-    self.saveButton = qt.QPushButton("Save")
-    self.segmentationGroupBoxLayout.addWidget(self.saveButton)
-
+    #self.qaButton = qt.QPushButton("Submit to web")
+    #self.segmentationGroupBoxLayout.addWidget(self.qaButton)
+    #self.saveButton = qt.QPushButton("Save")
+    #self.segmentationGroupBoxLayout.addWidget(self.saveButton)
+    self.segmentationGroupBoxLayout
+    
   def setupsubmissionUI(self):
     self.qaButton = qt.QPushButton("Submit to web")
     self.submissionGroupBoxLayout.addWidget(self.qaButton)
@@ -309,6 +310,15 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     slicer.modules.EditorWidget.helper.setMergeVolume(refLabel)
     slicer.util.mainWindow().moduleSelector().selectModule('Editor')
     print("BOOYAH!...")
+    
+    editorWidgetParent = slicer.qMRMLWidget()
+    editorWidgetParent.setLayout(qt.QVBoxLayout())
+    editorWidgetParent.setMRMLScene(slicer.mrmlScene)
+    self.editorWidget = EditorWidget(parent=editorWidgetParent)
+    self.editorWidget.setup()
+    self.segmentationGroupBoxLayout.addWidget(self.editorWidget.parent)
+    #self.layout.addWidget(self.editorWidget.parent)
+    
     
 #
 # SlicerPathologyLogic
