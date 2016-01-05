@@ -3,6 +3,7 @@ import unittest
 from __main__ import vtk, qt, ctk, slicer
 from slicer.ScriptedLoadableModule import *
 from Util.mixins import ModuleWidgetMixin
+import PythonQt
 
 #
 # SlicerPathology
@@ -38,7 +39,22 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
   
   def setup(self):
     ScriptedLoadableModuleWidget.setup(self)
-    
+    # this section is for custom color box
+    infoGroupBox = qt.QWidget()
+    hbox = qt.QHBoxLayout()
+    hbox.setMargin(0)
+    self.studySelectionGroupBoxLayout = qt.QGridLayout()
+    infoGroupBox.setLayout(hbox)
+    self.studySelectionGroupBoxLayout.addWidget(infoGroupBox, 0, 3, 1, 1)
+    infoIcon = qt.QPixmap(os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png'))
+    self.customLUTInfoIcon = qt.QLabel()
+    self.customLUTInfoIcon.setPixmap(infoIcon)
+    self.customLUTInfoIcon.setSizePolicy(PythonQt.QtGui.QSizePolicy())
+    hbox.addWidget(self.customLUTInfoIcon)
+    self.customLUTLabel = qt.QLabel()
+    hbox.addWidget(self.customLUTLabel)
+    # end of custom color box section
+    self.checkAndSetLUT()   
     self.setupIcons()
     self.setupTabBarNavigation()
     self.setupsetupUI()
@@ -221,6 +237,42 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.saveButton = qt.QPushButton("Save")
     self.submissionGroupBoxLayout.addWidget(self.saveButton)
 
+  def checkAndSetLUT(self):
+    # Default to module color table
+    self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName+".py",""), 'Resources')
+    self.colorFile = os.path.join(self.resourcesPath, "Colors/SlicerPathology.csv")
+    self.customLUTLabel.setText('Using Default LUT')
+    try:
+        self.editorWidget.helper.structureListWidget.merge = None
+    except AttributeError:
+        pass
+    # setup the color table, make sure tardis LUT is a singleton
+    allColorTableNodes = slicer.util.getNodes('vtkMRMLColorTableNode*').values()
+    for ctn in allColorTableNodes:
+        print ">>>"+ctn.GetName()
+        if ctn.GetName() == 'SlicerPathologyColor':
+            slicer.mrmlScene.RemoveNode(ctn)
+            break
+    self.tardisColorNode = slicer.vtkMRMLColorTableNode()
+    colorNode = self.tardisColorNode
+    colorNode.SetName('SlicerPathologyColor')
+    slicer.mrmlScene.AddNode(colorNode)
+    colorNode.SetTypeToUser()
+    with open(self.colorFile) as f:
+        n = sum(1 for line in f)
+    colorNode.SetNumberOfColors(n-1)
+    colorNode.NamesInitialisedOn()
+    import csv
+    self.structureNames = []
+    print self.colorFile
+    with open(self.colorFile, 'rb') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=',')
+        for index,row in enumerate(reader):
+            success = colorNode.SetColor(index ,row['Label'],float(row['R'])/255,float(row['G'])/255,float(row['B'])/255,float(row['A']))
+            if not success:
+                print "color %s could not be set" % row['Label']
+            self.structureNames.append(row['Label'])
+    print colorNode
     
 #
 # SlicerPathologyLogic
