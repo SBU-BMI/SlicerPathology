@@ -5,6 +5,7 @@ from slicer.ScriptedLoadableModule import *
 from Util.mixins import ModuleWidgetMixin
 from Editor import EditorWidget
 import PythonQt
+import json
 
 #
 # SlicerPathology
@@ -308,7 +309,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     refLabel = self.volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene,cv,labelName)
     refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
     slicer.modules.EditorWidget.helper.setMergeVolume(refLabel)
-    slicer.util.mainWindow().moduleSelector().selectModule('Editor')
+    #slicer.util.mainWindow().moduleSelector().selectModule('Editor')
     print("BOOYAH!...")
     
     editorWidgetParent = slicer.qMRMLWidget()
@@ -317,9 +318,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.editorWidget = EditorWidget(parent=editorWidgetParent)
     self.editorWidget.setup()
     self.segmentationGroupBoxLayout.addWidget(self.editorWidget.parent)
-    #self.layout.addWidget(self.editorWidget.parent)
-    
-    
 #
 # SlicerPathologyLogic
 #
