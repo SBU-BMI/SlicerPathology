@@ -230,13 +230,22 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     #self.segmentationGroupBoxLayout.addWidget(self.qaButton)
     #self.saveButton = qt.QPushButton("Save")
     #self.segmentationGroupBoxLayout.addWidget(self.saveButton)
-    self.segmentationGroupBoxLayout
+    #self.segmentationGroupBoxLayout
+    print "ading this for now..."
     
   def setupsubmissionUI(self):
-    self.qaButton = qt.QPushButton("Submit to web")
-    self.submissionGroupBoxLayout.addWidget(self.qaButton)
-    self.saveButton = qt.QPushButton("Save")
-    self.submissionGroupBoxLayout.addWidget(self.saveButton)
+    self.WebSaveButton = qt.QPushButton("Submit to web")
+    self.submissionGroupBoxLayout.addWidget(self.WebSaveButton)
+    self.WebSaveButton.connect('clicked()', self.onWebSaveButtonClicked)
+    self.SaveButton = qt.QPushButton("Save")
+    self.submissionGroupBoxLayout.addWidget(self.SaveButton)
+    self.SaveButton.connect('clicked()', self.onSaveButtonClicked)
+    
+  def onSaveButtonClicked(self):
+    print "YAY \o/"
+    
+  def onWebSaveButtonClicked(self):
+    print "OHHH YEAH"
 
   def checkAndSetLUT(self):
     # Default to module color table
