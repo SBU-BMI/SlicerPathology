@@ -226,11 +226,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.loadDataButton.connect('clicked()', self.loadTCGAData)
 
   def setupsegmentationUI(self):
-    #self.qaButton = qt.QPushButton("Submit to web")
-    #self.segmentationGroupBoxLayout.addWidget(self.qaButton)
-    #self.saveButton = qt.QPushButton("Save")
-    #self.segmentationGroupBoxLayout.addWidget(self.saveButton)
-    #self.segmentationGroupBoxLayout
+    #self.segmentationGroupBoxLayout.addWidget(self.SomeButton)
     print "ading this for now..."
     
   def setupsubmissionUI(self):
@@ -242,7 +238,23 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.SaveButton.connect('clicked()', self.onSaveButtonClicked)
     
   def onSaveButtonClicked(self):
-    print "YAY \o/"
+    labelNodes = slicer.util.getNodes('TCGA*-label')
+    print('All label nodes found: ' + str(labelNodes))
+    savedMessage = 'Segmentations for the following series were saved:\n\n'
+    for label in labelNodes.values():
+      labelName = label.GetName()
+      labelFileName = os.path.join('\SlicerPathology', labelName + '.tif')
+      print "labelFileName : "+labelFileName
+      sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
+      sNode.SetFileName(labelFileName)
+      sNode.SetWriteFileFormat('tif')
+      sNode.SetURI(None)
+      success = sNode.WriteData(label)
+      #success = True
+      if success:
+        print "I am sucessful! :D"
+      else:
+        print "I am a failure ;("
     
   def onWebSaveButtonClicked(self):
     print "OHHH YEAH"
