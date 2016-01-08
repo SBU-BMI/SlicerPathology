@@ -6,6 +6,8 @@ from Util.mixins import ModuleWidgetMixin
 from Editor import EditorWidget
 import PythonQt
 import json
+import EditorLib
+from EditorLib import EditUtil
 
 #
 # SlicerPathology
@@ -255,7 +257,12 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         print "I am sucessful! :D"
       else:
         print "I am a failure ;("
-    
+    a = EditUtil.EditUtil()
+    p = a.getParameterNode()
+    print p.GetParameter('SlicerPathology,MaxCellSize')
+    p.SetParameter('SlicerPathology,MaxCellSize','8')
+    print p.GetParameter('SlicerPathology,MaxCellSize')
+ 
   def onWebSaveButtonClicked(self):
     print "OHHH YEAH"
 

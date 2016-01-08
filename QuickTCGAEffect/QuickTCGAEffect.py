@@ -61,9 +61,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.locRadFrame.setLayout(qt.QHBoxLayout())
     self.frame.layout().addWidget(self.locRadFrame)
     self.widgets.append(self.locRadFrame)
-    
 
-    
     # Nucleus segmentation parameters (Yi Gao's algorithm)
     nucleusSegCollapsibleButton = ctk.ctkCollapsibleButton()
     nucleusSegCollapsibleButton.text = "Nucleus Segmentation Parameters (Yi Gao)"
@@ -160,10 +158,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
   def MPPSliderValueChanged(self,value):
     self.parameterNode.SetParameter("QuickTCGAEffect,mpp", str(value))
     self.updateMRMLFromGUI()  
-    
-    
-    
-    
+
   def onRadiusSpinBoxChanged(self,value):
     self.parameterNode.SetParameter("QuickTCGAEffect,radius", str(value))
     self.updateMRMLFromGUI()
@@ -183,12 +178,10 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).setMRMLDefaults()
 
   def onStartBot(self):
-
     """Stop Quick TCGA bot to avoid conflicts"""
     if hasattr(slicer.modules, 'editorBot'):
       slicer.modules.editorBot.stop()
       del(slicer.modules.editorBot)
-      
     """create the bot for background editing"""      
     if hasattr(slicer.modules, 'TCGAEditorBot'):
       slicer.modules.TCGAEditorBot.stop()
@@ -205,7 +198,6 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
         self.botButton.text = "Stop Quick TCGA Segmenter"  
         self.currentMessage =  "Quick TCGA Segmenter started: Press 'Y' to start automatic nucleus segmentation; Or go to PaintEffect to edit label image or press 'S' to start global segmentation process."
         slicer.util.showStatusMessage(self.currentMessage)        
-        
       if self.locRadFrame:
         self.locRadFrame.hide()
 
@@ -223,7 +215,6 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.parameterNode.SetDisableModifiedEvent(disableState)
     if not disableState:
       self.parameterNode.InvokePendingModifiedEvent()
-
 
   def botEstop(self):
     if hasattr(slicer.modules, 'TCGAEditorBot'):
@@ -259,7 +250,6 @@ so it can access tools if needed.
     self.logic = QuickTCGAEffectLogic( self.redSliceWidget.sliceLogic() )
 
   def stop(self):
-
     self.logic.destroy()
 #
 # QuickTCGAEffectTool
@@ -311,7 +301,6 @@ handle events from the render window interactor
       pass #print "EnterEvent in KSliceEffect."
     else:
       pass
-
 #
 # QuickTCGAEffectLogic
 #
@@ -349,7 +338,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.QuickTCGACreated=False
   
   def init_QuickTCGA(self):
-	
 	self.emergencyStopFunc = None    
 	self.dialogBox=qt.QMessageBox() #will display messages to draw users attention if he does anything wrong
 	self.dialogBox.setWindowTitle("QuickTCGA Error")
@@ -437,10 +425,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	roiVTK.DeepCopy(self.labelNode.GetImageData())
 	self.roiVTK = roiVTK
 	#roiVTK.UpdateInformation()
-    
-  
 	import vtkSlicerQuickTCGAModuleLogicPython
-	
 	node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
 	otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
 	print(otsuRatio)
@@ -472,7 +457,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
   
   def runQTCGA_Segmentation(self):
 	if self.bEditTCGA == True:
-
 		self.currentMessage = "Quick TCGA: running classification ..."
 		slicer.util.showStatusMessage(self.currentMessage)
 		seedArray = slicer.util.array(self.labelNode.GetName())
@@ -673,18 +657,17 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         self.bEditShortCut = True
         self.labelNode.GetImageData().Modified()
         self.labelNode.Modified()
-		
+
         print('show seed image')
         self.currentMessage = "Quick TCGA: ROI image is shown. Press 'F' to check segmentation result or left click the mouse to reselect the ROI, then press 'C' to start ShortCut for refinement"
         slicer.util.showStatusMessage(self.currentMessage)
     else:
         if self.qTCGASegArray.any() != 0 :
-		
 			seedArray[:] = self.qTCGASegArray[:]
 			self.bEditShortCut = False
 			self.labelNode.GetImageData().Modified()
 			self.labelNode.Modified()
-			
+
 			print('show segmentation')
 			self.currentMessage = "Quick TCGA: segmentation result is shown. If not satisfied, press 'F' to enable ROI selection and press 'C' to run ShortCut again"
 			slicer.util.showStatusMessage(self.currentMessage)
@@ -692,7 +675,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 			print('no segmentation result')	
 			self.currentMessage = "Quick TCGA:: no segmentation result available"
 			slicer.util.showStatusMessage(self.currentMessage)
-			
+
   def destroy(self):
     #destroy GrowCut key shortcuts
     for i in range(len(self.qtkeydefsQTCGA)):  #this will be an empty list if the KSlice part has been reached (all growcut functionality disabled)
@@ -799,7 +782,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 			print ("Press key F to enable editing ShortCut region")
 	  else:
 		  pass
-		  
 
 #
 # The QuickTCGAEffect class definition
@@ -845,7 +827,6 @@ class QuickTCGAEffect:
     parent.helpText = """Interactive TCGA editor extension."""
     parent.acknowledgementText = """ This editor extension was developed by Liangjia Zhu, Erich Bremer, Joel Saltz, Allen Tannenbaum  (Stony Brook University) """
 
-
     # TODO:
     # don't show this module - it only appears in the Editor module
     #parent.hidden = True
@@ -888,7 +869,6 @@ def get_view_names( sw ):
         viewOrient = vo
     return viewName,viewOrient
 
-
 def smart_xyToIJK(xy,sliceWidget):
   xyz = sliceWidget.sliceView().convertDeviceToXYZ(xy);
   ll = sliceWidget.sliceLogic().GetLabelLayer()
@@ -906,7 +886,6 @@ def smart_xyToIJK(xy,sliceWidget):
     ijk.append(index)
     #Print_Coord_Debug(xyz, RAS, xy, ijk, sliceWidget)
   return ijk
-
 
 def get_values_at_IJK( ijk, sliceWidget):
   labelLogic = sliceWidget.sliceLogic().GetLabelLayer()
@@ -930,7 +909,6 @@ def get_values_at_IJK( ijk, sliceWidget):
   # TODO get the user-integral value too
   return values
 
-
 def bind_view_observers( handlerFunc ):
   layoutManager = slicer.app.layoutManager()
   sliceNodeCount = slicer.mrmlScene.GetNumberOfNodesByClass('vtkMRMLSliceNode')
@@ -948,4 +926,3 @@ def bind_view_observers( handlerFunc ):
         tag = style.AddObserver(event, handlerFunc, 2.0)
         ObserverTags.append([style,tag])
   return ObserverTags,SliceWidgetLUT
-
