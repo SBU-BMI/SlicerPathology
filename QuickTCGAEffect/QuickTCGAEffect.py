@@ -48,14 +48,14 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
 
   def create(self):
     super(QuickTCGAEffectOptions,self).create()
-    self.helpLabel = qt.QLabel("Run the Quick TCGA Segmenter on the current label/seed image.", self.frame)
-    self.frame.layout().addWidget(self.helpLabel)
+    #self.helpLabel = qt.QLabel("Run the Quick TCGA Segmenter on the current label/seed image.", self.frame)
+    #self.frame.layout().addWidget(self.helpLabel)
     
     #create a "Start Bot" button
-    self.botButton = qt.QPushButton(self.frame)
+    ##self.botButton = qt.QPushButton(self.frame)
 
-    self.frame.layout().addWidget(self.botButton)
-    self.botButton.connect('clicked()', self.onStartBot)
+    ##self.frame.layout().addWidget(self.botButton)
+    ##self.botButton.connect('clicked()', self.onStartBot)
 
     self.locRadFrame = qt.QFrame(self.frame)
     self.locRadFrame.setLayout(qt.QHBoxLayout())
@@ -415,12 +415,12 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	self.qTCGASegArray = seedArray.copy()
 	self.qTCGASeedArray[:] = 0
 	self.qTCGASegArray[:] = 0
-	
+
 	self.SCutROIRad = 50
 	self.volSize=self.labelNode.GetImageData().GetDimensions()
 	self.qSCutROIArray = seedArray.copy() #np.zeros([self.volSize[0],self.volSize[1],1])
 	self.qSCutROIArray[:] = 0
-	
+
 	roiVTK = vtk.vtkImageData()
 	roiVTK.DeepCopy(self.labelNode.GetImageData())
 	self.roiVTK = roiVTK
@@ -445,14 +445,10 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	qTCGAMod.SetsizeThld(sizeThld)
 	qTCGAMod.SetsizeUpperThld(sizeUpperThld)
 	qTCGAMod.Setmpp(mpp)
-	
 	#qTCGAMod.SetSeedVol(self.labelNode.GetImageData())r
 	qTCGAMod.Initialization()
 	self.qTCGAMod = qTCGAMod   
 	self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
-
- 
-
   # run Quick TCGA segmenter for the current master volume and label volume
   
   def runQTCGA_Segmentation(self):
@@ -681,8 +677,8 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     for i in range(len(self.qtkeydefsQTCGA)):  #this will be an empty list if the KSlice part has been reached (all growcut functionality disabled)
         keyfun = self.qtkeydefsQTCGA[i]
         keydef = self.qtkeyconnections[i]
-        test1=keydef.disconnect('activated()', keyfun[1])
-        test2=keydef.disconnect('activatedAmbiguously()', keyfun[1])
+        test1 = keydef.disconnect('activated()', keyfun[1])
+        test2 = keydef.disconnect('activatedAmbiguously()', keyfun[1])
         #self.qtkeyconnections.remove(keydef) #remove from list
         keydef.setParent(None)
         #why is this necessary for full disconnect (if removed, get the error that more and more keypresses are required if module is repetedly erased and created

@@ -65,52 +65,52 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
 
     
     # Nucleus segmentation parameters (Yi Gao's algorithm)
-    nucleusSegCollapsibleButton = ctk.ctkCollapsibleButton()
-    nucleusSegCollapsibleButton.text = "Nucleus Segmentation Parameters (Yi Gao)"
-    nucleusSegCollapsibleButton.collapsed = True;
-    self.frame.layout().addWidget(nucleusSegCollapsibleButton)
+    #nucleusSegCollapsibleButton = ctk.ctkCollapsibleButton()
+    #nucleusSegCollapsibleButton.text = "Nucleus Segmentation Parameters (Yi Gao)"
+    #nucleusSegCollapsibleButton.collapsed = True;
+    #self.frame.layout().addWidget(nucleusSegCollapsibleButton)
     
     # Layout within the parameter button
-    nucleusSegFormLayout = qt.QFormLayout(nucleusSegCollapsibleButton)
-    frameOtsuSlider = ctk.ctkSliderWidget()
-    frameOtsuSlider.connect('valueChanged(double)', self.OtsuSliderValueChanged)
-    frameOtsuSlider.decimals = 0
-    frameOtsuSlider.minimum = 0
-    frameOtsuSlider.maximum = 10
-    frameOtsuSlider.value = 1.0
-    nucleusSegFormLayout.addRow("Otsu Threshold:", frameOtsuSlider)
+    #nucleusSegFormLayout = qt.QFormLayout(nucleusSegCollapsibleButton)
+    #frameOtsuSlider = ctk.ctkSliderWidget()
+    #frameOtsuSlider.connect('valueChanged(double)', self.OtsuSliderValueChanged)
+    #frameOtsuSlider.decimals = 0
+    #frameOtsuSlider.minimum = 0
+    #frameOtsuSlider.maximum = 10
+    #frameOtsuSlider.value = 1.0
+    #nucleusSegFormLayout.addRow("Otsu Threshold:", frameOtsuSlider)
     
-    frameCurvatureWeightSlider = ctk.ctkSliderWidget()
-    frameCurvatureWeightSlider.connect('valueChanged(double)', self.CurvatureWeightSliderValueChanged)
-    frameCurvatureWeightSlider.decimals = 0
-    frameCurvatureWeightSlider.minimum = 0
-    frameCurvatureWeightSlider.maximum = 10
-    frameCurvatureWeightSlider.value = 8
-    nucleusSegFormLayout.addRow("Curvature Weight:", frameCurvatureWeightSlider)
+    #frameCurvatureWeightSlider = ctk.ctkSliderWidget()
+    #frameCurvatureWeightSlider.connect('valueChanged(double)', self.CurvatureWeightSliderValueChanged)
+    #frameCurvatureWeightSlider.decimals = 0
+    #frameCurvatureWeightSlider.minimum = 0
+    #frameCurvatureWeightSlider.maximum = 10
+    #frameCurvatureWeightSlider.value = 8
+    #nucleusSegFormLayout.addRow("Curvature Weight:", frameCurvatureWeightSlider)
     
-    frameSizeThldSlider = ctk.ctkSliderWidget()
-    frameSizeThldSlider.connect('valueChanged(double)', self.SizeThldSliderValueChanged)
-    frameSizeThldSlider.decimals = 0
-    frameSizeThldSlider.minimum = 1
-    frameSizeThldSlider.maximum = 100
-    frameSizeThldSlider.value = 3
-    nucleusSegFormLayout.addRow("Size Threshold:", frameSizeThldSlider)
+    #frameSizeThldSlider = ctk.ctkSliderWidget()
+    #frameSizeThldSlider.connect('valueChanged(double)', self.SizeThldSliderValueChanged)
+    #frameSizeThldSlider.decimals = 0
+    #frameSizeThldSlider.minimum = 1
+    #frameSizeThldSlider.maximum = 100
+    #frameSizeThldSlider.value = 3
+    #nucleusSegFormLayout.addRow("Size Threshold:", frameSizeThldSlider)
     
-    frameSizeUpperThldSlider = ctk.ctkSliderWidget()
-    frameSizeUpperThldSlider.connect('valueChanged(double)', self.SizeUpperThldSliderValueChanged)
-    frameSizeUpperThldSlider.decimals = 0
-    frameSizeUpperThldSlider.minimum = 100
-    frameSizeUpperThldSlider.maximum = 500
-    frameSizeUpperThldSlider.value = 300
-    nucleusSegFormLayout.addRow("Size Upper Threshold:", frameSizeUpperThldSlider)
+    #frameSizeUpperThldSlider = ctk.ctkSliderWidget()
+    #frameSizeUpperThldSlider.connect('valueChanged(double)', self.SizeUpperThldSliderValueChanged)
+    #frameSizeUpperThldSlider.decimals = 0
+    #frameSizeUpperThldSlider.minimum = 100
+    #frameSizeUpperThldSlider.maximum = 500
+    #frameSizeUpperThldSlider.value = 300
+    #nucleusSegFormLayout.addRow("Size Upper Threshold:", frameSizeUpperThldSlider)
     
-    frameMPPSlider = ctk.ctkSliderWidget()
-    frameMPPSlider.connect('valueChanged(double)', self.MPPSliderValueChanged)
-    frameMPPSlider.decimals = 0
-    frameMPPSlider.minimum = 0
-    frameMPPSlider.maximum = 100
-    frameMPPSlider.value = 25
-    nucleusSegFormLayout.addRow("Size Upper Threshold:", frameMPPSlider)
+    #frameMPPSlider = ctk.ctkSliderWidget()
+    #frameMPPSlider.connect('valueChanged(double)', self.MPPSliderValueChanged)
+    #frameMPPSlider.decimals = 0
+    #frameMPPSlider.minimum = 0
+    #frameMPPSlider.maximum = 100
+    #frameMPPSlider.value = 25
+    #nucleusSegFormLayout.addRow("Size Upper Threshold:", frameMPPSlider)
 
     HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
      "\n KEYS for Global Segmentation: " +
@@ -141,43 +141,40 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     slicer.util.showStatusMessage(self.currentMessage)
     super(QuickTCGAEffectOptions,self).destroy()
     
-  def OtsuSliderValueChanged(self,value):
-    self.parameterNode.SetParameter("ShortCut,otsuRatio", str(value))
-    self.updateMRMLFromGUI()
+  #def OtsuSliderValueChanged(self,value):
+  #  self.parameterNode.SetParameter("ShortCut,otsuRatio", str(value))
+  #  self.updateMRMLFromGUI()
   
-  def CurvatureWeightSliderValueChanged(self,value):
-    self.parameterNode.SetParameter("ShortCut,curvatureWeight", str(value))
-    self.updateMRMLFromGUI()  
+  #def CurvatureWeightSliderValueChanged(self,value):
+  #  self.parameterNode.SetParameter("ShortCut,curvatureWeight", str(value))
+  #  self.updateMRMLFromGUI()  
     
-  def SizeThldSliderValueChanged(self,value):
-    self.parameterNode.SetParameter("ShortCut,sizeThld", str(value))
-    self.updateMRMLFromGUI()  
+  #def SizeThldSliderValueChanged(self,value):
+  #  self.parameterNode.SetParameter("ShortCut,sizeThld", str(value))
+  #  self.updateMRMLFromGUI()  
     
-  def SizeUpperThldSliderValueChanged(self,value):
-    self.parameterNode.SetParameter("ShortCut,sizeUpperThld", str(value))
-    self.updateMRMLFromGUI()  
+  #def SizeUpperThldSliderValueChanged(self,value):
+  #  self.parameterNode.SetParameter("ShortCut,sizeUpperThld", str(value))
+  #  self.updateMRMLFromGUI()  
     
-  def MPPSliderValueChanged(self,value):
-    self.parameterNode.SetParameter("ShortCut,mpp", str(value))
-    self.updateMRMLFromGUI()  
-    
-    
-    
-    
-  def onRadiusSpinBoxChanged(self,value):
-    self.parameterNode.SetParameter("ShortCut,radius", str(value))
-    self.updateMRMLFromGUI()
+  #def MPPSliderValueChanged(self,value):
+  #  self.parameterNode.SetParameter("ShortCut,mpp", str(value))
+  #  self.updateMRMLFromGUI()  
+ 
+  #def onRadiusSpinBoxChanged(self,value):
+  #  self.parameterNode.SetParameter("ShortCut,radius", str(value))
+  #  self.updateMRMLFromGUI()
 
   # note: this method needs to be implemented exactly as-is
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
-  def updateParameterNode(self, caller, event):
-    node = EditUtil.EditUtil().getParameterNode()
-    if node != self.parameterNode:
-      if self.parameterNode:
-        node.RemoveObserver(self.parameterNodeTag)
-      self.parameterNode = node
-      self.parameterNodeTag = node.AddObserver(vtk.vtkCommand.ModifiedEvent, self.updateGUIFromMRML)
+  #def updateParameterNode(self, caller, event):
+  #  node = EditUtil.EditUtil().getParameterNode()
+  #  if node != self.parameterNode:
+  #    if self.parameterNode:
+  #      node.RemoveObserver(self.parameterNodeTag)
+  #    self.parameterNode = node
+  #    self.parameterNodeTag = node.AddObserver(vtk.vtkCommand.ModifiedEvent, self.updateGUIFromMRML)
 
   def setMRMLDefaults(self):
     super(QuickTCGAEffectOptions,self).setMRMLDefaults()
@@ -223,7 +220,6 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.parameterNode.SetDisableModifiedEvent(disableState)
     if not disableState:
       self.parameterNode.InvokePendingModifiedEvent()
-
 
   def botEstop(self):
     if hasattr(slicer.modules, 'TCGAEditorBot'):
@@ -389,7 +385,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     # QuickTCGA shortcuts
 	resetQTCGAKey = qt.QKeySequence(qt.Qt.Key_R) # reset initialization flag
 	runQTCGAClusterKey = qt.QKeySequence(qt.Qt.Key_S) # run fast growcut
-	runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
+	#runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
 	editTCGAKey = qt.QKeySequence(qt.Qt.Key_E) # edit seed labels
 	runQTCGATemplateKey = qt.QKeySequence(qt.Qt.Key_T)
 	runQTCGARefineCurvatureKey = qt.QKeySequence(qt.Qt.Key_U)
@@ -401,7 +397,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	self.qtkeyconnections = []
 	self.qtkeydefsQTCGA = [[resetQTCGAKey, self.resetQTCGAFlag],
                              [runQTCGAClusterKey,self.runQTCGA_Segmentation],
-                             [runNucleiSegKey, self.runQTCGA_NucleiSegYi],
+                             #[runNucleiSegKey, self.runQTCGA_NucleiSegYi],
                              [runQTCGATemplateKey, self.runQTCGA_Template],
                              [runQTCGARefineCurvatureKey, self.runQTCGA_Refine_Curvature],
                              [runQTCGAShortCutKey, self.runQTCGA_ShortCut],
@@ -495,47 +491,47 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 		self.currentMessage = "Quick TCGA: go to seed labels first by pressing 'E'"
 		slicer.util.showStatusMessage(self.currentMessage)
 		
-  def runQTCGA_NucleiSegYi(self):
+#  def runQTCGA_NucleiSegYi(self):
 	#if self.bEditTCGA == True:
 
-		self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
-		slicer.util.showStatusMessage(self.currentMessage)
-		seedArray = slicer.util.array(self.labelNode.GetName())
-		self.qTCGASeedArray[:]  = seedArray[:]
-		
-		node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
-		otsuRatio = float(node.GetParameter("ShortCut,otsuRatio"))
-		print(otsuRatio)
-		curvatureWeight = float(node.GetParameter("ShortCut,curvatureWeight"))/10
-		print(curvatureWeight)
-		sizeThld = float(node.GetParameter("ShortCut,sizeThld"))
-		print(sizeThld)
-		sizeUpperThld = float(node.GetParameter("ShortCut,sizeUpperThld"))
-		print(sizeUpperThld)
-		mpp = float(node.GetParameter("ShortCut,mpp"))/100
-		print(mpp)
+#		self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
+#		slicer.util.showStatusMessage(self.currentMessage)
+#		seedArray = slicer.util.array(self.labelNode.GetName())
+#		self.qTCGASeedArray[:]  = seedArray[:]
+#		
+#		node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
+#		otsuRatio = float(node.GetParameter("ShortCut,otsuRatio"))
+#		print(otsuRatio)
+#		curvatureWeight = float(node.GetParameter("ShortCut,curvatureWeight"))/10
+#		print(curvatureWeight)
+#		sizeThld = float(node.GetParameter("ShortCut,sizeThld"))
+#		print(sizeThld)
+#		sizeUpperThld = float(node.GetParameter("ShortCut,sizeUpperThld"))
+#		print(sizeUpperThld)
+#		mpp = float(node.GetParameter("ShortCut,mpp"))/100
+#		print(mpp)
 
-		self.qTCGAMod.SetotsuRatio(otsuRatio)
-		self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
-		self.qTCGAMod.SetsizeThld(sizeThld)
-		self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
-		self.qTCGAMod.Setmpp(mpp)
-		
-		self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
-		self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
-		self.qTCGAMod.Run_NucleiSegYi()
-		self.qTCGASegArray[:] = seedArray[:]
-		
-		self.labelNode.GetImageData().Modified()
-		self.labelNode.Modified()
-			
+#		self.qTCGAMod.SetotsuRatio(otsuRatio)
+#		self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
+#		self.qTCGAMod.SetsizeThld(sizeThld)
+#		self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
+#		self.qTCGAMod.Setmpp(mpp)
+#		
+#		self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
+#		self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
+#		self.qTCGAMod.Run_NucleiSegYi()
+#		self.qTCGASegArray[:] = seedArray[:]
+#		
+#		self.labelNode.GetImageData().Modified()
+#		self.labelNode.Modified()
+#			
 		#self.bEditTCGA = False
-		
-		self.currentMessage = "Quick TCGA done: nuclei segmetnation is done; press 'F' to enable ROI selection for refinement"
-		slicer.util.showStatusMessage(self.currentMessage)
-	#else:
-	#	self.currentMessage = "Quick TCGA: go to seed labels first by pressing 'E'"
-	#	slicer.util.showStatusMessage(self.currentMessage)
+#		
+#		self.currentMessage = "Quick TCGA done: nuclei segmetnation is done; press 'F' to enable ROI selection for refinement"
+#		slicer.util.showStatusMessage(self.currentMessage)
+#	#else:
+#	#	self.currentMessage = "Quick TCGA: go to seed labels first by pressing 'E'"
+#	#	slicer.util.showStatusMessage(self.currentMessage)
 
   def runQTCGA_Template(self):
 	return
