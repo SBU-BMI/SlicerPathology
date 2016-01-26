@@ -21,12 +21,6 @@ set(MODULE_PYTHON_RESOURCES
   )
 
 #-----------------------------------------------------------------------------
-find_package(Slicer REQUIRED)
-if(Slicer_FOUND)
-   include(${Slicer_USE_FILE})
-endif(Slicer_FOUND)
-
-#-----------------------------------------------------------------------------
 add_subdirectory(ShortCutCore)
 
 #-----------------------------------------------------------------------------
