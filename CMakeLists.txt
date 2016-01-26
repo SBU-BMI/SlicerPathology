@@ -27,6 +27,8 @@ set(SLICEROPENCV_INCLUDE_DIR "${SLICEROPENCV_DIR}/include")
 INCLUDE_DIRECTORIES( ${SLICEROPENCV_INCLUDE_DIR} ${SLICEROPENCV_INCLUDE_DIR}/opencv ${SLICEROPENCV_INCLUDE_DIR}/ITK-4.9)
 # Set up link directories
 LINK_DIRECTORIES(${SLICEROPENCV_DIR}/lib)
+# Set up link libraries
+set(OpenCV_LIBS opencv_core;opencv_videoio;ITKVideoBridgeOpenCV)
 
 #-----------------------------------------------------------------------------
 set(MODULE_NAME SlicerPathology)
