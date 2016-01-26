@@ -32,7 +32,7 @@ if(OpenCV_FOUND)
 endif(OpenCV_FOUND)
 
 #-----------------------------------------------------------------------------
-add_subdirectory(QuickTCGA)
+#add_subdirectory(QuickTCGA)
 
 #-----------------------------------------------------------------------------
 slicerMacroBuildScriptedModule(
