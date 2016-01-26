@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 3.0.1)
 
 #-----------------------------------------------------------------------------
 set(MODULE_NAME ShortCut)
@@ -26,10 +26,10 @@ if(Slicer_FOUND)
    include(${Slicer_USE_FILE})
 endif(Slicer_FOUND)
 
-FIND_PACKAGE(OpenCV REQUIRED)
-if(OpenCV_FOUND)
-   INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} )
-endif(OpenCV_FOUND)
+#FIND_PACKAGE(OpenCV REQUIRED)
+#if(OpenCV_FOUND)
+#   INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} )
+#endif(OpenCV_FOUND)
 
 #-----------------------------------------------------------------------------
 add_subdirectory(ShortCutCore)

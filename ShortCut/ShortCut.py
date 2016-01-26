@@ -22,15 +22,15 @@ from vtk.util.numpy_support import vtk_to_numpy
 #
 
 #
-# QuickTCGAEffectOptions - see LabelEffect, EditOptions and Effect for superclasses
+# ShortCutOptions - see LabelEffect, EditOptions and Effect for superclasses
 #
 
-class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
+class ShortCutOptions(EditorLib.LabelEffectOptions):
   """ ShortCut-specfic gui
   """
 
   def __init__(self, parent=0):
-    super(QuickTCGAEffectOptions,self).__init__(parent)
+    super(ShortCutOptions,self).__init__(parent)
 
     editUtil = EditorLib.EditUtil.EditUtil()
     parameterNode = editUtil.getParameterNode()
@@ -44,10 +44,10 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.displayName = 'ShortCut Effect'
 
   def __del__(self):
-    super(QuickTCGAEffectOptions,self).__del__()
+    super(ShortCutOptions,self).__del__()
 
   def create(self):
-    super(QuickTCGAEffectOptions,self).create()
+    super(ShortCutOptions,self).create()
     self.helpLabel = qt.QLabel("Run the Quick TCGA Segmenter on the current label/seed image.", self.frame)
     self.frame.layout().addWidget(self.helpLabel)
     
@@ -112,7 +112,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     #frameMPPSlider.value = 25
     #nucleusSegFormLayout.addRow("Size Upper Threshold:", frameMPPSlider)
 
-    HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
+    HelpButton(self.frame, ("TO USE: \n Start the ShortCutCore segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
      "\n KEYS for Global Segmentation: " +
       "\n S: start Global segmentation \n E: toggle between seed image and segmentation result" +
       " \n R: reset seed/label image for Global Segmentation " +
@@ -139,7 +139,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
   def destroy(self):
     self.currentMessage = ""
     slicer.util.showStatusMessage(self.currentMessage)
-    super(QuickTCGAEffectOptions,self).destroy()
+    super(ShortCutOptions,self).destroy()
     
   #def OtsuSliderValueChanged(self,value):
   #  self.parameterNode.SetParameter("ShortCut,otsuRatio", str(value))
@@ -177,7 +177,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
   #    self.parameterNodeTag = node.AddObserver(vtk.vtkCommand.ModifiedEvent, self.updateGUIFromMRML)
 
   def setMRMLDefaults(self):
-    super(QuickTCGAEffectOptions,self).setMRMLDefaults()
+    super(ShortCutOptions,self).setMRMLDefaults()
 
   def onStartBot(self):
 
@@ -208,7 +208,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
 
   def updateGUIFromMRML(self,caller,event):
     self.disconnectWidgets()
-    super(QuickTCGAEffectOptions,self).updateGUIFromMRML(caller,event)
+    super(ShortCutOptions,self).updateGUIFromMRML(caller,event)
     self.connectWidgets()
 
   def updateMRMLFromGUI(self):
@@ -216,7 +216,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
       return
     disableState = self.parameterNode.GetDisableModifiedEvent()
     self.parameterNode.SetDisableModifiedEvent(1)
-    super(QuickTCGAEffectOptions,self).updateMRMLFromGUI()
+    super(ShortCutOptions,self).updateMRMLFromGUI()
     self.parameterNode.SetDisableModifiedEvent(disableState)
     if not disableState:
       self.parameterNode.InvokePendingModifiedEvent()
@@ -252,16 +252,16 @@ so it can access tools if needed.
 
   def start(self):
     sliceLogic = self.sliceWidget.sliceLogic()
-    self.logic = QuickTCGAEffectLogic( self.redSliceWidget.sliceLogic() )
+    self.logic = ShortCutLogic( self.redSliceWidget.sliceLogic() )
 
   def stop(self):
 
     self.logic.destroy()
 #
-# QuickTCGAEffectTool
+# ShortCutTool
 #
 
-class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
+class ShortCutTool(LabelEffect.LabelEffectTool):
   """
   One instance of this will be created per-view when the effect
   is selected.  It is responsible for implementing feedback and
@@ -272,12 +272,12 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
   """
 
   def __init__(self, sliceWidget):
-    super(QuickTCGAEffectTool,self).__init__(sliceWidget)
+    super(ShortCutTool,self).__init__(sliceWidget)
     # create a logic instance to do the non-gui work
-    #self.logic = QuickTCGAEffectLogic(self.sliceWidget.sliceLogic())
+    #self.logic = ShortCutLogic(self.sliceWidget.sliceLogic())
 
   def cleanup(self):
-    super(QuickTCGAEffectTool,self).cleanup()
+    super(ShortCutTool,self).cleanup()
 
   #def processEvent(self, caller=None, event=None):
    # """
@@ -285,7 +285,7 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
    # """
 
    # # let the superclass deal with the event if it wants to
-   # if super(QuickTCGAEffectTool,self).processEvent(caller,event):
+   # if super(ShortCutTool,self).processEvent(caller,event):
    #   return
 
    # # events from the slice node
@@ -309,26 +309,26 @@ handle events from the render window interactor
       pass
 
 #
-# QuickTCGAEffectLogic
+# ShortCutLogic
 #
 
-class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
+class ShortCutLogic(LabelEffect.LabelEffectLogic):
   """
   This class contains helper methods for a given effect
-  type.  It can be instanced as needed by an QuickTCGAEffectTool
-  or QuickTCGAEffectOptions instance in order to compute intermediate
+  type.  It can be instanced as needed by an ShortCutTool
+  or ShortCutOptions instance in order to compute intermediate
   results (say, for user feedback) or to implement the final
   segmentation editing operation.  This class is split
-  from the QuickTCGAEffectTool so that the operations can be used
+  from the ShortCutTool so that the operations can be used
   by other code without the need for a view context.
   """
 
   def __init__(self,sliceLogic):
     print("Preparing Quick TCGA Interaction")
     self.attributes = ('MouseTool')
-    self.displayName = 'QuickTCGA Effect'
+    self.displayName = 'ShortCutCore Effect'
 
-    #disconnect all shortcuts that may exist, to allow QuickTCGA's to work, reconnect once bot is turned off
+    #disconnect all shortcuts that may exist, to allow ShortCutCore's to work, reconnect once bot is turned off
     slicer.modules.EditorWidget.removeShortcutKeys()
     self.sliceLogic = sliceLogic
     self.editUtil = EditUtil.EditUtil()
@@ -340,15 +340,15 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.mouse_obs_growcut, self.swLUT_growcut = bind_view_observers(self.updateShortCutROI)
 
     #initialize Fast GrowCut
-    self.init_QuickTCGA()
+    self.init_ShortCutCore()
     
-    self.QuickTCGACreated=False
+    self.ShortCutCoreCreated=False
   
-  def init_QuickTCGA(self):
+  def init_ShortCutCore(self):
 	
 	self.emergencyStopFunc = None    
 	self.dialogBox=qt.QMessageBox() #will display messages to draw users attention if he does anything wrong
-	self.dialogBox.setWindowTitle("QuickTCGA Error")
+	self.dialogBox.setWindowTitle("ShortCutCore Error")
 	self.dialogBox.setWindowModality(qt.Qt.NonModal) #will allow user to continue interacting with Slicer
     
     # TODO: check this claim- might be causing leaks
@@ -382,7 +382,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 			self.emergencyStopFunc()
 		return
          
-    # QuickTCGA shortcuts
+    # ShortCutCore shortcuts
 	resetQTCGAKey = qt.QKeySequence(qt.Qt.Key_R) # reset initialization flag
 	runQTCGAClusterKey = qt.QKeySequence(qt.Qt.Key_S) # run fast growcut
 	#runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
@@ -392,7 +392,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	runQTCGAShortCutKey = qt.QKeySequence(qt.Qt.Key_C)
 	runQTCGAShortEditCutKey = qt.QKeySequence(qt.Qt.Key_F)
 
-	print " keys to run QuickTCGA segmentation, ShortCut, edit ShortCut, edit seed, reset parameters are S, C, F, E, R"
+	print " keys to run ShortCutCore segmentation, ShortCut, edit ShortCut, edit seed, reset parameters are S, C, F, E, R"
     
 	self.qtkeyconnections = []
 	self.qtkeydefsQTCGA = [[resetQTCGAKey, self.resetQTCGAFlag],
@@ -435,7 +435,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	#roiVTK.UpdateInformation()
     
   
-	import vtkSlicerQuickTCGAModuleLogicPython
+	import vtkSlicerShortCutCoreModuleLogicPython
 	
 	node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
 	otsuRatio = float(node.GetParameter("ShortCut,otsuRatio"))
@@ -449,7 +449,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	mpp = float(node.GetParameter("ShortCut,mpp"))/100
 	print(mpp)
 
-	qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()
+	qTCGAMod =vtkSlicerShortCutCoreModuleLogicPython.vtkShortCutCore()
 	qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
 	qTCGAMod.SetotsuRatio(otsuRatio)
 	qTCGAMod.SetcurvatureWeight(curvatureWeight)
@@ -460,7 +460,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	#qTCGAMod.SetSeedVol(self.labelNode.GetImageData())r
 	qTCGAMod.Initialization()
 	self.qTCGAMod = qTCGAMod   
-	self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
+	self.ShortCutCoreCreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
 
  
 
@@ -701,7 +701,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         #why is this necessary for full disconnect (if removed, get the error that more and more keypresses are required if module is repetedly erased and created
         keydef.delete() #this causes errors   
     
-    # destroy QuickTCGA objects
+    # destroy ShortCutCore objects
     self.qTCGASeedArray = None
     self.qTCGASegArray = None
     self.qTCGAMod = None
@@ -801,7 +801,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 # The ShortCut class definition
 #
 
-class QuickTCGAEffectExtension(LabelEffect.LabelEffect):
+class ShortCutExtension(LabelEffect.LabelEffect):
   """Organizes the Options, Tool, and Logic classes into a single instance
   that can be managed by the EditBox
   """
@@ -812,15 +812,15 @@ class QuickTCGAEffectExtension(LabelEffect.LabelEffect):
     # tool tip is displayed on mouse hover
     self.toolTip = "Paint: circular paint brush for label map editing"
 
-    self.options = QuickTCGAEffectOptions
-    self.tool = QuickTCGAEffectTool
-    self.logic = QuickTCGAEffectLogic
+    self.options = ShortCutOptions
+    self.tool = ShortCutTool
+    self.logic = ShortCutLogic
 
 """ Test:
 
 sw = slicer.app.layoutManager().sliceWidget('Red')
 import EditorLib
-pet = EditorLib.QuickTCGAEffectTool(sw)
+pet = EditorLib.ShortCutTool(sw)
 
 """
 
@@ -853,13 +853,13 @@ class ShortCut:
       slicer.modules.editorExtensions
     except AttributeError:
       slicer.modules.editorExtensions = {}
-    slicer.modules.editorExtensions['ShortCut'] = QuickTCGAEffectExtension
+    slicer.modules.editorExtensions['ShortCut'] = ShortCutExtension
 
 #
-# QuickTCGAEffectWidget
+# ShortCutWidget
 #
 
-class QuickTCGAEffectWidget:
+class ShortCutWidget:
   def __init__(self, parent = None):
     self.parent = parent
 
