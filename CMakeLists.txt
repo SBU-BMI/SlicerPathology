@@ -55,5 +55,3 @@ add_subdirectory(ShortCut)
 add_subdirectory(SPsegmentation)
 ## NEXT_MODULE
 
-#-----------------------------------------------------------------------------
-include(${Slicer_EXTENSION_CPACK})
