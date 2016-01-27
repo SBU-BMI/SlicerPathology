@@ -399,7 +399,7 @@ void FindBoundingBoxFromMask(const cv::Mat& imMask, cv::Rect& rect) {
 
     assert(contours.size() > 0);
 
-    for(int i=0;i<contours.size();i++) {
+    for(unsigned int i=0;i<contours.size();i++) {
         area = cv::contourArea(contours[i]);
         if(area > maxArea) {
             maxArea = area;

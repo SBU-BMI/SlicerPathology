@@ -59,7 +59,7 @@ void IniDK(uchar* pImg, uchar* pLabels, const int ROWS, const int COLS, int CHAN
     double MAXC = 441.673;
     int idxq, idxp, idxp1, idxp2, idxq1, idxq2, idxp_scn, idxq_scn; // idxp_scn: index for single channel
     int i,j,m;
-    double g, C, t;
+    double C;
 
     // index rule: pixelPtr[i*img.cols*cn + j*cn + k], k is channel index
     pDK = new DKElement[DIMXY];
@@ -138,9 +138,9 @@ void IniDK(uchar* pImg, uchar* pLabels, const int ROWS, const int COLS, int CHAN
 
     // initialize first-ring neighbors
     DKBand.clear();
-    for(i = 0; i < alive_vec.size(); i++) {
+    for(unsigned int i = 0; i < alive_vec.size(); i++) {
         idxp = alive_vec[i];
-        for(j = 0; j < pDK[idxp].indNeighbor.size(); j++) {
+        for(unsigned int j = 0; j < pDK[idxp].indNeighbor.size(); j++) {
 
             idxq = pDK[idxp].indNeighbor[j];
             BandElement ele;
@@ -172,7 +172,7 @@ void UpdateDK(uchar* pImg, uchar* pLabels, const std::vector<uchar>& pLabelsOri,
     double MAXC = 441.673;
     int idxq, idxp, idxp1, idxp2, idxq1, idxq2, idxp_scn, idxq_scn; // idxp_scn: index for single channel
     int i,j,m;
-    double g, C, t;
+    double C;
 
     for(i = 0; i < DIMXY; i++) {
         pDK[i].t = pDistOri[i];              // Copy original distance information
@@ -246,9 +246,9 @@ void UpdateDK(uchar* pImg, uchar* pLabels, const std::vector<uchar>& pLabelsOri,
 
     // initialize first-ring neighbors
     DKBand.clear();
-    for(i = 0; i < alive_vec.size(); i++) {
+    for(unsigned int i = 0; i < alive_vec.size(); i++) {
         idxp = alive_vec[i];
-        for(j = 0; j < pDK[idxp].indNeighbor.size(); j++) {
+        for(unsigned int j = 0; j < pDK[idxp].indNeighbor.size(); j++) {
 
             idxq = pDK[idxp].indNeighbor[j];
             BandElement ele;
@@ -273,7 +273,7 @@ void ClassifyNNPoints(DKElement* pDK) {
 
     BandElement ele;
     double t, tOri, tSrc;
-    int i, idxp, idxq;
+    int idxp, idxq;
 
     long k = 0;
     while(!DKBand.empty()) {
@@ -284,7 +284,7 @@ void ClassifyNNPoints(DKElement* pDK) {
 
         k++;
 
-        for(i = 0; i < pDK[idxp].indNeighbor.size(); i++) {
+        for(unsigned int i = 0; i < pDK[idxp].indNeighbor.size(); i++) {
             idxq = pDK[idxp].indNeighbor[i];
 
             if(pDK[idxq].state == DKElement::Alive || !pDK[idxq].bValid) continue;    // Alive points won't be affected
@@ -658,7 +658,7 @@ void ShortCut::ShowImage(bool bPoly) {
             findContours(imROI,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE,cv::Point(0,0));
 
             if(!bPoly) {
-                for(int i=0;i<contours.size();i++) {
+                for(unsigned int i=0;i<contours.size();i++) {
                   drawContours(imResult,contours,i,CYAN,2,8,hierarchy,0,cv::Point());
                 }
             }
@@ -675,22 +675,22 @@ void ShortCut::ShowImage(bool bPoly) {
             imSeg = m_imSeg&m_INDFGD;
             findContours(imSeg,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE,cv::Point(0,0));
             if(!bPoly) {
-                for(int i=0;i<contours.size();i++) {
+                for(unsigned int i=0;i<contours.size();i++) {
                   drawContours(imResult,contours,i,BLUE,1,8,hierarchy,0,cv::Point());
                 }
             }
             else {
                 m_polys.resize(contours.size());
 
-                for( int i = 0; i < contours.size(); i++ )
+                for(unsigned int i = 0; i < contours.size(); i++ )
                     cv::approxPolyDP( cv::Mat(contours[i]), m_polys[i], 3, true );
 
 
-                for( int i = 0; i < m_polys.size(); i++ ) {
+                for(unsigned int i = 0; i < m_polys.size(); i++ ) {
                     std::vector<cv::Point>  poly = m_polys[i];
                     cv::polylines(imResult, poly, 1, BLUE, 2);
 
-                    for(int j = 0; j < poly.size(); j++) {
+                    for(unsigned int j = 0; j < poly.size(); j++) {
                         cv::circle(imResult, poly[j], 3, GREEN, -1, CV_AA);
                     }
                 }
@@ -701,7 +701,7 @@ void ShortCut::ShowImage(bool bPoly) {
 
                 findContours(imROI,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE,cv::Point(0,0));
                 if(!bPoly) {
-                    for(int i=0;i<contours.size();i++) {
+                    for(unsigned int i=0;i<contours.size();i++) {
                       drawContours(imResult,contours,i,CYAN,2,8,hierarchy,0,cv::Point());
                     }
                 }
@@ -723,13 +723,12 @@ void ShortCut::FindNNPolyPoint(const int x, const int y) {
 
     if(m_polys.empty()) return;
 
-    const double DIST_NN = 10;
     double d, dMin;
 
     cv::Point pt;
     dMin = 1e10;
-    for(int i = 0; i < m_polys.size(); i++) {
-        for(int j = 0; j < m_polys[i].size(); j++) {
+    for(unsigned int i = 0; i < m_polys.size(); i++) {
+        for(unsigned int j = 0; j < m_polys[i].size(); j++) {
             pt = m_polys[i][j];
             d = sqrt((pt.x-x)*(pt.x-x)+(pt.y-y)*(pt.y-y));
 
@@ -756,11 +755,11 @@ void ShortCut::UpdatePolyGon() {
             imSeg = m_imSeg&m_INDFGD;
             imSeg.copyTo(imUpdate);
 
-            for( int i = 0; i < m_polys.size(); i++ ) {
+            for(unsigned int i = 0; i < m_polys.size(); i++ ) {
                 std::vector<cv::Point>  poly = m_polys[i];
                 cv::polylines(imResult, poly, 1, BLUE, 2);
 
-                for(int j = 0; j < poly.size(); j++) {
+                for(unsigned int j = 0; j < poly.size(); j++) {
                     cv::circle(imResult, poly[j], 3, GREEN, -1, CV_AA);
                 }
             }

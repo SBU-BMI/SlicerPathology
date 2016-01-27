@@ -36,7 +36,7 @@ void QuickTCGASegmenter::OnTrackColorThreshold(int indColorTh) {
     cv::findContours(dst,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE,cv::Point(0,0));
     cv::Scalar color=cv::Scalar(255);
 
-    for(int i=0;i<contours.size();i++) {
+    for(unsigned int i=0;i<contours.size();i++) {
       drawContours(dst,contours,i,color,-1,8,hierarchy,0,cv::Point());
     }
 
@@ -54,7 +54,7 @@ void QuickTCGASegmenter::OnTrackColorThreshold(int indColorTh) {
 
 
     cv::Mat srcDraw = m_imSrcSample.clone();
-    for(int i=0;i<contours.size();i++) {
+    for(unsigned int i=0;i<contours.size();i++) {
         drawContours(srcDraw,contours,i,color,1,8,hierarchy,0,cv::Point());
     }
 
@@ -130,7 +130,7 @@ void QuickTCGASegmenter::DoSegmentation() {
 
      cv::Mat seg = cv::Mat::zeros(m_imLabSample.size(), CV_8UC1);
      cv::Scalar color=cv::Scalar(1);
-     for(int i=0;i<m_contours.size();i++) {
+     for(unsigned int i=0;i<m_contours.size();i++) {
        drawContours(seg,m_contours,i,color,-1,8,m_hierarchy,0,cv::Point());
      }
      cv::resize(seg, m_imLab, cv::Size(m_imLab.cols, m_imLab.rows), cv::INTER_NEAREST);

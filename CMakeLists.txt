@@ -19,16 +19,17 @@ include(${Slicer_USE_FILE})
 
 #-----------------------------------------------------------------------------
 # Get OpenCV from the SlicerOpenCV extension
-set(SLICEROPENCV_DIR "" CACHE PATH "SlicerOpenCV qt loadable module directory")
-MESSAGE(STATUS "SLICEROPENCV_DIR = ${SLICEROPENCV_DIR}")
+set(SlicerOpenCV_DIR "" CACHE PATH "SlicerOpenCV build directory")
+MESSAGE(STATUS "SlicerOpenCV_DIR = ${SlicerOpenCV_DIR}")
 
 # Set up include directories
-set(SLICEROPENCV_INCLUDE_DIR "${SLICEROPENCV_DIR}/include")
+set(SLICEROPENCV_MODULE_LIB_DIR "${SlicerOpenCV_DIR}/${Slicer_QTLOADABLEMODULES_LIB_DIR}")
+set(SLICEROPENCV_INCLUDE_DIR "${SLICEROPENCV_MODULE_LIB_DIR}/include")
 INCLUDE_DIRECTORIES( ${SLICEROPENCV_INCLUDE_DIR} ${SLICEROPENCV_INCLUDE_DIR}/opencv ${SLICEROPENCV_INCLUDE_DIR}/ITK-4.9)
 # Set up link directories
-LINK_DIRECTORIES(${SLICEROPENCV_DIR}/lib)
+LINK_DIRECTORIES(${SLICEROPENCV_MODULE_LIB_DIR}/lib)
 # Set up link libraries
-set(OpenCV_LIBS opencv_core;opencv_videoio;ITKVideoBridgeOpenCV)
+set(OpenCV_LIBS opencv_core;opencv_videoio;opencv_imgproc;opencv_highgui;ITKVideoBridgeOpenCV-4.9)
 
 #-----------------------------------------------------------------------------
 set(MODULE_NAME SlicerPathology)
