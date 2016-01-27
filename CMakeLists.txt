@@ -10,11 +10,25 @@ set(EXTENSION_CONTRIBUTORS "Erich Bremer (Stony Brook University), Yi Gao (Stony
 set(EXTENSION_DESCRIPTION "An extension to provide multiscale segmentation tools.")
 set(EXTENSION_ICONURL "http://www.example.com/Slicer/Extensions/SlicerPathology.png")
 set(EXTENSION_SCREENSHOTURLS "http://www.example.com/Slicer/Extensions/SlicerPathology/Screenshots/1.png")
+set(EXTENSION_DEPENDS "SlicerOpenCV")
 
 #-----------------------------------------------------------------------------
 # Extension dependencies
 find_package(Slicer REQUIRED)
 include(${Slicer_USE_FILE})
+
+#-----------------------------------------------------------------------------
+# Get OpenCV from the SlicerOpenCV extension
+set(SLICEROPENCV_DIR "" CACHE PATH "SlicerOpenCV qt loadable module directory")
+MESSAGE(STATUS "SLICEROPENCV_DIR = ${SLICEROPENCV_DIR}")
+
+# Set up include directories
+set(SLICEROPENCV_INCLUDE_DIR "${SLICEROPENCV_DIR}/include")
+INCLUDE_DIRECTORIES( ${SLICEROPENCV_INCLUDE_DIR} ${SLICEROPENCV_INCLUDE_DIR}/opencv ${SLICEROPENCV_INCLUDE_DIR}/ITK-4.9)
+# Set up link directories
+LINK_DIRECTORIES(${SLICEROPENCV_DIR}/lib)
+# Set up link libraries
+set(OpenCV_LIBS opencv_core;opencv_videoio;ITKVideoBridgeOpenCV)
 
 #-----------------------------------------------------------------------------
 set(MODULE_NAME SlicerPathology)
@@ -55,3 +69,5 @@ add_subdirectory(ShortCut)
 add_subdirectory(SPsegmentation)
 ## NEXT_MODULE
 
+#-----------------------------------------------------------------------------
+# include(${Slicer_EXTENSION_CPACK})

@@ -122,7 +122,7 @@ void LogSession::toSummaryStringByName(std::string &header, std::string &value) 
 	ss1 << "pid,hostName,group,sessionName,";
 	ss2 << id << "," << name << "," << group << "," << session_name << "," << std::fixed;
 
-	for (std::tr1::unordered_map<std::string, long>::iterator iter= countByEventName.begin();
+	for (std::unordered_map<std::string, long>::iterator iter= countByEventName.begin();
 			iter != countByEventName.end(); ++iter) {
 		std::string name = iter->first;
 		ss1 << name << " count," << name << " mean," << name << " stdev, ";
@@ -136,7 +136,7 @@ void LogSession::toSummaryStringByType(std::string &header, std::string &value) 
 	ss1 << "pid,hostName,group,sessionName,";
 	ss2 << id << "," << name << "," << group << "," << session_name << "," << std::fixed;
 
-	for (std::tr1::unordered_map<int, long>::iterator iter = countByEventType.begin();
+	for (std::unordered_map<int, long>::iterator iter = countByEventType.begin();
 			iter != countByEventType.end(); ++iter) {
 		int type = iter->first;
 		ss1 << "type " << type << " count," << "type " << type << " mean," << "type " << type << " stdev, ";
@@ -160,7 +160,7 @@ std::vector<std::string> Logger::toStrings() {
 	// headers
 	std::vector<std::string> output;
 
-	for (std::tr1::unordered_map<std::string, cci::common::LogSession >::iterator iter = values.begin();
+	for (std::unordered_map<std::string, cci::common::LogSession >::iterator iter = values.begin();
 			iter != values.end(); ++iter) {
 		std::string headers;
 		std::string times;
@@ -176,7 +176,7 @@ std::vector<std::string> Logger::toOneLineStrings() {
 	// headers
 	std::vector<std::string> output;
 
-	for (std::tr1::unordered_map<std::string, cci::common::LogSession >::iterator iter = values.begin();
+	for (std::unordered_map<std::string, cci::common::LogSession >::iterator iter = values.begin();
 			iter != values.end(); ++iter) {
 		std::string times;
 
@@ -190,7 +190,7 @@ std::vector<std::string> Logger::toSummaryStringsByName() {
 	// headers
 	std::vector<std::string> output;
 
-	for (std::tr1::unordered_map<std::string, cci::common::LogSession >::iterator iter = values.begin();
+	for (std::unordered_map<std::string, cci::common::LogSession >::iterator iter = values.begin();
 			iter != values.end(); ++iter) {
 		std::string headers;
 		std::string times;
@@ -206,7 +206,7 @@ std::vector<std::string> Logger::toSummaryStringsByType() {
 	// headers
 	std::vector<std::string> output;
 
-	for (std::tr1::unordered_map<std::string, cci::common::LogSession >::iterator iter = values.begin();
+	for (std::unordered_map<std::string, cci::common::LogSession >::iterator iter = values.begin();
 			iter != values.end(); ++iter) {
 		std::string headers;
 		std::string times;

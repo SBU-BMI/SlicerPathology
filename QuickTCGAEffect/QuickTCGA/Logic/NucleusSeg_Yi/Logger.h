@@ -9,7 +9,7 @@
 #define _UTILS_LOGGER_H_
 
 #include <sys/time.h>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <vector>
 #include <cmath>
 #include <string>
@@ -165,13 +165,13 @@ private :
 	std::vector<cci::common::event> events;
 	long long start;
 
-	std::tr1::unordered_map<std::string, long> countByEventName;
-	std::tr1::unordered_map<std::string, long long> sumDurationByEventName;
-	std::tr1::unordered_map<std::string, long long> sumSquareDurationByEventName;
+	std::unordered_map<std::string, long> countByEventName;
+	std::unordered_map<std::string, long long> sumDurationByEventName;
+	std::unordered_map<std::string, long long> sumSquareDurationByEventName;
 
-	std::tr1::unordered_map<int, long> countByEventType;
-	std::tr1::unordered_map<int, long long> sumDurationByEventType;
-	std::tr1::unordered_map<int, long long> sumSquareDurationByEventType;
+	std::unordered_map<int, long> countByEventType;
+	std::unordered_map<int, long long> sumDurationByEventType;
+	std::unordered_map<int, long long> sumSquareDurationByEventType;
 
 };
 
@@ -220,7 +220,7 @@ private :
 	std::string logprefix;
 
 	// image name to log map.
-	std::tr1::unordered_map<std::string, cci::common::LogSession > values;
+	std::unordered_map<std::string, cci::common::LogSession > values;
 };
 
 

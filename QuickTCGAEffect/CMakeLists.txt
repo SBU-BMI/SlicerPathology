@@ -26,11 +26,6 @@ if(Slicer_FOUND)
    include(${Slicer_USE_FILE})
 endif(Slicer_FOUND)
 
-FIND_PACKAGE(OpenCV REQUIRED)
-if(OpenCV_FOUND)
-   INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} )
-endif(OpenCV_FOUND)
-
 #-----------------------------------------------------------------------------
 add_subdirectory(QuickTCGA)
 
