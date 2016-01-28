@@ -1,5 +1,11 @@
 #include "ShortCutCoreSegmenter.h"
 
+// init static variables
+const double ShortCutCoreSegmenter::m_SAMPLERATE = 0.5;
+const int ShortCutCoreSegmenter::m_COUNTOURAREA_MIN = 10;
+const int ShortCutCoreSegmenter::m_COLOR_SLIDER_MAX = 40;
+const int ShortCutCoreSegmenter::m_STRELE_SIZE = 1;
+
 static void On_TrackColorThreshold(int indColorTh, void* userData) {
 
     ShortCutCoreSegmenter* pTCGA = static_cast<ShortCutCoreSegmenter*>(userData);
