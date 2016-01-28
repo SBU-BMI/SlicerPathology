@@ -1,5 +1,10 @@
 #include "QuickTCGASegmenter.h"
 
+const double QuickTCGASegmenter::m_SAMPLERATE = 0.5;
+const int QuickTCGASegmenter::m_COUNTOURAREA_MIN = 10;
+const int QuickTCGASegmenter::m_COLOR_SLIDER_MAX = 40;
+const int QuickTCGASegmenter::m_STRELE_SIZE = 1;
+
 static void On_TrackColorThreshold(int indColorTh, void* userData) {
 
     QuickTCGASegmenter* pTCGA = static_cast<QuickTCGASegmenter*>(userData);

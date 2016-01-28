@@ -46,10 +46,10 @@ private:
     cv::Mat m_imFeature;
     std::string m_WindowNameFull;
     std::string m_WindowNameROI;
-    static const double m_SAMPLERATE = 0.5;
-    static const int m_COUNTOURAREA_MIN = 10;
-    static const int m_COLOR_SLIDER_MAX = 40;
-    static const int m_STRELE_SIZE = 1;
+    static const double m_SAMPLERATE;
+    static const int m_COUNTOURAREA_MIN;
+    static const int m_COLOR_SLIDER_MAX;
+    static const int m_STRELE_SIZE;
     std::vector<std::vector<cv::Point> > m_contours;
     std::vector<cv::Vec4i> m_hierarchy;
 };
