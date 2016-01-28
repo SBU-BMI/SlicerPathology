@@ -29,7 +29,6 @@ set(MODULE_SRCS
     BinaryMaskAnalysisFilter.cxx
     Normalization.cpp
     PixelOperations.cpp
-    Logger.cpp
     ProcessTileUtils.cxx
 )
 
