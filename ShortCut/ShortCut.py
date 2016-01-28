@@ -397,7 +397,6 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
 	self.qtkeyconnections = []
 	self.qtkeydefsQTCGA = [[resetQTCGAKey, self.resetQTCGAFlag],
                              [runQTCGAClusterKey,self.runQTCGA_Segmentation],
-                             #[runNucleiSegKey, self.runQTCGA_NucleiSegYi],
                              [runQTCGATemplateKey, self.runQTCGA_Template],
                              [runQTCGARefineCurvatureKey, self.runQTCGA_Refine_Curvature],
                              [runQTCGAShortCutKey, self.runQTCGA_ShortCut],
@@ -477,7 +476,6 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
 		self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
 		self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
 		self.qTCGAMod.Run_QTCGA_Segmentation()
-		#self.qTCGAMod.Run_NucleiSegYi()
 		self.qTCGASegArray[:] = seedArray[:]
 		
 		self.labelNode.GetImageData().Modified()
@@ -491,7 +489,6 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
 		self.currentMessage = "Quick TCGA: go to seed labels first by pressing 'E'"
 		slicer.util.showStatusMessage(self.currentMessage)
 		
-#  def runQTCGA_NucleiSegYi(self):
 	#if self.bEditTCGA == True:
 
 #		self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
@@ -519,7 +516,6 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
 #		
 #		self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
 #		self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
-#		self.qTCGAMod.Run_NucleiSegYi()
 #		self.qTCGASegArray[:] = seedArray[:]
 #		
 #		self.labelNode.GetImageData().Modified()

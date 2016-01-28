@@ -44,7 +44,6 @@ public:
   void Run_QTCGA_Template();
   void Run_Refine_Curvature();
   void Run_QTCGA_ShortCut();
-  void Run_NucleiSegYi();
   void Initialization();
 //  void RunFGC();
   void PrintSelf(ostream &os, vtkIndent indent);
