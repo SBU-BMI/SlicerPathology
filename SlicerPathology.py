@@ -240,28 +240,28 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.SaveButton.connect('clicked()', self.onSaveButtonClicked)
     
   def onSaveButtonClicked(self):
+    print "local save"
     labelNodes = slicer.util.getNodes('TCGA*-label')
-    print('All label nodes found: ' + str(labelNodes))
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     for label in labelNodes.values():
       labelName = label.GetName()
-      labelFileName = os.path.join('\SlicerPathology', labelName + '.tif')
+      labelFileName = os.path.join('/home/erich/', labelName + '.tif')
       print "labelFileName : "+labelFileName
       sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
       sNode.SetFileName(labelFileName)
       sNode.SetWriteFileFormat('tif')
       sNode.SetURI(None)
       success = sNode.WriteData(label)
-      #success = True
+#      #success = True
       if success:
         print "I am sucessful! :D"
       else:
         print "I am a failure ;("
-    a = EditUtil.EditUtil()
-    p = a.getParameterNode()
-    print p.GetParameter('SlicerPathology,MaxCellSize')
-    p.SetParameter('SlicerPathology,MaxCellSize','8')
-    print p.GetParameter('SlicerPathology,MaxCellSize')
+#    a = EditUtil.EditUtil()
+#    p = a.getParameterNode()
+#    print p.GetParameter('SlicerPathology,MaxCellSize')
+#    p.SetParameter('SlicerPathology,MaxCellSize','8')
+#    print p.GetParameter('SlicerPathology,MaxCellSize')
  
   def onWebSaveButtonClicked(self):
     print "OHHH YEAH"
