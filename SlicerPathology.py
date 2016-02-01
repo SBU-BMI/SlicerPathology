@@ -252,19 +252,37 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
       sNode.SetWriteFileFormat('tif')
       sNode.SetURI(None)
       success = sNode.WriteData(label)
-#      #success = True
       if success:
         print "I am sucessful! :D"
       else:
         print "I am a failure ;("
-#    a = EditUtil.EditUtil()
-#    p = a.getParameterNode()
+    a = EditUtil.EditUtil()
+    p = a.getParameterNode()
 #    print p.GetParameter('SlicerPathology,MaxCellSize')
 #    p.SetParameter('SlicerPathology,MaxCellSize','8')
 #    print p.GetParameter('SlicerPathology,MaxCellSize')
- 
+    j={}
+    j['sizeUpperThld']=p.GetParameter('QuickTCGAEffect,sizeUpperThld')
+#300.0
+    j['otsuRatio']=p.GetParameter('QuickTCGAEffect,otsuRatio')
+#1.0
+    j['curvatureWeight']=p.GetParameter('QuickTCGAEffect,curvatureWeight')
+#8.0
+    j['sizeThld']=p.GetParameter('QuickTCGAEffect,sizeThld')
+#3.0
+    j['sizeUpperThld']=p.GetParameter('QuickTCGAEffect,sizeUpperThld')
+#300.0
+    j['mpp']=p.GetParameter('QuickTCGAEffect,mpp')
+    print j
+    jstr = json.dumps(j,sort_keys=True, indent=4, separators=(',', ': '))
+    print jstr
+    f = open('/home/erich/YAY','w')
+    f.write(jstr)
+    f.close()
+
+
   def onWebSaveButtonClicked(self):
-    print "OHHH YEAH"
+    print "Web Save to be implemented...."
 
   def checkAndSetLUT(self):
     # Default to module color table
