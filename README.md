@@ -9,9 +9,9 @@ This is work in progress to develop tools for automatic and semi-automatic patho
 
 # Acknowledgments
 
-Additional Coding and 3D Slicer programming support:
-Nicole Aucoin (https://github.com/naucoin)
-Andrey Fedorov (https://github.com/fedorov)
+Additional Coding and 3D Slicer programming support:<br>
+Nicole Aucoin (https://github.com/naucoin)<br>
+Andrey Fedorov (https://github.com/fedorov)<br>
 
 This work is supported by:
 
