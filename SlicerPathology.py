@@ -173,7 +173,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     submissionGroupBox = qt.QGroupBox()
 
     self.setupGroupBoxLayout = qt.QFormLayout()
-    self.imageSelectionGroupBoxLayout = qt.QGridLayout()
+    self.imageSelectionGroupBoxLayout = qt.QFormLayout()
     self.segmentationGroupBoxLayout = qt.QGridLayout()
     self.submissionGroupBoxLayout = qt.QFormLayout()
 
@@ -232,12 +232,15 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     print "ading this for now..."
     
   def setupsubmissionUI(self):
-    self.WebSaveButton = qt.QPushButton("Submit to web")
-    self.submissionGroupBoxLayout.addWidget(self.WebSaveButton)
-    self.WebSaveButton.connect('clicked()', self.onWebSaveButtonClicked)
+    self.dataDirButton = ctk.ctkDirectoryButton()
+    self.submissionGroupBoxLayout.addWidget(qt.QLabel("Data directory:") )
+    self.submissionGroupBoxLayout.addWidget(self.dataDirButton)
     self.SaveButton = qt.QPushButton("Save")
     self.submissionGroupBoxLayout.addWidget(self.SaveButton)
     self.SaveButton.connect('clicked()', self.onSaveButtonClicked)
+    self.WebSaveButton = qt.QPushButton("Submit to web")
+    self.submissionGroupBoxLayout.addWidget(self.WebSaveButton)
+    self.WebSaveButton.connect('clicked()', self.onWebSaveButtonClicked)
     
   def onSaveButtonClicked(self):
     print "local save"
@@ -245,7 +248,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     for label in labelNodes.values():
       labelName = label.GetName()
-      labelFileName = os.path.join('/home/erich/', labelName + '.tif')
+      labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
       print "labelFileName : "+labelFileName
       sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
       sNode.SetFileName(labelFileName)
@@ -258,28 +261,23 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         print "I am a failure ;("
     a = EditUtil.EditUtil()
     p = a.getParameterNode()
-#    print p.GetParameter('SlicerPathology,MaxCellSize')
-#    p.SetParameter('SlicerPathology,MaxCellSize','8')
-#    print p.GetParameter('SlicerPathology,MaxCellSize')
     j={}
-    j['sizeUpperThld']=p.GetParameter('QuickTCGAEffect,sizeUpperThld')
-#300.0
-    j['otsuRatio']=p.GetParameter('QuickTCGAEffect,otsuRatio')
+    j['otsuRatio'] = p.GetParameter('QuickTCGAEffect,otsuRatio')
 #1.0
-    j['curvatureWeight']=p.GetParameter('QuickTCGAEffect,curvatureWeight')
+    j['curvatureWeight'] = p.GetParameter('QuickTCGAEffect,curvatureWeight')
 #8.0
-    j['sizeThld']=p.GetParameter('QuickTCGAEffect,sizeThld')
+    j['sizeThld'] = p.GetParameter('QuickTCGAEffect,sizeThld')
 #3.0
-    j['sizeUpperThld']=p.GetParameter('QuickTCGAEffect,sizeUpperThld')
+    j['sizeUpperThld'] = p.GetParameter('QuickTCGAEffect,sizeUpperThld')
 #300.0
     j['mpp']=p.GetParameter('QuickTCGAEffect,mpp')
+    j['username'] = self.setupUserName.text
     print j
     jstr = json.dumps(j,sort_keys=True, indent=4, separators=(',', ': '))
     print jstr
-    f = open('/home/erich/YAY','w')
+    f = open(os.path.join(self.dataDirButton.directory, labelName + '.json'),'w')
     f.write(jstr)
     f.close()
-
 
   def onWebSaveButtonClicked(self):
     print "Web Save to be implemented...."
