@@ -16,3 +16,4 @@ Andrey Fedorov (https://github.com/fedorov)<br>
 This work is supported by:
 
 * U24 CA180924 Tools to Analyze Morphology and Spatially Mapped Molecular Data, PI Joel Saltz, Stony Brook University
+* U24 CA180918 Quantitative Image Informatics for Cancer Research (QIICR), http://qiicr.org, PIs Ron Kikinis and Andrey Fedorov, Brigham and Women's Hospital
