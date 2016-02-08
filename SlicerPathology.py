@@ -259,9 +259,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         print "successful writing "+labelFileName
       else:
         print "failed writing "+labelFileName
-    #a = EditUtil.EditUtil()
-    ci = slicer.util.findChildren(slicer.modules.EditorWidget.volumes, 'StructuresView')[0]
-    ci = currentIndex().row()
+    a = EditUtil.EditUtil()
+    ci = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0] 
+    ci = ci.currentIndex().row()
     print ci
     p = a.getParameterNode()
     j={}
@@ -287,7 +287,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.colorFile = os.path.join(self.resourcesPath, "Colors/SlicerPathology.csv")
     self.customLUTLabel.setText('Using Default LUT')
     try:
-        self.d = Widget.helper.structureListWidget.merge = None
+        self.editorWidget.helper.structureListWidget.merge = None
     except AttributeError:
         pass
     # setup the color table, make sure SlicerPathology LUT is a singleton
