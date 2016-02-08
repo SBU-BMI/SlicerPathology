@@ -244,7 +244,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     
   def onSaveButtonClicked(self):
     print "local save"
-    labelNodes = slicer.util.getNodes('TCGA*-label')
+    labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     for label in labelNodes.values():
       labelName = label.GetName()
@@ -256,20 +256,19 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
       sNode.SetURI(None)
       success = sNode.WriteData(label)
       if success:
-        print "I am sucessful! :D"
+        print "successful writing "+labelFileName
       else:
-        print "I am a failure ;("
-    a = EditUtil.EditUtil()
+        print "failed writing "+labelFileName
+    #a = EditUtil.EditUtil()
+    ci = slicer.util.findChildren(slicer.modules.EditorWidget.volumes, 'StructuresView')[0]
+    ci = currentIndex().row()
+    print ci
     p = a.getParameterNode()
     j={}
     j['otsuRatio'] = p.GetParameter('QuickTCGAEffect,otsuRatio')
-#1.0
     j['curvatureWeight'] = p.GetParameter('QuickTCGAEffect,curvatureWeight')
-#8.0
     j['sizeThld'] = p.GetParameter('QuickTCGAEffect,sizeThld')
-#3.0
     j['sizeUpperThld'] = p.GetParameter('QuickTCGAEffect,sizeUpperThld')
-#300.0
     j['mpp']=p.GetParameter('QuickTCGAEffect,mpp')
     j['username'] = self.setupUserName.text
     print j
@@ -288,7 +287,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.colorFile = os.path.join(self.resourcesPath, "Colors/SlicerPathology.csv")
     self.customLUTLabel.setText('Using Default LUT')
     try:
-        self.editorWidget.helper.structureListWidget.merge = None
+        self.d = Widget.helper.structureListWidget.merge = None
     except AttributeError:
         pass
     # setup the color table, make sure SlicerPathology LUT is a singleton
