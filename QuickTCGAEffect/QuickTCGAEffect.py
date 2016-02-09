@@ -1,4 +1,5 @@
 import os
+import json
 from __main__ import vtk, qt, ctk, slicer
 import EditorLib
 from EditorLib.EditOptions import HelpButton
@@ -14,6 +15,7 @@ from copy import copy, deepcopy
 import numpy as np
 from vtk.util import numpy_support
 from vtk.util.numpy_support import vtk_to_numpy
+params = {}
 
 #
 # The Editor Extension itself.
@@ -140,33 +142,48 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.currentMessage = ""
     slicer.util.showStatusMessage(self.currentMessage)
     super(QuickTCGAEffectOptions,self).destroy()
-    
+
+  def updateParam(self,p,v):
+    ci = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0]
+    ci = ci.currentIndex().row()
+    if ci not in params:
+      params[ci] = {}
+    params[ci][p] = v
+#    params[ci]['curvatureWeight'] = self.parameterNode.GetParameter('QuickTCGAEffect,curvatureWeight')
+#    params[ci]['sizeThld'] = self.parameterNode.GetParameter('QuickTCGAEffect,sizeThld')
+#    params[ci]['sizeUpperThld'] = self.parameterNode.GetParameter('QuickTCGAEffect,sizeUpperThld')
+#    params[ci]['mpp']= self.parameterNode.GetParameter('QuickTCGAEffect,mpp')
+    jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
+    self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
+ 
   def OtsuSliderValueChanged(self,value):
     self.parameterNode.SetParameter("QuickTCGAEffect,otsuRatio", str(value))
+    self.updateParam("otsuRatio",value)
     self.updateMRMLFromGUI()
   
   def CurvatureWeightSliderValueChanged(self,value):
     self.parameterNode.SetParameter("QuickTCGAEffect,curvatureWeight", str(value))
+    self.updateParam("curvatureWeight",value)
     self.updateMRMLFromGUI()  
     
   def SizeThldSliderValueChanged(self,value):
     self.parameterNode.SetParameter("QuickTCGAEffect,sizeThld", str(value))
+    self.updateParam("sizeThld",value)
     self.updateMRMLFromGUI()  
     
   def SizeUpperThldSliderValueChanged(self,value):
     self.parameterNode.SetParameter("QuickTCGAEffect,sizeUpperThld", str(value))
+    self.updateParam("sizeUpperThld",value)
     self.updateMRMLFromGUI()  
     
   def MPPSliderValueChanged(self,value):
     self.parameterNode.SetParameter("QuickTCGAEffect,mpp", str(value))
+    self.updateParam("mpp",value)
     self.updateMRMLFromGUI()  
     
-    
-    
-    
-  def onRadiusSpinBoxChanged(self,value):
-    self.parameterNode.SetParameter("QuickTCGAEffect,radius", str(value))
-    self.updateMRMLFromGUI()
+#  def onRadiusSpinBoxChanged(self,value):
+#    self.parameterNode.SetParameter("QuickTCGAEffect,radius", str(value))
+#    self.updateMRMLFromGUI()
 
   # note: this method needs to be implemented exactly as-is
   # in each leaf subclass so that "self" in the observer

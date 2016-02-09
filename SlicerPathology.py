@@ -293,7 +293,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     # setup the color table, make sure SlicerPathology LUT is a singleton
     allColorTableNodes = slicer.util.getNodes('vtkMRMLColorTableNode*').values()
     for ctn in allColorTableNodes:
-        print "color: "+ctn.GetName()
+        #print "color: "+ctn.GetName()
         if ctn.GetName() == 'SlicerPathologyColor':
             slicer.mrmlScene.RemoveNode(ctn)
             break
@@ -308,7 +308,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     colorNode.NamesInitialisedOn()
     import csv
     self.structureNames = []
-    print self.colorFile
+#    print self.colorFile
     with open(self.colorFile, 'rb') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=',')
         for index,row in enumerate(reader):
@@ -353,7 +353,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
     slicer.modules.EditorWidget.helper.setMergeVolume(refLabel)
     #slicer.util.mainWindow().moduleSelector().selectModule('Editor')
-    print("BOOYAH!...")
     
     editorWidgetParent = slicer.qMRMLWidget()
     editorWidgetParent.setLayout(qt.QVBoxLayout())
