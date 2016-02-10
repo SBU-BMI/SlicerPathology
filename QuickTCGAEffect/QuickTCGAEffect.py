@@ -16,6 +16,7 @@ import numpy as np
 from vtk.util import numpy_support
 from vtk.util.numpy_support import vtk_to_numpy
 params = {}
+cparams = {}
 
 #
 # The Editor Extension itself.
@@ -64,55 +65,55 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frame.layout().addWidget(self.locRadFrame)
     self.widgets.append(self.locRadFrame)
     
-
-    
     # Nucleus segmentation parameters (Yi Gao's algorithm)
     nucleusSegCollapsibleButton = ctk.ctkCollapsibleButton()
     nucleusSegCollapsibleButton.text = "Nucleus Segmentation Parameters (Yi Gao)"
     nucleusSegCollapsibleButton.collapsed = True;
     self.frame.layout().addWidget(nucleusSegCollapsibleButton)
+
+    self.cci = -10
     
     # Layout within the parameter button
     nucleusSegFormLayout = qt.QFormLayout(nucleusSegCollapsibleButton)
-    frameOtsuSlider = ctk.ctkSliderWidget()
-    frameOtsuSlider.connect('valueChanged(double)', self.OtsuSliderValueChanged)
-    frameOtsuSlider.decimals = 0
-    frameOtsuSlider.minimum = 0
-    frameOtsuSlider.maximum = 10
-    frameOtsuSlider.value = 1.0
-    nucleusSegFormLayout.addRow("Otsu Threshold:", frameOtsuSlider)
+    self.frameOtsuSlider = ctk.ctkSliderWidget()
+    self.frameOtsuSlider.connect('valueChanged(double)', self.OtsuSliderValueChanged)
+    self.frameOtsuSlider.decimals = 0
+    self.frameOtsuSlider.minimum = 0
+    self.frameOtsuSlider.maximum = 10
+    self.frameOtsuSlider.value = 1.0
+    nucleusSegFormLayout.addRow("Otsu Threshold:", self.frameOtsuSlider)
     
-    frameCurvatureWeightSlider = ctk.ctkSliderWidget()
-    frameCurvatureWeightSlider.connect('valueChanged(double)', self.CurvatureWeightSliderValueChanged)
-    frameCurvatureWeightSlider.decimals = 0
-    frameCurvatureWeightSlider.minimum = 0
-    frameCurvatureWeightSlider.maximum = 10
-    frameCurvatureWeightSlider.value = 8
-    nucleusSegFormLayout.addRow("Curvature Weight:", frameCurvatureWeightSlider)
+    self.frameCurvatureWeightSlider = ctk.ctkSliderWidget()
+    self.frameCurvatureWeightSlider.connect('valueChanged(double)', self.CurvatureWeightSliderValueChanged)
+    self.frameCurvatureWeightSlider.decimals = 0
+    self.frameCurvatureWeightSlider.minimum = 0
+    self.frameCurvatureWeightSlider.maximum = 10
+    self.frameCurvatureWeightSlider.value = 8
+    nucleusSegFormLayout.addRow("Curvature Weight:", self.frameCurvatureWeightSlider)
     
-    frameSizeThldSlider = ctk.ctkSliderWidget()
-    frameSizeThldSlider.connect('valueChanged(double)', self.SizeThldSliderValueChanged)
-    frameSizeThldSlider.decimals = 0
-    frameSizeThldSlider.minimum = 1
-    frameSizeThldSlider.maximum = 100
-    frameSizeThldSlider.value = 3
-    nucleusSegFormLayout.addRow("Size Threshold:", frameSizeThldSlider)
+    self.frameSizeThldSlider = ctk.ctkSliderWidget()
+    self.frameSizeThldSlider.connect('valueChanged(double)', self.SizeThldSliderValueChanged)
+    self.frameSizeThldSlider.decimals = 0
+    self.frameSizeThldSlider.minimum = 1
+    self.frameSizeThldSlider.maximum = 100
+    self.frameSizeThldSlider.value = 3
+    nucleusSegFormLayout.addRow("Size Threshold:", self.frameSizeThldSlider)
     
-    frameSizeUpperThldSlider = ctk.ctkSliderWidget()
-    frameSizeUpperThldSlider.connect('valueChanged(double)', self.SizeUpperThldSliderValueChanged)
-    frameSizeUpperThldSlider.decimals = 0
-    frameSizeUpperThldSlider.minimum = 100
-    frameSizeUpperThldSlider.maximum = 500
-    frameSizeUpperThldSlider.value = 300
-    nucleusSegFormLayout.addRow("Size Upper Threshold:", frameSizeUpperThldSlider)
+    self.frameSizeUpperThldSlider = ctk.ctkSliderWidget()
+    self.frameSizeUpperThldSlider.connect('valueChanged(double)', self.SizeUpperThldSliderValueChanged)
+    self.frameSizeUpperThldSlider.decimals = 0
+    self.frameSizeUpperThldSlider.minimum = 100
+    self.frameSizeUpperThldSlider.maximum = 500
+    self.frameSizeUpperThldSlider.value = 300
+    nucleusSegFormLayout.addRow("Size Upper Threshold:", self.frameSizeUpperThldSlider)
     
-    frameMPPSlider = ctk.ctkSliderWidget()
-    frameMPPSlider.connect('valueChanged(double)', self.MPPSliderValueChanged)
-    frameMPPSlider.decimals = 0
-    frameMPPSlider.minimum = 0
-    frameMPPSlider.maximum = 100
-    frameMPPSlider.value = 25
-    nucleusSegFormLayout.addRow("Size Upper Threshold:", frameMPPSlider)
+    self.frameMPPSlider = ctk.ctkSliderWidget()
+    self.frameMPPSlider.connect('valueChanged(double)', self.MPPSliderValueChanged)
+    self.frameMPPSlider.decimals = 0
+    self.frameMPPSlider.minimum = 0
+    self.frameMPPSlider.maximum = 100
+    self.frameMPPSlider.value = 25
+    nucleusSegFormLayout.addRow("Size Upper Threshold:", self.frameMPPSlider)
 
     HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
      "\n KEYS for Global Segmentation: " +
@@ -143,16 +144,26 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     slicer.util.showStatusMessage(self.currentMessage)
     super(QuickTCGAEffectOptions,self).destroy()
 
+  def updateSliders(self):
+    self.frameOtsuSlider.value = 1.0
+    self.frameCurvatureWeightSlider.value = 8
+    self.frameSizeThldSlider.value = 3
+    self.frameSizeUpperThldSlider.value = 300
+    self.frameMPPSlider.value = 25
+
   def updateParam(self,p,v):
     ci = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0]
     ci = ci.currentIndex().row()
+    if (ci<>self.cci):
+      print "CHANGED ROWS!!!"
+      updateSliders(self)
+      self.cci=ci
     if ci not in params:
-      params[ci] = {}
+      print "ci not in params...initializing"
+      params[ci] = cparams.copy()
     params[ci][p] = v
-#    params[ci]['curvatureWeight'] = self.parameterNode.GetParameter('QuickTCGAEffect,curvatureWeight')
-#    params[ci]['sizeThld'] = self.parameterNode.GetParameter('QuickTCGAEffect,sizeThld')
-#    params[ci]['sizeUpperThld'] = self.parameterNode.GetParameter('QuickTCGAEffect,sizeUpperThld')
-#    params[ci]['mpp']= self.parameterNode.GetParameter('QuickTCGAEffect,mpp')
+    cparams[p] = v
+    print params
     jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
     self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
  
@@ -181,10 +192,6 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.updateParam("mpp",value)
     self.updateMRMLFromGUI()  
     
-#  def onRadiusSpinBoxChanged(self,value):
-#    self.parameterNode.SetParameter("QuickTCGAEffect,radius", str(value))
-#    self.updateMRMLFromGUI()
-
   # note: this method needs to be implemented exactly as-is
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
