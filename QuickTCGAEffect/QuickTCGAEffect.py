@@ -72,6 +72,8 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frame.layout().addWidget(nucleusSegCollapsibleButton)
 
     self.cci = -10
+    self.structuresView = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0]
+    self.structuresView.connect("activated(QModelIndex)", self.onStructureClickedOrAdded)
     
     # Layout within the parameter button
     nucleusSegFormLayout = qt.QFormLayout(nucleusSegCollapsibleButton)
@@ -151,13 +153,13 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameSizeUpperThldSlider.value = 300
     self.frameMPPSlider.value = 25
 
+  def onStructureClickedOrAdded(self):
+    print "BOOYAH!!!!"
+    self.updateSliders();
+
   def updateParam(self,p,v):
     ci = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0]
     ci = ci.currentIndex().row()
-    if (ci<>self.cci):
-      print "CHANGED ROWS!!!"
-      updateSliders(self)
-      self.cci=ci
     if ci not in params:
       print "ci not in params...initializing"
       params[ci] = cparams.copy()
