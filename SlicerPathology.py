@@ -264,15 +264,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     ci = ci.currentIndex().row()
     print ci
     p = a.getParameterNode()
-    j={}
-    j['otsuRatio'] = p.GetParameter('QuickTCGAEffect,otsuRatio')
-    j['curvatureWeight'] = p.GetParameter('QuickTCGAEffect,curvatureWeight')
-    j['sizeThld'] = p.GetParameter('QuickTCGAEffect,sizeThld')
-    j['sizeUpperThld'] = p.GetParameter('QuickTCGAEffect,sizeUpperThld')
-    j['mpp']=p.GetParameter('QuickTCGAEffect,mpp')
+    bundle = p.GetParameter('QuickTCGAEffect,erich')
+    j = json.loads(bundle)
     j['username'] = self.setupUserName.text
-    print j
     jstr = json.dumps(j,sort_keys=True, indent=4, separators=(',', ': '))
+    print "************************************!!!"
     print jstr
     f = open(os.path.join(self.dataDirButton.directory, labelName + '.json'),'w')
     f.write(jstr)

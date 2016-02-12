@@ -147,21 +147,24 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).destroy()
 
   def updateSliders(self):
-    self.frameOtsuSlider.value = 1.0
-    self.frameCurvatureWeightSlider.value = 8
-    self.frameSizeThldSlider.value = 3
-    self.frameSizeUpperThldSlider.value = 300
-    self.frameMPPSlider.value = 25
+    r = self.structuresView.currentIndex().row()
+    print r
+    if r not in params:
+      print "r not in params...initializing"
+      params[r] = cparams.copy()
+    self.frameOtsuSlider.value = params[r]["otsuRatio"]
+    self.frameCurvatureWeightSlider.value = params[r]["curvatureWeight"]
+    self.frameSizeThldSlider.value = params[r]["sizeThld"]
+    self.frameSizeUpperThldSlider.value = params[r]["sizeUpperThld"]
+    self.frameMPPSlider.value = params[r]["mpp"]
 
   def onStructureClickedOrAdded(self):
-    print "BOOYAH!!!!"
     self.updateSliders();
 
   def updateParam(self,p,v):
     ci = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0]
     ci = ci.currentIndex().row()
     if ci not in params:
-      print "ci not in params...initializing"
       params[ci] = cparams.copy()
     params[ci][p] = v
     cparams[p] = v
