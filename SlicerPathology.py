@@ -244,6 +244,14 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     
   def onSaveButtonClicked(self):
     print "local save"
+    a = EditUtil.EditUtil()
+    p = a.getParameterNode()
+    bundle = p.GetParameter('QuickTCGAEffect,erich')
+    j = json.loads(bundle)
+    j['username'] = self.setupUserName.text
+    print "* * *"
+    print j
+    print "= = ="
     labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     for label in labelNodes.values():
@@ -259,17 +267,10 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         print "successful writing "+labelFileName
       else:
         print "failed writing "+labelFileName
-    a = EditUtil.EditUtil()
     ci = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0] 
     ci = ci.currentIndex().row()
     print ci
-    p = a.getParameterNode()
-    bundle = p.GetParameter('QuickTCGAEffect,erich')
-    j = json.loads(bundle)
-    j['username'] = self.setupUserName.text
     jstr = json.dumps(j,sort_keys=True, indent=4, separators=(',', ': '))
-    print "************************************!!!"
-    print jstr
     f = open(os.path.join(self.dataDirButton.directory, labelName + '.json'),'w')
     f.write(jstr)
     f.close()
