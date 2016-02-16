@@ -71,7 +71,6 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     nucleusSegCollapsibleButton.collapsed = True;
     self.frame.layout().addWidget(nucleusSegCollapsibleButton)
 
-    self.cci = -10
     self.structuresView = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0]
     self.structuresView.connect("activated(QModelIndex)", self.onStructureClickedOrAdded)
     

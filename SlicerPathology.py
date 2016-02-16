@@ -64,6 +64,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.setupimageSelectionUI()
     self.setupsegmentationUI()
     self.setupsubmissionUI()
+    self.setupEditorWidget()
     
     # Instantiate and connect widgets ...
 
@@ -305,7 +306,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     colorNode.NamesInitialisedOn()
     import csv
     self.structureNames = []
-#    print self.colorFile
     with open(self.colorFile, 'rb') as csvfile:
         reader = csv.DictReader(csvfile, delimiter=',')
         for index,row in enumerate(reader):
@@ -313,8 +313,18 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             if not success:
                 print "color %s could not be set" % row['Label']
             self.structureNames.append(row['Label'])
-    #print colorNode
-    
+
+  def setupEditorWidget(self):
+    editorWidgetParent = slicer.qMRMLWidget()
+    editorWidgetParent.setLayout(qt.QVBoxLayout())
+    editorWidgetParent.setMRMLScene(slicer.mrmlScene)
+    self.editorWidget = EditorWidget(parent=editorWidgetParent)
+    self.editorWidget.setup()
+    self.segmentationGroupBoxLayout.addWidget(self.editorWidget.parent)
+#    self.segmentationGroupBoxLayout.addWidget(editorWidgetParent)
+#    self.hideUnwantedEditorUIElements()
+#    self.configureEditorEffectsUI()
+
   def loadTCGAData(self):
     slicer.util.openAddVolumeDialog()
     red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
@@ -350,13 +360,12 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
     slicer.modules.EditorWidget.helper.setMergeVolume(refLabel)
     #slicer.util.mainWindow().moduleSelector().selectModule('Editor')
-    
-    editorWidgetParent = slicer.qMRMLWidget()
-    editorWidgetParent.setLayout(qt.QVBoxLayout())
-    editorWidgetParent.setMRMLScene(slicer.mrmlScene)
-    self.editorWidget = EditorWidget(parent=editorWidgetParent)
-    self.editorWidget.setup()
-    self.segmentationGroupBoxLayout.addWidget(self.editorWidget.parent)
+    #editorWidgetParent = slicer.qMRMLWidget()
+    #editorWidgetParent.setLayout(qt.QVBoxLayout())
+    #editorWidgetParent.setMRMLScene(slicer.mrmlScene)
+    #self.editorWidget = EditorWidget(parent=editorWidgetParent)
+    #self.editorWidget.setup()
+    #self.segmentationGroupBoxLayout.addWidget(self.editorWidget.parent)
 #
 # SlicerPathologyLogic
 #
