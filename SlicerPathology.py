@@ -8,6 +8,7 @@ import PythonQt
 import json
 import EditorLib
 from EditorLib import EditUtil
+import datetime
 
 #
 # SlicerPathology
@@ -246,11 +247,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     
   def onSaveButtonClicked(self):
     print "local save"
-    a = EditUtil.EditUtil()
-    p = a.getParameterNode()
-    bundle = p.GetParameter('QuickTCGAEffect,erich')
-    j = json.loads(bundle)
+    bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
+    layers = json.loads(bundle)
+    j = {}
+    j['layers'] = layers
     j['username'] = self.setupUserName.text
+    j['generator'] = "3DSlicer"
+    j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     print "* * *"
     print j
     print "= = ="
@@ -258,8 +261,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     for label in labelNodes.values():
       labelName = label.GetName()
-      print j[labelName]
-      j[labelName]["file"] = labelName + '.tif'
+      print j["layers"][labelName]
+      j["layers"][labelName]["file"] = labelName + '.tif'
       labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
       print "labelFileName : "+labelFileName
       sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
@@ -272,7 +275,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
       else:
         print "failed writing "+labelFileName
     jstr = json.dumps(j,sort_keys=True, indent=4, separators=(',', ': '))
-    f = open(os.path.join(self.dataDirButton.directory, labelName + '.json'),'w')
+    f = open(os.path.join(self.dataDirButton.directory, self.tilename + '.json'),'w')
     f.write(jstr)
     f.close()
 

@@ -16,7 +16,7 @@ import numpy as np
 from vtk.util import numpy_support
 from vtk.util.numpy_support import vtk_to_numpy
 params = {}
-cparams = {}
+cparams = {"algorithm":"Yi"}
 
 #
 # The Editor Extension itself.
@@ -159,6 +159,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     if ei not in params:
       print "ei not in params...initializing"
       params[ei] = cparams.copy()
+      params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
       print params
       print "===================="
       jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
@@ -186,6 +187,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     if ei not in params:
       print "ei not in params...initializing"
       params[ei] = cparams.copy()
+      params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
       print params
       print "===================="
     params[ei][p] = v
