@@ -65,6 +65,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.setupsegmentationUI()
     self.setupsubmissionUI()
     self.setupEditorWidget()
+    editUtil = EditorLib.EditUtil.EditUtil()
+    self.parameterNode = editUtil.getParameterNode()
     
     # Instantiate and connect widgets ...
 
@@ -229,8 +231,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.loadDataButton.connect('clicked()', self.loadTCGAData)
 
   def setupsegmentationUI(self):
-    #self.segmentationGroupBoxLayout.addWidget(self.SomeButton)
-    print "ading this for now..."
+    print "adding this for now..."
     
   def setupsubmissionUI(self):
     self.dataDirButton = ctk.ctkDirectoryButton()
@@ -257,6 +258,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     for label in labelNodes.values():
       labelName = label.GetName()
+      print j[labelName]
+      j[labelName]["file"] = labelName + '.tif'
       labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
       print "labelFileName : "+labelFileName
       sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
@@ -268,9 +271,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         print "successful writing "+labelFileName
       else:
         print "failed writing "+labelFileName
-    ci = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0] 
-    ci = ci.currentIndex().row()
-    print ci
     jstr = json.dumps(j,sort_keys=True, indent=4, separators=(',', ': '))
     f = open(os.path.join(self.dataDirButton.directory, labelName + '.json'),'w')
     f.write(jstr)
@@ -321,9 +321,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.editorWidget = EditorWidget(parent=editorWidgetParent)
     self.editorWidget.setup()
     self.segmentationGroupBoxLayout.addWidget(self.editorWidget.parent)
-#    self.segmentationGroupBoxLayout.addWidget(editorWidgetParent)
-#    self.hideUnwantedEditorUIElements()
-#    self.configureEditorEffectsUI()
 
   def loadTCGAData(self):
     slicer.util.openAddVolumeDialog()
@@ -334,6 +331,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     fMat=vtk.vtkMatrix4x4()
     fgrdNode.GetIJKToRASDirectionMatrix(fMat)
     bgrdName = fgrdNode.GetName() + '_gray'
+    self.tilename = fgrdNode.GetName() + '_gray'
+    self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
     # Get dummy grayscale image
     magnitude = vtk.vtkImageMagnitude()
     magnitude.SetInputData(fgrdNode.GetImageData())
@@ -348,10 +347,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     red_cn.SetForegroundVolumeID(fgrdVolID)
     red_cn.SetBackgroundVolumeID(bgrdVolID)
     red_cn.SetForegroundOpacity(1)   
-    # Start Editor
-    #m = slicer.util.mainWindow()
-    #m.moduleSelector().selectModule('Editor')
-    #print("Load...")
     self.checkAndSetLUT() 
     cv = slicer.util.getNode('FA')
     self.volumesLogic = slicer.modules.volumes.logic()

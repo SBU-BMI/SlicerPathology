@@ -146,28 +146,50 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).destroy()
 
   def updateSliders(self):
+    print "* * * * *"
+    print cparams
+    print "-----"
+    print params
+    print "^^^^^^^^^"
     r = self.structuresView.currentIndex().row()
-    print r
-    if r not in params:
-      print "r not in params...initializing"
-      params[r] = cparams.copy()
-    self.frameOtsuSlider.value = params[r]["otsuRatio"]
-    self.frameCurvatureWeightSlider.value = params[r]["curvatureWeight"]
-    self.frameSizeThldSlider.value = params[r]["sizeThld"]
-    self.frameSizeUpperThldSlider.value = params[r]["sizeUpperThld"]
-    self.frameMPPSlider.value = params[r]["mpp"]
+    if (r>-1):
+      ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,3).text()
+    else:
+      ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename')+'-label'
+    if ei not in params:
+      print "ei not in params...initializing"
+      params[ei] = cparams.copy()
+      print params
+      print "===================="
+      jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
+      self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
+    self.frameOtsuSlider.value = params[ei]["otsuRatio"]
+    self.frameCurvatureWeightSlider.value = params[ei]["curvatureWeight"]
+    self.frameSizeThldSlider.value = params[ei]["sizeThld"]
+    self.frameSizeUpperThldSlider.value = params[ei]["sizeUpperThld"]
+    self.frameMPPSlider.value = params[ei]["mpp"]
 
   def onStructureClickedOrAdded(self):
     self.updateSliders();
 
   def updateParam(self,p,v):
-    ci = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0]
-    ci = ci.currentIndex().row()
-    if ci not in params:
-      params[ci] = cparams.copy()
-    params[ci][p] = v
-    cparams[p] = v
+    print "* * * * *"
+    print cparams
+    print "-----"
     print params
+    print "^^^^^^^^^"
+    r = self.structuresView.currentIndex().row()
+    if (r>-1):
+      ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,3).text()
+    else:
+      ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename')+'-label'
+    if ei not in params:
+      print "ei not in params...initializing"
+      params[ei] = cparams.copy()
+      print params
+      print "===================="
+    params[ei][p] = v
+    cparams[p] = v
     jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
     self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
  
@@ -480,7 +502,13 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	print(sizeUpperThld)
 	mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
 	print(mpp)
-
+        cparams["otsuRatio"]=otsuRatio
+        cparams["curvatureWeight"]=curvatureWeight
+        cparams["sizeThld"]=sizeThld
+        cparams["sizeUpperThld"]=sizeUpperThld
+        cparams["mpp"]=mpp
+        print "Initial cparams block"
+        print cparams
 	qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()
 	qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
 	qTCGAMod.SetotsuRatio(otsuRatio)
@@ -493,8 +521,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	qTCGAMod.Initialization()
 	self.qTCGAMod = qTCGAMod   
 	self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
-
- 
 
   # run Quick TCGA segmenter for the current master volume and label volume
   
