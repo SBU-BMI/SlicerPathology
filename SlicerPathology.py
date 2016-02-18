@@ -248,11 +248,17 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
   def onSaveButtonClicked(self):
     print "local save"
     bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
-    layers = json.loads(bundle)
+    tran = json.loads(bundle)
+    layers = []
+    for key in tran:
+      nn = tran[key]
+      nn["file"] = key + '.tif'
+      layers.append(tran[key])
     j = {}
     j['layers'] = layers
     j['username'] = self.setupUserName.text
-    j['generator'] = "3DSlicer"
+    j['sourcetile'] = self.tilename
+    j['generator'] = "3DSlicer-4.5.0 with SlicerPathology v1.0a"
     j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     print "* * *"
     print j
@@ -261,8 +267,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     for label in labelNodes.values():
       labelName = label.GetName()
-      print j["layers"][labelName]
-      j["layers"][labelName]["file"] = labelName + '.tif'
       labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
       print "labelFileName : "+labelFileName
       sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
