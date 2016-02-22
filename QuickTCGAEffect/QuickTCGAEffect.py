@@ -146,22 +146,14 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).destroy()
 
   def updateSliders(self):
-    print "* * * * *"
-    print cparams
-    print "-----"
-    print params
-    print "^^^^^^^^^"
     r = self.structuresView.currentIndex().row()
     if (r>-1):
       ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,3).text()
     else:
       ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename')+'-label'
     if ei not in params:
-      print "ei not in params...initializing"
       params[ei] = cparams.copy()
       params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
-      print params
-      print "===================="
       jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
       self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
     self.frameOtsuSlider.value = params[ei]["otsuRatio"]
@@ -174,22 +166,14 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.updateSliders();
 
   def updateParam(self,p,v):
-    print "* * * * *"
-    print cparams
-    print "-----"
-    print params
-    print "^^^^^^^^^"
     r = self.structuresView.currentIndex().row()
     if (r>-1):
       ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,3).text()
     else:
       ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename')+'-label'
     if ei not in params:
-      print "ei not in params...initializing"
       params[ei] = cparams.copy()
       params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
-      print params
-      print "===================="
     params[ei][p] = v
     cparams[p] = v
     jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))

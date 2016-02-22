@@ -82,38 +82,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     parametersFormLayout = qt.QFormLayout(parametersCollapsibleButton)
 
     #
-    # input volume selector
-    #
-    #self.inputSelector = slicer.qMRMLNodeComboBox()
-    #self.inputSelector.nodeTypes = ( ("vtkMRMLScalarVolumeNode"), "" )
-    #self.inputSelector.addAttribute( "vtkMRMLScalarVolumeNode", "LabelMap", 0 )
-    #self.inputSelector.selectNodeUponCreation = True
-    #self.inputSelector.addEnabled = False
-    #self.inputSelector.removeEnabled = False
-    #self.inputSelector.noneEnabled = False
-    #self.inputSelector.showHidden = False
-    #self.inputSelector.showChildNodeTypes = False
-    #self.inputSelector.setMRMLScene( slicer.mrmlScene )
-    #self.inputSelector.setToolTip( "Pick the input to the algorithm." )
-    #parametersFormLayout.addRow("Input Volume: ", self.inputSelector)
-
-    #
-    # output volume selector
-    #
-    #self.outputSelector = slicer.qMRMLNodeComboBox()
-    #self.outputSelector.nodeTypes = ( ("vtkMRMLScalarVolumeNode"), "" )
-    #self.outputSelector.addAttribute( "vtkMRMLScalarVolumeNode", "LabelMap", 0 )
-    #self.outputSelector.selectNodeUponCreation = False
-    #self.outputSelector.addEnabled = True
-    #self.outputSelector.removeEnabled = True
-    #self.outputSelector.noneEnabled = False
-    #self.outputSelector.showHidden = False
-    #self.outputSelector.showChildNodeTypes = False
-    #self.outputSelector.setMRMLScene( slicer.mrmlScene )
-    #self.outputSelector.setToolTip( "Pick the output to the algorithm." )
-    #parametersFormLayout.addRow("Output Volume: ", self.outputSelector)
-
-    #
     # check box to trigger taking screen shots for later use in tutorials
     #
     self.enableScreenshotsFlagCheckBox = qt.QCheckBox()
@@ -139,11 +107,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     #self.applyButton.toolTip = "Run the algorithm."
     #self.applyButton.enabled = False
     #parametersFormLayout.addRow(self.applyButton)
-
-    # connections
-    #self.applyButton.connect('clicked(bool)', self.onApplyButton)
-    #self.inputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.onSelect)
-    #self.outputSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.onSelect)
 
     # Add vertical spacer
     self.layout.addStretch(1)
@@ -246,7 +209,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.WebSaveButton.connect('clicked()', self.onWebSaveButtonClicked)
     
   def onSaveButtonClicked(self):
-    print "local save"
     bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
     tran = json.loads(bundle)
     layers = []
@@ -260,9 +222,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     j['sourcetile'] = self.tilename
     j['generator'] = "3DSlicer-4.5.0 with SlicerPathology v1.0a"
     j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-    print "* * *"
-    print j
-    print "= = ="
     labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     for label in labelNodes.values():
@@ -355,19 +314,17 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     red_cn.SetBackgroundVolumeID(bgrdVolID)
     red_cn.SetForegroundOpacity(1)   
     self.checkAndSetLUT() 
-    cv = slicer.util.getNode('FA')
+    #cv = slicer.util.getNode('FA')
+    #self.volumesLogic = slicer.modules.volumes.logic()
+    #labelName = 'FA-label'
+    cv = slicer.util.getNode(bgrdName)
     self.volumesLogic = slicer.modules.volumes.logic()
-    labelName = 'FA-label'
+    labelName = bgrdName+'-label'
     refLabel = self.volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene,cv,labelName)
     refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
-    slicer.modules.EditorWidget.helper.setMergeVolume(refLabel)
-    #slicer.util.mainWindow().moduleSelector().selectModule('Editor')
-    #editorWidgetParent = slicer.qMRMLWidget()
-    #editorWidgetParent.setLayout(qt.QVBoxLayout())
-    #editorWidgetParent.setMRMLScene(slicer.mrmlScene)
-    #self.editorWidget = EditorWidget(parent=editorWidgetParent)
-    #self.editorWidget.setup()
-    #self.segmentationGroupBoxLayout.addWidget(self.editorWidget.parent)
+    print "refLabel"
+    print refLabel
+    self.editorWidget.helper.setMergeVolume(bgrdName)
 #
 # SlicerPathologyLogic
 #
