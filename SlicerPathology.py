@@ -314,17 +314,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     red_cn.SetBackgroundVolumeID(bgrdVolID)
     red_cn.SetForegroundOpacity(1)   
     self.checkAndSetLUT() 
-    #cv = slicer.util.getNode('FA')
-    #self.volumesLogic = slicer.modules.volumes.logic()
-    #labelName = 'FA-label'
+    print bgrdName
     cv = slicer.util.getNode(bgrdName)
     self.volumesLogic = slicer.modules.volumes.logic()
     labelName = bgrdName+'-label'
     refLabel = self.volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene,cv,labelName)
     refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
-    print "refLabel"
-    print refLabel
-    self.editorWidget.helper.setMergeVolume(bgrdName)
+    self.editorWidget.helper.setMasterVolume(cv)
 #
 # SlicerPathologyLogic
 #

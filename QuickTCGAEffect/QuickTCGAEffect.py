@@ -153,7 +153,10 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
       ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename')+'-label'
     if ei not in params:
       params[ei] = cparams.copy()
-      params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
+      if (r<0):
+        params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
+      else:
+        params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
       jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
       self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
     self.frameOtsuSlider.value = params[ei]["otsuRatio"]
@@ -173,7 +176,10 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
       ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename')+'-label'
     if ei not in params:
       params[ei] = cparams.copy()
-      params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
+      if (r<0):
+        params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
+      else:
+        params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
     params[ei][p] = v
     cparams[p] = v
     jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
@@ -479,22 +485,15 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	
 	node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
 	otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
-	print(otsuRatio)
 	curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
-	print(curvatureWeight)
 	sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
-	print(sizeThld)
 	sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
-	print(sizeUpperThld)
 	mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
-	print(mpp)
         cparams["otsuRatio"]=otsuRatio
         cparams["curvatureWeight"]=curvatureWeight
         cparams["sizeThld"]=sizeThld
         cparams["sizeUpperThld"]=sizeUpperThld
         cparams["mpp"]=mpp
-        print "Initial cparams block"
-        print cparams
 	qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()
 	qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
 	qTCGAMod.SetotsuRatio(otsuRatio)
@@ -545,15 +544,10 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 		
 		node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
 		otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
-		print(otsuRatio)
 		curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
-		print(curvatureWeight)
 		sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
-		print(sizeThld)
 		sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
-		print(sizeUpperThld)
 		mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
-		print(mpp)
 
 		self.qTCGAMod.SetotsuRatio(otsuRatio)
 		self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
@@ -760,17 +754,12 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.sliceLogic.RemoveObserver(self.qTCGALabMod_tag)
 
     #put back the editor shortcuts we removed
-    slicer.modules.EditorWidget.installShortcutKeys()
+    slicer.modules.SlicerPathologyWidget.editorWidget.installShortcutKeys()
 
     print("Deletion completed")
 
    
   def sliceViewMatchEditor(self, sliceLogic):
-    #if self.dialogBox==type(None): #something deleted teh dialogBox, this function then breaks, bail
-    # if self.emergencyStopFunc:
-    # self.emergencyStopFunc()
-    # return False
-    
     imgNode = sliceLogic.GetBackgroundLayer().GetVolumeNode()
     labelNode = sliceLogic.GetLabelLayer().GetVolumeNode()
 
