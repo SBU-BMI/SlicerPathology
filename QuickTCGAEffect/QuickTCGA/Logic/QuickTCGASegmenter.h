@@ -13,7 +13,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 #include "utilities.h"
-#include "ShortCut.h"
 #include "./NucleusSeg_Yi/ProcessTileUtils.h"
 
 class QuickTCGASegmenter {

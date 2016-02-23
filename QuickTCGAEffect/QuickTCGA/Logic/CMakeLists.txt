@@ -23,7 +23,7 @@ ${OpenCV_LIBS}
 #add_library(QuickTCGALogic STATIC $QuickTCGA_SRC$)
 add_subdirectory(NucleusSeg_Yi)
 
-add_library(QuickTCGALogic utilities.h QuickTCGASegmenter.h QuickTCGASegmenter.cxx ShortCut.cpp)
+add_library(QuickTCGALogic utilities.h QuickTCGASegmenter.h QuickTCGASegmenter.cxx)
 target_link_libraries(QuickTCGALogic ${QuickTCGA_LIBS} NucleiSegLib)
 
 

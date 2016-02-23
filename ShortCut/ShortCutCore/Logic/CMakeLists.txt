@@ -9,7 +9,6 @@ set(${KIT}_INCLUDE_DIRECTORIES
 
 #Build Logic as a lib
 set(ShortCutCore_SRC
-    utilities.h
     ShortCutCoreSegmenter.h
     ShortCutCoreSegmenter.cxx
 )
@@ -23,7 +22,7 @@ ${OpenCV_LIBS}
 #add_library(ShortCutCoreLogic STATIC $ShortCutCore_SRC$)
 #add_subdirectory(NucleusSeg_Yi)
 
-add_library(ShortCutCoreLogic utilities.h ShortCutCoreSegmenter.h ShortCutCoreSegmenter.cxx ShortCut.cpp)
+add_library(ShortCutCoreLogic ShortCutCoreSegmenter.h ShortCutCoreSegmenter.cxx ShortCut.cpp)
 target_link_libraries(ShortCutCoreLogic ${ShortCutCore_LIBS})
 
 

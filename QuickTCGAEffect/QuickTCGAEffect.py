@@ -369,7 +369,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.displayName = 'QuickTCGA Effect'
 
     #disconnect all shortcuts that may exist, to allow QuickTCGA's to work, reconnect once bot is turned off
-    slicer.modules.EditorWidget.removeShortcutKeys()
+    slicer.modules.SlicerPathologyWidget.editorWidget.removeShortcutKeys()
     self.sliceLogic = sliceLogic
     self.editUtil = EditUtil.EditUtil()
     self.swRed = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()

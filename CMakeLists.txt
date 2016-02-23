@@ -67,7 +67,6 @@ set(MODULE_PYTHON_RESOURCES
 
 add_subdirectory(QuickTCGAEffect)
 add_subdirectory(ShortCut)
-add_subdirectory(SPsegmentation)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------

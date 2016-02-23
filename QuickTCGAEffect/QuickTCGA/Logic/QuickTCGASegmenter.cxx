@@ -176,32 +176,6 @@ void QuickTCGASegmenter::RefineCurvature() {
     std::cout << "Do refinement at QuickTCGASegmenter\n";
 }
 
-void QuickTCGASegmenter::RefineShortCut() {
-
-    cv::Mat imSrcROI, imLabROI;
-    cv::Rect roi;
-
-    // Find ROI to apply ShortCut
-    TCGA::FindBoundingBoxFromMask(m_imROI, roi);
-    imSrcROI = m_imSrc(roi);
-    imLabROI = m_imLab(roi);
-
-    ShortCut sc;
-    sc.SetSourceImage(imSrcROI.clone(), imLabROI.clone());
-    sc.DoSegmentation();
-
-    cv::Mat imSC;
-    sc.GetSegmentation(imSC);
-
-    // Update results
-//    imLabROI = (imSegROI&(imLabROI==0)|imSC&(imLabROI > 0));
-//    imLabROI = imSC&(imLabTmp > 0);
-//    imLabROI = imSC;
-    imSC.copyTo(imLabROI);
-
-    std::cout << "Do ShortCut at QuickTCGASegmenter\n";
-}
-
 void QuickTCGASegmenter::DoTemplateMatching() {
     std::cout << "Do template matching at QuickTCGASegmenter\n";
 }

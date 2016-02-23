@@ -141,31 +141,6 @@ void vtkQuickTCGA::Run_QTCGA_Template() {
     std::cout << "Finished TCGA template matching\n";
 }
 
-void vtkQuickTCGA::Run_QTCGA_ShortCut() {
-
-    //Convert vtkImage to lplImage
-    int dims[3];
-    SourceVol->GetDimensions(dims);
-    m_imSrc = cv::Mat(dims[0], dims[1], CV_8UC3);
-    m_imLab = cv::Mat(dims[0], dims[1], CV_8UC1);
-    m_imSCROI = cv::Mat(dims[0], dims[1], CV_8UC1);
-
-    TCGA::CopyImageVTK2OpenCV<uchar,uchar>(SourceVol, m_imSrc);
-    TCGA::CopyImageVTK2OpenCV<short, uchar>(SeedVol, m_imLab);
-    TCGA::CopyImageVTK2OpenCV<short, uchar>(SCROIVol, m_imSCROI);
-
-    m_qTCGASeg->SetSourceImage(m_imSrc);
-    m_qTCGASeg->SetLabImage(m_imLab);
-    m_qTCGASeg->SetROIImage(m_imSCROI);
-
-    m_qTCGASeg->RefineShortCut();
-
-    m_qTCGASeg->GetSegmentation(m_imLab);
-
-    // Convert lplImage to vtkImage and update SeedVol
-    TCGA::CopyImageOpenCV2VTK<uchar, short>(m_imLab, SeedVol);
-}
-
 void vtkQuickTCGA::PrintSelf(ostream &os, vtkIndent indent){
     std::cout<<"This function has been found"<<std::endl;
 }
