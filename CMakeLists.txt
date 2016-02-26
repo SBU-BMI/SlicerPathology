@@ -32,41 +32,11 @@ LINK_DIRECTORIES(${SLICEROPENCV_MODULE_LIB_DIR}/lib)
 set(OpenCV_LIBS opencv_core;opencv_videoio;opencv_imgproc;opencv_highgui;ITKVideoBridgeOpenCV-4.9)
 
 #-----------------------------------------------------------------------------
-set(MODULE_NAME SlicerPathology)
-
-#-----------------------------------------------------------------------------
-set(MODULE_PYTHON_SCRIPTS
-  Util/__init__.py
-  Util/mixins.py
-  ${MODULE_NAME}.py
-  )
-  
-set(MODULE_PYTHON_RESOURCES
-  Resources/Icons/icon-submission.png
-  Resources/Icons/icon-infoBox.png
-  Resources/Icons/icon-segmentation.png
-  Resources/Icons/icon-imageselection.png
-  Resources/Icons/icon-setup.png
-  Resources/Icons/SlicerPathology-simple-small.png
-  Resources/Icons/SlicerPathologyExtensionLogo.png
-  Resources/Icons/SlicerPathology128px.png
-  )
-
-#-----------------------------------------------------------------------------
-
- slicerMacroBuildScriptedModule(
-  NAME ${MODULE_NAME}
-  SCRIPTS ${MODULE_PYTHON_SCRIPTS} 
-  RESOURCES ${MODULE_PYTHON_RESOURCES}
-  WITH_GENERIC_TESTS
-  )
-  
-  
-#-----------------------------------------------------------------------------
 # Extension modules
 
 add_subdirectory(QuickTCGAEffect)
 add_subdirectory(ShortCut)
+add_subdirectory(SlicerPathology)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------

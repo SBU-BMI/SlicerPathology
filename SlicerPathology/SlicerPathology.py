@@ -2,7 +2,7 @@ import os
 import unittest
 from __main__ import vtk, qt, ctk, slicer
 from slicer.ScriptedLoadableModule import *
-from Util.mixins import ModuleWidgetMixin
+from SlicerPathologyUtil.mixins import ModuleWidgetMixin
 from Editor import EditorWidget
 import PythonQt
 import json
