@@ -9,16 +9,16 @@ set(${KIT}_INCLUDE_DIRECTORIES
 
 #Build Logic as a lib
 set(QuickTCGA_SRC
-    utilities.h
-    QuickTCGASegmenter.h
-    QuickTCGASegmenter.cxx
-)
+  utilities.h
+  QuickTCGASegmenter.h
+  QuickTCGASegmenter.cxx
+  )
 
 set(QuickTCGA_LIBS
-${ITK_LIBRARIES}
-${VTK_LIBRARIES}
-${OpenCV_LIBS}
-)
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES}
+  ${OpenCV_LIBS}
+  )
 
 #add_library(QuickTCGALogic STATIC $QuickTCGA_SRC$)
 add_subdirectory(NucleusSeg_Yi)
@@ -36,7 +36,7 @@ set(${KIT}_SRCS
 
 set(${KIT}_TARGET_LIBRARIES
 #  ${ITK_LIBRARIES}
-QuickTCGALogic
+  QuickTCGALogic
   )
 
 #-----------------------------------------------------------------------------
