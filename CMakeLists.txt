@@ -17,10 +17,7 @@ set(EXTENSION_DEPENDS "SlicerOpenCV")
 find_package(Slicer REQUIRED)
 include(${Slicer_USE_FILE})
 
-#-----------------------------------------------------------------------------
-# Get OpenCV from the SlicerOpenCV extension
-set(SlicerOpenCV_DIR "" CACHE PATH "SlicerOpenCV build directory")
-MESSAGE(STATUS "SlicerOpenCV_DIR = ${SlicerOpenCV_DIR}")
+find_package(SlicerOpenCV REQUIRED)
 
 # Set up include directories
 set(SLICEROPENCV_MODULE_LIB_DIR "${SlicerOpenCV_DIR}/${Slicer_QTLOADABLEMODULES_LIB_DIR}")
