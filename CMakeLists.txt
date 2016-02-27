@@ -29,4 +29,4 @@ add_subdirectory(SlicerPathology)
 ## NEXT_MODULE
 
 #-----------------------------------------------------------------------------
-# include(${Slicer_EXTENSION_CPACK})
+include(${Slicer_EXTENSION_CPACK})
