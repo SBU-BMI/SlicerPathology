@@ -21,9 +21,6 @@ set(MODULE_PYTHON_RESOURCES
   )
 
 #-----------------------------------------------------------------------------
-add_subdirectory(ShortCutCore)
-
-#-----------------------------------------------------------------------------
 slicerMacroBuildScriptedModule(
   NAME ${MODULE_NAME}
   SCRIPTS ${MODULE_PYTHON_SCRIPTS}
