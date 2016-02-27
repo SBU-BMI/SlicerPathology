@@ -27,9 +27,6 @@ if(Slicer_FOUND)
 endif(Slicer_FOUND)
 
 #-----------------------------------------------------------------------------
-add_subdirectory(QuickTCGA)
-
-#-----------------------------------------------------------------------------
 slicerMacroBuildScriptedModule(
   NAME ${MODULE_NAME}
   SCRIPTS ${MODULE_PYTHON_SCRIPTS}
