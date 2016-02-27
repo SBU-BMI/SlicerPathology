@@ -1,5 +1,9 @@
 project(vtkSlicer${MODULE_NAME}ModuleLogic)
 
+#-----------------------------------------------------------------------------
+find_package(OpenCV REQUIRED)
+
+#-----------------------------------------------------------------------------
 set(KIT ${PROJECT_NAME})
 
 set(${KIT}_EXPORT_DIRECTIVE "VTK_SLICER_${MODULE_NAME_UPPER}_MODULE_LOGIC_EXPORT")
@@ -19,12 +23,8 @@ set(ShortCutCore_LIBS
   ${OpenCV_LIBS}
   )
 
-#add_library(ShortCutCoreLogic STATIC $ShortCutCore_SRC$)
-#add_subdirectory(NucleusSeg_Yi)
-
 add_library(ShortCutCoreLogic ShortCutCoreSegmenter.h ShortCutCoreSegmenter.cxx ShortCut.cpp)
 target_link_libraries(ShortCutCoreLogic ${ShortCutCore_LIBS})
-
 
 set(${KIT}_SRCS
   vtkSlicer${MODULE_NAME}Logic.cxx
@@ -34,7 +34,6 @@ set(${KIT}_SRCS
   )
 
 set(${KIT}_TARGET_LIBRARIES
-#  ${ITK_LIBRARIES}
   ShortCutCoreLogic
   )
 

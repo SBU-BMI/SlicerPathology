@@ -1,5 +1,6 @@
 project(vtkSlicer${MODULE_NAME}ModuleLogic)
 
+#-----------------------------------------------------------------------------
 set(KIT ${PROJECT_NAME})
 
 set(${KIT}_EXPORT_DIRECTIVE "VTK_SLICER_${MODULE_NAME_UPPER}_MODULE_LOGIC_EXPORT")
@@ -17,7 +18,6 @@ set(QuickTCGA_SRC
 set(QuickTCGA_LIBS
   ${ITK_LIBRARIES}
   ${VTK_LIBRARIES}
-  ${OpenCV_LIBS}
   )
 
 #add_library(QuickTCGALogic STATIC $QuickTCGA_SRC$)
