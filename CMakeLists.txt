@@ -22,7 +22,6 @@ find_package(SlicerOpenCV REQUIRED)
 #-----------------------------------------------------------------------------
 # Extension modules
 add_subdirectory(QuickTCGA)
-
 add_subdirectory(QuickTCGAEffect)
 add_subdirectory(ShortCut)
 add_subdirectory(SlicerPathology)

@@ -23,6 +23,9 @@ set(ShortCutCore_LIBS
   ${OpenCV_LIBS}
   )
 
+# XXX Ugly hack to allow inclusion of 'utilities.h'
+include_directories(${vtkSlicerQuickTCGAModuleLogic_SOURCE_DIR})
+
 add_library(ShortCutCoreLogic ShortCutCoreSegmenter.h ShortCutCoreSegmenter.cxx ShortCut.cpp)
 target_link_libraries(ShortCutCoreLogic ${ShortCutCore_LIBS})
 
