@@ -9,35 +9,32 @@ set(KIT ${PROJECT_NAME})
 set(${KIT}_EXPORT_DIRECTIVE "VTK_SLICER_${MODULE_NAME_UPPER}_MODULE_LOGIC_EXPORT")
 
 set(${KIT}_INCLUDE_DIRECTORIES
+  ${vtkSlicerQuickTCGAModuleLogic_INCLUDE_DIRS}
   )
 
-#Build Logic as a lib
-set(ShortCutCore_SRC
+set(${KIT}_WRAP_EXCLUDE_SRCS
+  ShortCut.h
+  ShortCut.cpp
   ShortCutCoreSegmenter.h
   ShortCutCoreSegmenter.cxx
   )
-
-set(ShortCutCore_LIBS
-  ${ITK_LIBRARIES}
-  ${VTK_LIBRARIES}
-  ${OpenCV_LIBS}
-  )
-
-# XXX Ugly hack to allow inclusion of 'utilities.h'
-include_directories(${vtkSlicerQuickTCGAModuleLogic_SOURCE_DIR})
-
-add_library(ShortCutCoreLogic ShortCutCoreSegmenter.h ShortCutCoreSegmenter.cxx ShortCut.cpp)
-target_link_libraries(ShortCutCoreLogic ${ShortCutCore_LIBS})
 
 set(${KIT}_SRCS
   vtkSlicer${MODULE_NAME}Logic.cxx
   vtkSlicer${MODULE_NAME}Logic.h
   vtkShortCutCore.cxx
   vtkShortCutCore.h
+  ${${KIT}_WRAP_EXCLUDE_SRCS}
+  )
+
+set_source_files_properties(
+  ${${KIT}_WRAP_EXCLUDE_SRCS}
+  WRAP_EXCLUDE
   )
 
 set(${KIT}_TARGET_LIBRARIES
-  ShortCutCoreLogic
+  ${OpenCV_LIBS}
+  vtkSlicerQuickTCGAModuleLogic
   )
 
 #-----------------------------------------------------------------------------

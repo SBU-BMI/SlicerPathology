@@ -1,6 +1,12 @@
 project(vtkSlicer${MODULE_NAME}ModuleLogic)
 
 #-----------------------------------------------------------------------------
+add_subdirectory(NucleusSeg_Yi)
+
+#-----------------------------------------------------------------------------
+find_package(OpenCV 3.1 REQUIRED)
+
+#-----------------------------------------------------------------------------
 set(KIT ${PROJECT_NAME})
 
 set(${KIT}_EXPORT_DIRECTIVE "VTK_SLICER_${MODULE_NAME_UPPER}_MODULE_LOGIC_EXPORT")
@@ -8,35 +14,30 @@ set(${KIT}_EXPORT_DIRECTIVE "VTK_SLICER_${MODULE_NAME_UPPER}_MODULE_LOGIC_EXPORT
 set(${KIT}_INCLUDE_DIRECTORIES
   )
 
-#Build Logic as a lib
-set(QuickTCGA_SRC
-  utilities.h
-  QuickTCGASegmenter.h
+set(${KIT}_WRAP_EXCLUDE_SRCS
   QuickTCGASegmenter.cxx
+  QuickTCGASegmenter.h
+  TCGAUtilities.cxx
+  TCGAUtilities.h
+  TCGAUtilities.hxx
   )
-
-set(QuickTCGA_LIBS
-  ${ITK_LIBRARIES}
-  ${VTK_LIBRARIES}
-  )
-
-#add_library(QuickTCGALogic STATIC $QuickTCGA_SRC$)
-add_subdirectory(NucleusSeg_Yi)
-
-add_library(QuickTCGALogic utilities.h QuickTCGASegmenter.h QuickTCGASegmenter.cxx)
-target_link_libraries(QuickTCGALogic ${QuickTCGA_LIBS} NucleiSegLib)
-
 
 set(${KIT}_SRCS
-  vtkSlicer${MODULE_NAME}Logic.cxx
-  vtkSlicer${MODULE_NAME}Logic.h
   vtkQuickTCGA.cxx
   vtkQuickTCGA.h
+  vtkSlicer${MODULE_NAME}Logic.cxx
+  vtkSlicer${MODULE_NAME}Logic.h
+  ${${KIT}_WRAP_EXCLUDE_SRCS}
+  )
+
+set_source_files_properties(
+  ${${KIT}_WRAP_EXCLUDE_SRCS}
+  WRAP_EXCLUDE
   )
 
 set(${KIT}_TARGET_LIBRARIES
-#  ${ITK_LIBRARIES}
-  QuickTCGALogic
+  ${OpenCV_LIBS}
+  NucleiSegLib
   )
 
 #-----------------------------------------------------------------------------

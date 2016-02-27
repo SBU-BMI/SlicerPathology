@@ -8,7 +8,7 @@
 #include "itkTimeProbe.h"
 
 #include "ShortCutCoreSegmenter.h"
-#include "utilities.h"
+#include "TCGAUtilities.h"
 
 //vtkCxxRevisionMacro(vtkFastGrowCutSeg, "$Revision$"); //necessary?
 vtkStandardNewMacro(vtkShortCutCore); //for the new() macro

@@ -12,7 +12,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#include "utilities.h"
+#include "TCGAUtilities.h"
 #include "./NucleusSeg_Yi/ProcessTileUtils.h"
 
 class QuickTCGASegmenter {
