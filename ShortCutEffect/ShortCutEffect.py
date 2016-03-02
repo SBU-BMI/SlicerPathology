@@ -824,7 +824,7 @@ pet = EditorLib.ShortCutTool(sw)
 # ShortCut
 #
 
-class ShortCut:
+class ShortCutEffect:
   """
   This class is the 'hook' for slicer to detect and recognize the extension
   as a loadable scripted module
@@ -849,7 +849,7 @@ class ShortCut:
       slicer.modules.editorExtensions
     except AttributeError:
       slicer.modules.editorExtensions = {}
-    slicer.modules.editorExtensions['ShortCut'] = ShortCutExtension
+    slicer.modules.editorExtensions['ShortCutEffect'] = ShortCutExtension
 
 #
 # ShortCutWidget
