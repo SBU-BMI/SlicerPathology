@@ -13,7 +13,7 @@
 // local
 #include "BinaryMaskAnalysisFilter.h"
 #include "itkTypedefs.h"
-#include "MeanshiftClusteringFilter.h"
+#include "HierarchicalMeanshiftClusteringFilter.h"
 
 
 namespace gth818n
@@ -126,7 +126,7 @@ namespace gth818n
 
   void BinaryMaskAnalysisFilter::_breakRegion()
   {
-    typedef gth818n::MeanshiftClusteringFilter<float, 2> MeanshiftClusteringFilterType;
+    typedef gth818n::HierarchicalMeanshiftClusteringFilter<float, 2> MeanshiftClusteringFilterType;
 
     typedef MeanshiftClusteringFilterType::VectorType VectorType;
     typedef itk::Statistics::ListSample< VectorType > SampleType;
