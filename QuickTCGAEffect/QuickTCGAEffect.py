@@ -51,7 +51,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
 
   def create(self):
     super(QuickTCGAEffectOptions,self).create()
-    self.helpLabel = qt.QLabel("Run the Quick TCGA Segmenter on the current label/seed image.", self.frame)
+    self.helpLabel = qt.QLabel("Press Y to run automatic segmentation on the current image using given parameters.", self.frame)
     self.frame.layout().addWidget(self.helpLabel)
     
     #create a "Start Bot" button
@@ -242,7 +242,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
         self.locRadFrame.show()
     else:
       TCGASegBot(self)
-      slicer.modules.TCGAEditorBot.logic.emergencyStopFunc = self.botEstop; #save the function that stops bot, destroys FastGrowCut segmenter, if things go wrong
+      slicer.modules.TCGAEditorBot.logic.emergencyStopFunc = self.botEstop; #save the function that stops bot, destroys ShortCut segmenter, if things go wrong
       if self.botButton:
         self.botButton.text = "Stop Quick TCGA Segmenter"  
         self.currentMessage =  "Quick TCGA Segmenter started: Press 'Y' to start automatic nucleus segmentation; Or go to PaintEffect to edit label image or press 'S' to start global segmentation process."
@@ -405,7 +405,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	self.labelNode = self.editUtil.getLabelVolume() #labelLogic.GetVolumeNode()
 	self.backgroundNode = self.editUtil.getBackgroundVolume() #backgroundLogic.GetVolumeNode()
 	self.foregroundNode = self.swRed.GetForegroundLayer().GetVolumeNode()
-	#self.labelNode = self.swRed.GetLabelLayer().GetVolumeNode()
     
     #perform safety check on right images/labels being selected, #set up images
     #if red slice doesnt have a label or image, go no further
@@ -429,32 +428,23 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 		return
          
     # QuickTCGA shortcuts
-	resetQTCGAKey = qt.QKeySequence(qt.Qt.Key_R) # reset initialization flag
-	runQTCGAClusterKey = qt.QKeySequence(qt.Qt.Key_S) # run fast growcut
+	##resetQTCGAKey = qt.QKeySequence(qt.Qt.Key_R) # reset initialization flag
+	##runQTCGAClusterKey = qt.QKeySequence(qt.Qt.Key_S) # run fast growcut
 	runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
-	editTCGAKey = qt.QKeySequence(qt.Qt.Key_E) # edit seed labels
-	runQTCGATemplateKey = qt.QKeySequence(qt.Qt.Key_T)
-	runQTCGARefineCurvatureKey = qt.QKeySequence(qt.Qt.Key_U)
-	runQTCGAShortCutKey = qt.QKeySequence(qt.Qt.Key_C)
-	runQTCGAShortEditCutKey = qt.QKeySequence(qt.Qt.Key_F)
+	##editTCGAKey = qt.QKeySequence(qt.Qt.Key_E) # edit seed labels
+	##runQTCGATemplateKey = qt.QKeySequence(qt.Qt.Key_T)
+	##runQTCGARefineCurvatureKey = qt.QKeySequence(qt.Qt.Key_U)
+	##runQTCGAShortCutKey = qt.QKeySequence(qt.Qt.Key_C)
+	##runQTCGAShortEditCutKey = qt.QKeySequence(qt.Qt.Key_F)
 
-	print " keys to run QuickTCGA segmentation, ShortCut, edit ShortCut, edit seed, reset parameters are S, C, F, E, R"
+	print " key to run QuickTCGA segmentation is  Y"
     
 	self.qtkeyconnections = []
-	self.qtkeydefsQTCGA = [[resetQTCGAKey, self.resetQTCGAFlag],
-                             [runQTCGAClusterKey,self.runQTCGA_Segmentation],
-                             [runNucleiSegKey, self.runQTCGA_NucleiSegYi],
-                             [runQTCGATemplateKey, self.runQTCGA_Template],
-                             [runQTCGARefineCurvatureKey, self.runQTCGA_Refine_Curvature],
-                             [runQTCGAShortCutKey, self.runQTCGA_ShortCut],
-                             [runQTCGAShortEditCutKey, self.editShortCut],
-                             [editTCGAKey, self.editTCGA]]
+        self.qtkeydefsQTCGA = [[runNucleiSegKey, self.runQTCGA_NucleiSegYi]]
 
 	for keydef in self.qtkeydefsQTCGA:
 		s = qt.QShortcut(keydef[0], slicer.util.mainWindow()) # connect this qt event to mainWindow focus
-        #s.setContext(1)
 		s.connect('activated()', keydef[1])
-        #s.connect('activatedAmbiguously()', keydef[1])
 		self.qtkeyconnections.append(s)
     
 	self.qTCGALabMod_tag = self.sliceLogic.AddObserver("ModifiedEvent", self.QTCGAChangeLabelInput) # put test listener on the whole window  
@@ -478,8 +468,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	roiVTK = vtk.vtkImageData()
 	roiVTK.DeepCopy(self.labelNode.GetImageData())
 	self.roiVTK = roiVTK
-	#roiVTK.UpdateInformation()
-    
   
 	import vtkSlicerQuickTCGAModuleLogicPython
 	
@@ -501,232 +489,42 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 	qTCGAMod.SetsizeThld(sizeThld)
 	qTCGAMod.SetsizeUpperThld(sizeUpperThld)
 	qTCGAMod.Setmpp(mpp)
-	
-	#qTCGAMod.SetSeedVol(self.labelNode.GetImageData())r
 	qTCGAMod.Initialization()
 	self.qTCGAMod = qTCGAMod   
 	self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
 
   # run Quick TCGA segmenter for the current master volume and label volume
   
-  def runQTCGA_Segmentation(self):
-	if self.bEditTCGA == True:
-
-		self.currentMessage = "Quick TCGA: running classification ..."
-		slicer.util.showStatusMessage(self.currentMessage)
-		seedArray = slicer.util.array(self.labelNode.GetName())
-		self.qTCGASeedArray[:]  = seedArray[:]
-		
-		self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
-		self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
-		self.qTCGAMod.Run_QTCGA_Segmentation()
-		#self.qTCGAMod.Run_NucleiSegYi()
-		self.qTCGASegArray[:] = seedArray[:]
-		
-		self.labelNode.GetImageData().Modified()
-		self.labelNode.Modified()
-			
-		self.bEditTCGA = False
-		
-		self.currentMessage = "Quick TCGA done: press 'E' to add more prior information, or 'R' to reset Quick TCGA parameters; or press 'F' to enable ROI selection for refinement"
-		slicer.util.showStatusMessage(self.currentMessage)
-	else:
-		self.currentMessage = "Quick TCGA: go to seed labels first by pressing 'E'"
-		slicer.util.showStatusMessage(self.currentMessage)
-		
   def runQTCGA_NucleiSegYi(self):
-	#if self.bEditTCGA == True:
-
-		self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
-		slicer.util.showStatusMessage(self.currentMessage)
-		seedArray = slicer.util.array(self.labelNode.GetName())
-		self.qTCGASeedArray[:]  = seedArray[:]
-		
-		node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
-		otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
-		curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
-		sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
-		sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
-		mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
-
-		self.qTCGAMod.SetotsuRatio(otsuRatio)
-		self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
-		self.qTCGAMod.SetsizeThld(sizeThld)
-		self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
-		self.qTCGAMod.Setmpp(mpp)
-		
-		self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
-		self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
-		self.qTCGAMod.Run_NucleiSegYi()
-		self.qTCGASegArray[:] = seedArray[:]
-		
-		self.labelNode.GetImageData().Modified()
-		self.labelNode.Modified()
-			
-		#self.bEditTCGA = False
-		
-		self.currentMessage = "Quick TCGA done: nuclei segmetnation is done; press 'F' to enable ROI selection for refinement"
-		slicer.util.showStatusMessage(self.currentMessage)
-	#else:
-	#	self.currentMessage = "Quick TCGA: go to seed labels first by pressing 'E'"
-	#	slicer.util.showStatusMessage(self.currentMessage)
-
-  def runQTCGA_Template(self):
-	return
-	if self.bEditTCGA == True:
-	
-		self.currentMessage = "Quick TCGA: running template matching ..."
-		slicer.util.showStatusMessage(self.currentMessage)
-		seedArray = slicer.util.array(self.labelNode.GetName())
-		self.qTCGASeedArray[:]  = seedArray[:]
-		
-		self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
-		self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
-		#self.qTCGAMod.SetInitializationFlag(bGCInitialized)
-		self.qTCGAMod.Run_QTCGA_Template()
-		self.qTCGASegArray[:] = seedArray[:]
-		
-		self.labelNode.GetImageData().Modified()
-		self.labelNode.Modified()
-			
-		self.bEditTCGA = False
-		
-		self.currentMessage = "Quick TCGA done: press 'E' to add more prior information or 'R' to reset Quick TCGA parameters; or press 'F' to enable ROI selection for refinement "
-		slicer.util.showStatusMessage(self.currentMessage)
-	else:
-		self.currentMessage = "Quick TCGA: go to seed labels first by pressing 'E'"
-		slicer.util.showStatusMessage(self.currentMessage)
-
-  def runQTCGA_ShortCut(self):
-	if self.bEditShortCut == True:
-
-		self.currentMessage = "Quick TCGA: running ShortCut ..."
-		slicer.util.showStatusMessage(self.currentMessage)
-		seedArray = slicer.util.array(self.labelNode.GetName())
-		
-		seedArray[:] = self.qTCGASegArray[:]
-		
-		self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
-		self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
-		
-		roiArray = vtk_to_numpy(self.roiVTK.GetPointData().GetScalars())
-		roiArray = roiArray.reshape(1, self.volSize[0], self.volSize[1])
-		roiArray[:] = self.qSCutROIArray[:]
-		self.qTCGAMod.SetSCROIVol(self.roiVTK)
-		
-		self.qTCGAMod.Run_QTCGA_ShortCut()	
-		self.qTCGASegArray[:] = seedArray[:]
-		
-		self.labelNode.GetImageData().Modified()
-		self.labelNode.Modified()
-		
-		
-			
-		self.bEditShortCut = False
-		
-		self.currentMessage = "Quick TCGA done: press 'F' to enable ROI selection and left click to select ROI and press 'C' to start refinement; Or press 'E' to add more seed information, or 'R' to reset Quick TCGA parameters"
-		slicer.util.showStatusMessage(self.currentMessage)
-	else:
-		self.currentMessage = "Quick TCGA: go to ROI first by pressing 'F'"
-		slicer.util.showStatusMessage(self.currentMessage)
-		
-  def runQTCGA_Refine_Curvature(self):
-	return
-
-	self.currentMessage = "Quick TCGA: running refinement ..."
+        self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
 	slicer.util.showStatusMessage(self.currentMessage)
-	
+	seedArray = slicer.util.array(self.labelNode.GetName())
+	self.qTCGASeedArray[:]  = seedArray[:]
+		
+	node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
+	otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
+	curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
+	sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
+	sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
+	mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
+
+	self.qTCGAMod.SetotsuRatio(otsuRatio)
+	self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
+	self.qTCGAMod.SetsizeThld(sizeThld)
+	self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
+	self.qTCGAMod.Setmpp(mpp)
+		
 	self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
 	self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
-	self.qTCGAMod.Run_Refine_Curvature()
-	
+	self.qTCGAMod.Run_NucleiSegYi()
+	self.qTCGASegArray[:] = seedArray[:]
+		
 	self.labelNode.GetImageData().Modified()
 	self.labelNode.Modified()
 			
-		
-	self.currentMessage = "Quick TCGA done: press 'U' to keep refining segmentation, or 'R' to reset Quick TCGA parameters"
+	self.currentMessage = "Quick TCGA done: nuclei segmetnation is done; press 'F' to enable ROI selection for refinement"
 	slicer.util.showStatusMessage(self.currentMessage)
-	#else:
-	#	self.currentMessage = "Quick TCGA: go to seed labels first by pressing 'E'"
-	#	slicer.util.showStatusMessage(self.currentMessage)
-	#	
 
-  
-  # reset Quick TCGA
-  def resetQTCGAFlag(self):
-        self.bEditTCGA = True
-        self.bEditShortCut = False;
-        self.qTCGASeedArray[:] = 0
-        self.qTCGASegArray[:] = 0
-        
-        seedArray = slicer.util.array(self.labelNode.GetName())
-        seedArray[:] = 0
-        
-        self.labelNode.GetImageData().Modified()
-        self.labelNode.Modified()
-        print('reset Quick TCGA parameters')
-        self.currentMessage = "Quick TCGA: parameters have been reset. Press 'Y' to do automatic nucleus segmentation, Or go to PaintEffect to initialize labels and press 'S' to start global segmentation"
-        slicer.util.showStatusMessage(self.currentMessage)
-        
-        
-  def editTCGA(self):
-	
-    seedArray = slicer.util.array(self.labelNode.GetName())
-    if self.bEditTCGA == False:
-        self.qTCGASegArray[:] = seedArray[:]
-        seedArray[:] = self.qTCGASeedArray[:]
-        self.bEditTCGA = True
-        self.labelNode.GetImageData().Modified()
-        self.labelNode.Modified()
-		
-        print('show seed image')
-        self.currentMessage = "Quick TCGA: seed image is shown. Press 'E' to segmentation result; Or go to PaintEffect to refine labels if necessary,and press 'S' to start global segmentation"
-        slicer.util.showStatusMessage(self.currentMessage)
-    else:
-        if self.qTCGASegArray.any() != 0 :
-		
-			seedArray[:] = self.qTCGASegArray[:]
-			self.bEditTCGA = False
-			self.labelNode.GetImageData().Modified()
-			self.labelNode.Modified()
-			
-			print('show segmentation')
-			self.currentMessage = "Quick TCGA: segmentation result is shown. If not satisfied, press 'E' to edit seeds and run Quick TCGA again"
-			slicer.util.showStatusMessage(self.currentMessage)
-        else:
-			print('no segmentation result')	
-			self.currentMessage = "Quick TCGA:: no segmentation result available"
-			slicer.util.showStatusMessage(self.currentMessage)
-			
-  def editShortCut(self):
-	
-    seedArray = slicer.util.array(self.labelNode.GetName())
-    
-    if self.bEditShortCut == False:
-        seedArray[:] = self.qSCutROIArray[:]
-        self.bEditShortCut = True
-        self.labelNode.GetImageData().Modified()
-        self.labelNode.Modified()
-		
-        print('show seed image')
-        self.currentMessage = "Quick TCGA: ROI image is shown. Press 'F' to check segmentation result or left click the mouse to reselect the ROI, then press 'C' to start ShortCut for refinement"
-        slicer.util.showStatusMessage(self.currentMessage)
-    else:
-        if self.qTCGASegArray.any() != 0 :
-		
-			seedArray[:] = self.qTCGASegArray[:]
-			self.bEditShortCut = False
-			self.labelNode.GetImageData().Modified()
-			self.labelNode.Modified()
-			
-			print('show segmentation')
-			self.currentMessage = "Quick TCGA: segmentation result is shown. If not satisfied, press 'F' to enable ROI selection and press 'C' to run ShortCut again"
-			slicer.util.showStatusMessage(self.currentMessage)
-        else:
-			print('no segmentation result')	
-			self.currentMessage = "Quick TCGA:: no segmentation result available"
-			slicer.util.showStatusMessage(self.currentMessage)
-			
   def destroy(self):
     #destroy GrowCut key shortcuts
     for i in range(len(self.qtkeydefsQTCGA)):  #this will be an empty list if the KSlice part has been reached (all growcut functionality disabled)
@@ -750,9 +548,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.labelNode = None
     self.backgroundNode = None
     
-    # remove GrowCut observer
-    self.sliceLogic.RemoveObserver(self.qTCGALabMod_tag)
-
     #put back the editor shortcuts we removed
     slicer.modules.SlicerPathologyWidget.editorWidget.installShortcutKeys()
 
@@ -772,8 +567,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 
     dimImg=self.backgroundNode.GetImageData().GetDimensions()
     dimLab=self.labelNode.GetImageData().GetDimensions()
-    #~ dimImg=imgNode.GetImageData().GetDimensions()
-    #~ dimLab=labelNode.GetImageData().GetDimensions()
 
     if not (dimImg[0]==dimLab[0] and dimImg[1]==dimLab[1] and dimImg[2]==dimLab[2]): #if sizes dont match up(doing this b/c cant reach HelperBox parameters
         self.dialogBox.setText("Mismatched label to image.")
@@ -797,26 +590,18 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
        return #do nothing, exit function
        
   def entranceCursorDetect(self, caller, event):
-    #interactor=caller # should be called by the slice interactor...
-    #self.interactor=interactor
-    #self.sw = self.swLUT_growcut[interactor]
-    #self.sliceLogic = self.sw.sliceLogic() #this is a hack, look at init function, self.sliceLogic already defined as just "Red" slice
     ijkPlane = self.sliceIJKPlane()
     self.ijkPlane = ijkPlane
     self.computeCurrSliceSmarter()
     
   def updateShortCutROI(self, caller, event):
-	  
 	  if event == "LeftButtonPressEvent":
 		  if self.bEditShortCut == True:
 			xy = self.interactor.GetEventPosition()
 			ijk = smart_xyToIJK(xy,self.sw)			
-			
 			if ijk[0] > self.SCutROIRad and ijk[0] < self.volSize[0] - self.SCutROIRad and ijk[1] > self.SCutROIRad and ijk[1] < self.volSize[1] - self.SCutROIRad:
 				self.qSCutROIArray[:] = 0
-				#self.qSCutROIArray[np.ix_([ijk[0] - self.SCutROIRad, ijk[0] + self.SCutROIRad],[ijk[1] - self.SCutROIRad, ijk[1] + self.SCutROIRad],[0,1])] = 2
 				self.qSCutROIArray[0,ijk[1]-self.SCutROIRad:ijk[1]+self.SCutROIRad, ijk[0]-self.SCutROIRad:ijk[0]+self.SCutROIRad] = 2
-				#print ("EditROI")
 				
 				# Update ROI
 				roiArray = slicer.util.array(self.labelNode.GetName())
@@ -874,14 +659,6 @@ class QuickTCGAEffect:
     parent.helpText = """Interactive TCGA editor extension."""
     parent.acknowledgementText = """ This editor extension was developed by Liangjia Zhu, Erich Bremer, Joel Saltz, Allen Tannenbaum  (Stony Brook University) """
 
-
-    # TODO:
-    # don't show this module - it only appears in the Editor module
-    #parent.hidden = True
-
-    # Add this extension to the editor's list for discovery when the module
-    # is created.  Since this module may be discovered before the Editor itself,
-    # create the list if it doesn't already exist.
     try:
       slicer.modules.editorExtensions
     except AttributeError:
@@ -925,7 +702,6 @@ def smart_xyToIJK(xy,sliceWidget):
   #~ ijkFloat = xyToIJK.MultiplyPoint(xyz+(1,))[:3]
   xyToIJK = ll.GetXYToIJKTransform()
   ijkFloat = xyToIJK.TransformDoublePoint(xyz)
-  #print( ijkFloat )
   ijk = []
   for element in ijkFloat:
     try:
