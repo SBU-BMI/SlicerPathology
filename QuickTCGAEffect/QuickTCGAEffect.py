@@ -6,6 +6,7 @@ from EditorLib.EditOptions import HelpButton
 from EditorLib.EditOptions import EditOptions
 from EditorLib import EditUtil
 from EditorLib import LabelEffect
+import SimpleITK as sitk
 
 # Added libs
 from EditorLib import Effect
@@ -13,8 +14,8 @@ from EditorLib import LabelEffectLogic
 
 from copy import copy, deepcopy
 import numpy as np
-from vtk.util import numpy_support
-from vtk.util.numpy_support import vtk_to_numpy
+#from vtk.util import numpy_support
+#from vtk.util.numpy_support import vtk_to_numpy
 params = {}
 cparams = {"algorithm":"Yi"}
 
@@ -131,14 +132,14 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frame.layout().addStretch(1) # Add vertical spacer
     
     if hasattr(slicer.modules, 'TCGAEditorBot'):
-	  slicer.util.showStatusMessage(slicer.modules.TCGAEditorBot.logic.currentMessage)
-	  self.botButton.text = "Stop Quick TCGA Segmenter"
-	  if self.locRadFrame:
-		self.locRadFrame.hide()
+      slicer.util.showStatusMessage(slicer.modules.TCGAEditorBot.logic.currentMessage)
+      self.botButton.text = "Stop Quick TCGA Segmenter"
+    if self.locRadFrame:
+      self.locRadFrame.hide()
     else:
-	  self.botButton.text = "Start Quick TCGA Segmenter"
-	  if self.locRadFrame:
-		self.locRadFrame.show()
+      self.botButton.text = "Start Quick TCGA Segmenter"
+    if self.locRadFrame:
+      self.locRadFrame.show()
 
   def destroy(self):
     self.currentMessage = ""
@@ -325,30 +326,19 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
   def cleanup(self):
     super(QuickTCGAEffectTool,self).cleanup()
 
-  #def processEvent(self, caller=None, event=None):
-   # """
-   # handle events from the render window interactor
-   # """
-
-   # # let the superclass deal with the event if it wants to
-   # if super(QuickTCGAEffectTool,self).processEvent(caller,event):
-   #   return
-
-   # # events from the slice node
-  #  if caller and caller.IsA('vtkMRMLSliceNode'):
-  #    # here you can respond to pan/zoom or other changes
-   #   # to the view
-   #   pass
   def processEvent(self, caller=None, event=None):
     """
 handle events from the render window interactor
 """
     if event == "LeftButtonPressEvent":
+      print "The Left Mouse Button has been pressed!!!"
       xy = self.interactor.GetEventPosition()
       viewName,orient = get_view_names(self.sliceWidget)
       ijk= smart_xyToIJK(xy,self.sliceWidget)
       if not orient:
         print "Warning, unexpected view orientation!?"
+    elif event == "LeftButtonReleaseEvent":
+        print "Left button has been released"
     if event == 'EnterEvent':
       pass #print "EnterEvent in KSliceEffect."
     else:
@@ -391,139 +381,165 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.QuickTCGACreated=False
   
   def init_QuickTCGA(self):
-	
-	self.emergencyStopFunc = None    
-	self.dialogBox=qt.QMessageBox() #will display messages to draw users attention if he does anything wrong
-	self.dialogBox.setWindowTitle("QuickTCGA Error")
-	self.dialogBox.setWindowModality(qt.Qt.NonModal) #will allow user to continue interacting with Slicer
+    self.emergencyStopFunc = None    
+    self.dialogBox=qt.QMessageBox() #will display messages to draw users attention if he does anything wrong
+    self.dialogBox.setWindowTitle("QuickTCGA Error")
+    self.dialogBox.setWindowModality(qt.Qt.NonModal) #will allow user to continue interacting with Slicer
     
     # TODO: check this claim- might be causing leaks
     # set the image, label nodes (this will not change although the user can
     # alter what is bgrnd/frgrnd in editor)
     # Confused about how info propagates UIarray to UIVol, not the other way, NEEDS AUTO TESTS
     
-	self.labelNode = self.editUtil.getLabelVolume() #labelLogic.GetVolumeNode()
-	self.backgroundNode = self.editUtil.getBackgroundVolume() #backgroundLogic.GetVolumeNode()
-	self.foregroundNode = self.swRed.GetForegroundLayer().GetVolumeNode()
+    self.labelNode = self.editUtil.getLabelVolume() #labelLogic.GetVolumeNode()
+    self.backgroundNode = self.editUtil.getBackgroundVolume() #backgroundLogic.GetVolumeNode()
+    self.foregroundNode = self.swRed.GetForegroundLayer().GetVolumeNode()
     
     #perform safety check on right images/labels being selected, #set up images
     #if red slice doesnt have a label or image, go no further
-	if type(self.backgroundNode)==type(None) or type(self.labelNode)==type(None):
-		self.dialogBox.setText("Either Image (must be Background Image) or Label not set in slice views.")
-		self.dialogBox.show()
+    if type(self.backgroundNode)==type(None) or type(self.labelNode)==type(None):
+      self.dialogBox.setText("Either Image (must be Background Image) or Label not set in slice views.")
+      self.dialogBox.show()
        
-		if self.emergencyStopFunc:
-			self.emergencyStopFunc()
-		return
+    if self.emergencyStopFunc:
+      self.emergencyStopFunc()
+      return
        
-	volumesLogic = slicer.modules.volumes.logic()
+    volumesLogic = slicer.modules.volumes.logic()
     
-	self.labelName = self.labelNode.GetName() # record name of label so user, cant trick us    
-	self.imgBgrdName = self.backgroundNode.GetName()
-	self.imgFgrdName = self.foregroundNode.GetName()
+    self.labelName = self.labelNode.GetName() # record name of label so user, cant trick us    
+    self.imgBgrdName = self.backgroundNode.GetName()
+    self.imgFgrdName = self.foregroundNode.GetName()
     
-	if self.sliceViewMatchEditor(self.sliceLogic)==False: # do nothing, exit function if user has played with images
-		if self.emergencyStopFunc:
-			self.emergencyStopFunc()
-		return
+    if self.sliceViewMatchEditor(self.sliceLogic)==False: # do nothing, exit function if user has played with images
+      if self.emergencyStopFunc:
+        self.emergencyStopFunc()
+        return
          
     # QuickTCGA shortcuts
-	##resetQTCGAKey = qt.QKeySequence(qt.Qt.Key_R) # reset initialization flag
-	##runQTCGAClusterKey = qt.QKeySequence(qt.Qt.Key_S) # run fast growcut
-	runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
-	##editTCGAKey = qt.QKeySequence(qt.Qt.Key_E) # edit seed labels
-	##runQTCGATemplateKey = qt.QKeySequence(qt.Qt.Key_T)
-	##runQTCGARefineCurvatureKey = qt.QKeySequence(qt.Qt.Key_U)
-	##runQTCGAShortCutKey = qt.QKeySequence(qt.Qt.Key_C)
-	##runQTCGAShortEditCutKey = qt.QKeySequence(qt.Qt.Key_F)
+  ##resetQTCGAKey = qt.QKeySequence(qt.Qt.Key_R) # reset initialization flag
+  ##runQTCGAClusterKey = qt.QKeySequence(qt.Qt.Key_S) # run fast growcut
+    runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
+  ##editTCGAKey = qt.QKeySequence(qt.Qt.Key_E) # edit seed labels
+  ##runQTCGATemplateKey = qt.QKeySequence(qt.Qt.Key_T)
+  ##runQTCGARefineCurvatureKey = qt.QKeySequence(qt.Qt.Key_U)
+  ##runQTCGAShortCutKey = qt.QKeySequence(qt.Qt.Key_C)
+  ##runQTCGAShortEditCutKey = qt.QKeySequence(qt.Qt.Key_F)
 
-	print " key to run QuickTCGA segmentation is  Y"
+    print " key to run QuickTCGA segmentation is  Y"
     
-	self.qtkeyconnections = []
-        self.qtkeydefsQTCGA = [[runNucleiSegKey, self.runQTCGA_NucleiSegYi]]
+    self.qtkeyconnections = []
+    self.qtkeydefsQTCGA = [[runNucleiSegKey, self.runQTCGA_NucleiSegYi]]
 
-	for keydef in self.qtkeydefsQTCGA:
-		s = qt.QShortcut(keydef[0], slicer.util.mainWindow()) # connect this qt event to mainWindow focus
-		s.connect('activated()', keydef[1])
-		self.qtkeyconnections.append(s)
+    for keydef in self.qtkeydefsQTCGA:
+      s = qt.QShortcut(keydef[0], slicer.util.mainWindow()) # connect this qt event to mainWindow focus
+      s.connect('activated()', keydef[1])
+      self.qtkeyconnections.append(s)
     
-	self.qTCGALabMod_tag = self.sliceLogic.AddObserver("ModifiedEvent", self.QTCGAChangeLabelInput) # put test listener on the whole window  
+    self.qTCGALabMod_tag = self.sliceLogic.AddObserver("ModifiedEvent", self.QTCGAChangeLabelInput) # put test listener on the whole window  
    
     # Quick TCGA parameters
-	self.bEditTCGA = True
-	self.bEditShortCut = False
-	self.currentMessage = ""
+    self.bEditTCGA = True
+    self.bEditShortCut = False
+    self.currentMessage = ""
     
-	seedArray = slicer.util.array(self.labelName)
-	self.qTCGASeedArray = seedArray.copy()
-	self.qTCGASegArray = seedArray.copy()
-	self.qTCGASeedArray[:] = 0
-	self.qTCGASegArray[:] = 0
-	
-	self.SCutROIRad = 50
-	self.volSize=self.labelNode.GetImageData().GetDimensions()
-	self.qSCutROIArray = seedArray.copy() #np.zeros([self.volSize[0],self.volSize[1],1])
-	self.qSCutROIArray[:] = 0
-	
-	roiVTK = vtk.vtkImageData()
-	roiVTK.DeepCopy(self.labelNode.GetImageData())
-	self.roiVTK = roiVTK
+    seedArray = slicer.util.array(self.labelName)
+    self.qTCGASeedArray = seedArray.copy()
+    self.qTCGASegArray = seedArray.copy()
+    self.qTCGASeedArray[:] = 0
+    self.qTCGASegArray[:] = 0
   
-	import vtkSlicerQuickTCGAModuleLogicPython
-	
-	node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
-	otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
-	curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
-	sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
-	sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
-	mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
-        cparams["otsuRatio"]=otsuRatio
-        cparams["curvatureWeight"]=curvatureWeight
-        cparams["sizeThld"]=sizeThld
-        cparams["sizeUpperThld"]=sizeUpperThld
-        cparams["mpp"]=mpp
-	qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()
-	qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
-	qTCGAMod.SetotsuRatio(otsuRatio)
-	qTCGAMod.SetcurvatureWeight(curvatureWeight)
-	qTCGAMod.SetsizeThld(sizeThld)
-	qTCGAMod.SetsizeUpperThld(sizeUpperThld)
-	qTCGAMod.Setmpp(mpp)
-	qTCGAMod.Initialization()
-	self.qTCGAMod = qTCGAMod   
-	self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
+    self.SCutROIRad = 50
+    self.volSize=self.labelNode.GetImageData().GetDimensions()
+    self.qSCutROIArray = seedArray.copy() #np.zeros([self.volSize[0],self.volSize[1],1])
+    self.qSCutROIArray[:] = 0
+  
+    roiVTK = vtk.vtkImageData()
+    roiVTK.DeepCopy(self.labelNode.GetImageData())
+    self.roiVTK = roiVTK
+  
+    import vtkSlicerQuickTCGAModuleLogicPython
+  
+    node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
+    otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
+    curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
+    sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
+    sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
+    mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
+    cparams["otsuRatio"]=otsuRatio
+    cparams["curvatureWeight"]=curvatureWeight
+    cparams["sizeThld"]=sizeThld
+    cparams["sizeUpperThld"]=sizeUpperThld
+    cparams["mpp"]=mpp
+    qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()
+    qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
+    qTCGAMod.SetotsuRatio(otsuRatio)
+    qTCGAMod.SetcurvatureWeight(curvatureWeight)
+    qTCGAMod.SetsizeThld(sizeThld)
+    qTCGAMod.SetsizeUpperThld(sizeUpperThld)
+    qTCGAMod.Setmpp(mpp)
+    qTCGAMod.Initialization()
+    self.qTCGAMod = qTCGAMod   
+    self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
 
-  # run Quick TCGA segmenter for the current master volume and label volume
-  
+    # run Quick TCGA segmenter for the current master volume and label volume
+ 
   def runQTCGA_NucleiSegYi(self):
-        self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
-	slicer.util.showStatusMessage(self.currentMessage)
-	seedArray = slicer.util.array(self.labelNode.GetName())
-	self.qTCGASeedArray[:]  = seedArray[:]
-		
-	node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
-	otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
-	curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
-	sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
-	sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
-	mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
+    self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
+    slicer.util.showStatusMessage(self.currentMessage)
+    seedArray = slicer.util.array(self.labelNode.GetName())
+    self.qTCGASeedArray[:]  = seedArray[:]
+    
+    node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
+    otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
+    curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
+    sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
+    sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
+    mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
 
-	self.qTCGAMod.SetotsuRatio(otsuRatio)
-	self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
-	self.qTCGAMod.SetsizeThld(sizeThld)
-	self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
-	self.qTCGAMod.Setmpp(mpp)
-		
-	self.qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
-	self.qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
-	self.qTCGAMod.Run_NucleiSegYi()
-	self.qTCGASegArray[:] = seedArray[:]
-		
-	self.labelNode.GetImageData().Modified()
-	self.labelNode.Modified()
-			
-	self.currentMessage = "Quick TCGA done: nuclei segmetnation is done; press 'F' to enable ROI selection for refinement"
-	slicer.util.showStatusMessage(self.currentMessage)
+    self.qTCGAMod.SetotsuRatio(otsuRatio)
+    self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
+    self.qTCGAMod.SetsizeThld(sizeThld)
+    self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
+    self.qTCGAMod.Setmpp(mpp)
+    AA = self.foregroundNode.GetImageData()
+    a1 = 0
+    b1 = 0
+    ddd = AA.GetDimensions()
+    a2 = ddd[0]-1
+    b2 = ddd[1]-1
+    LL = self.labelNode.GetImageData()
+    BB = self.GetTile(AA,a1,b1,a2,b2)
+    LL = self.GetTile(LL,a1,b1,a2,b2)
+    self.qTCGAMod.SetSourceVol(BB)
+    self.qTCGAMod.SetSeedVol(LL)
+    self.qTCGAMod.Run_NucleiSegYi()
+    self.qTCGASegArray[:] = seedArray[:]
+    self.MergeImages(LL,self.labelNode.GetImageData(),a1,b1)
+    self.foregroundNode.GetImageData().Modified()
+    self.foregroundNode.Modified()
+    self.labelNode.GetImageData().Modified()
+    self.labelNode.Modified()
+    self.currentMessage = "Quick TCGA done: nuclei segmetnation is done; press 'F' to enable ROI selection for refinement"
+    slicer.util.showStatusMessage(self.currentMessage)
+
+  def GetTile(self,image,x1,y1,x2,y2):
+    i = vtk.vtkImageData().NewInstance()
+    i.SetDimensions(x2-x1+1,y2-y1+1,1)
+    i.AllocateScalars(vtk.VTK_UNSIGNED_CHAR,image.GetNumberOfScalarComponents())
+    for x in range(x1,x2+1):
+      for y in range(y1,y2+1):
+        for c in range(0,image.GetNumberOfScalarComponents()):
+          i.SetScalarComponentFromDouble(x-x1,y-y1,0,c,image.GetScalarComponentAsDouble(x,y,0,c))
+    return i
+
+  def MergeImages(self, image1, image2, a, b):
+    dim = image1.GetDimensions()
+    for x in range(a,a+dim[0]):
+      for y in range(b,b+dim[1]):
+        for c in range(0,image1.GetNumberOfScalarComponents()):
+          image2.SetScalarComponentFromDouble(x,y,0,c,image1.GetScalarComponentAsDouble(x-a,y-b,0,c))
+    image2.Modified()
 
   def destroy(self):
     #destroy GrowCut key shortcuts
@@ -595,25 +611,23 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.computeCurrSliceSmarter()
     
   def updateShortCutROI(self, caller, event):
-	  if event == "LeftButtonPressEvent":
-		  if self.bEditShortCut == True:
-			xy = self.interactor.GetEventPosition()
-			ijk = smart_xyToIJK(xy,self.sw)			
-			if ijk[0] > self.SCutROIRad and ijk[0] < self.volSize[0] - self.SCutROIRad and ijk[1] > self.SCutROIRad and ijk[1] < self.volSize[1] - self.SCutROIRad:
-				self.qSCutROIArray[:] = 0
-				self.qSCutROIArray[0,ijk[1]-self.SCutROIRad:ijk[1]+self.SCutROIRad, ijk[0]-self.SCutROIRad:ijk[0]+self.SCutROIRad] = 2
-				
-				# Update ROI
-				roiArray = slicer.util.array(self.labelNode.GetName())
-				roiArray[:] = self.qSCutROIArray[:]
-				self.labelNode.GetImageData().Modified()
-				self.labelNode.Modified()
-			
-		  else:
-			print ("Press key F to enable editing ShortCut region")
-	  else:
-		  pass
-		  
+    if event == "LeftButtonPressEvent":
+      if self.bEditShortCut == True:
+        xy = self.interactor.GetEventPosition()
+        ijk = smart_xyToIJK(xy,self.sw)      
+        if ijk[0] > self.SCutROIRad and ijk[0] < self.volSize[0] - self.SCutROIRad and ijk[1] > self.SCutROIRad and ijk[1] < self.volSize[1] - self.SCutROIRad:
+          self.qSCutROIArray[:] = 0
+          self.qSCutROIArray[0,ijk[1]-self.SCutROIRad:ijk[1]+self.SCutROIRad, ijk[0]-self.SCutROIRad:ijk[0]+self.SCutROIRad] = 2
+        
+          # Update ROI
+          roiArray = slicer.util.array(self.labelNode.GetName())
+          roiArray[:] = self.qSCutROIArray[:]
+          self.labelNode.GetImageData().Modified()
+          self.labelNode.Modified()
+      else:
+        print ("Press key F to enable editing ShortCut region")
+    else:
+      pass
 
 #
 # The QuickTCGAEffect class definition

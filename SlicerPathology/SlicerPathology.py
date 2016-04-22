@@ -193,6 +193,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.loadDataButton = qt.QPushButton("Load Data")
     self.imageSelectionGroupBoxLayout.addWidget(self.loadDataButton)
     self.loadDataButton.connect('clicked()', self.loadTCGAData)
+    print "Adding WIP Button!"
+    self.WIP = qt.QPushButton("WIP")
+    self.WIP.connect('clicked()', self.onWIPButtonClicked)
+    self.imageSelectionGroupBoxLayout.addWidget(self.WIP)
+
 
   def setupsegmentationUI(self):
     print "adding this for now..."
@@ -207,6 +212,17 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.WebSaveButton = qt.QPushButton("Submit to web")
     self.submissionGroupBoxLayout.addWidget(self.WebSaveButton)
     self.WebSaveButton.connect('clicked()', self.onWebSaveButtonClicked)
+
+  def onWIPButtonClicked(self):
+    print "WIP ME!"
+    from EditorLib import EditUtil
+    self.editUtil = EditorLib.EditUtil.EditUtil()
+    self.labelNode = self.editUtil.getLabelVolume()
+    print self.labelNode.GetImageData()
+    self.labelNode.GetImageData().Modified() 
+    self.labelNode.Modified() 
+    self.currentMessage = "WIP Code is done being executed..." 
+    slicer.util.showStatusMessage(self.currentMessage) 
     
   def onSaveButtonClicked(self):
     bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
