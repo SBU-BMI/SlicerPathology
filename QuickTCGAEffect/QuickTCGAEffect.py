@@ -323,8 +323,70 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
     # create a logic instance to do the non-gui work
     #self.logic = QuickTCGAEffectLogic(self.sliceWidget.sliceLogic())
 
+    self.sliceWidget = sliceWidget
+    self.sliceLogic = sliceWidget.sliceLogic()
+    self.sliceView = self.sliceWidget.sliceView()
+    self.interactor = self.sliceView.interactorStyle().GetInteractor()
+    self.renderWindow = self.sliceWidget.sliceView().renderWindow()
+
+    self.actionState = None
+    self.startXYPosition = None
+    self.currentXYPosition = None
+
+    self.createGlyph()
+
+    self.mapper = vtk.vtkPolyDataMapper2D()
+    self.actor = vtk.vtkActor2D()
+    self.mapper.SetInputData(self.polyData)
+    self.actor.SetMapper(self.mapper)
+    property_ = self.actor.GetProperty()
+    property_.SetColor(1,1,0)
+    property_.SetLineWidth(1)
+    self.renderer.AddActor2D( self.actor )
+    self.actors.append( self.actor )
+
   def cleanup(self):
     super(QuickTCGAEffectTool,self).cleanup()
+
+  def createGlyph(self):
+    self.polyData = vtk.vtkPolyData()
+    points = vtk.vtkPoints()
+    lines = vtk.vtkCellArray()
+    self.polyData.SetPoints( points )
+    self.polyData.SetLines( lines )
+    prevPoint = None
+    firstPoint = None
+    for x,y in ((0,0),)*4:
+      p = points.InsertNextPoint( x, y, 0 )
+      if prevPoint is not None:
+        idList = vtk.vtkIdList()
+        idList.InsertNextId( prevPoint )
+        idList.InsertNextId( p )
+        self.polyData.InsertNextCell( vtk.VTK_LINE, idList )
+      prevPoint = p
+      if firstPoint is None:
+        firstPoint = p
+    # make the last line in the polydata
+    idList = vtk.vtkIdList()
+    idList.InsertNextId( p )
+    idList.InsertNextId( firstPoint )
+    self.polyData.InsertNextCell( vtk.VTK_LINE, idList )
+    self.updateGlyph() 
+
+  def updateGlyph(self):
+    if not self.startXYPosition or not self.currentXYPosition:
+      return
+    points = self.polyData.GetPoints()
+    xlo,ylo = self.startXYPosition
+    xhi,yhi = self.currentXYPosition
+    points.SetPoint( 0, xlo, ylo, 0 )
+    points.SetPoint( 1, xlo, yhi, 0 )
+    points.SetPoint( 2, xhi, yhi, 0 )
+    points.SetPoint( 3, xhi, ylo, 0 )
+    #points.SetPoint( 0, 200, 200, 0 )
+    #points.SetPoint( 1, 200, 400, 0 )
+    #points.SetPoint( 2, 400, 400, 0 )
+    #points.SetPoint( 3, 400, 200, 0 )
 
   def processEvent(self, caller=None, event=None):
     """
@@ -332,17 +394,41 @@ handle events from the render window interactor
 """
     if event == "LeftButtonPressEvent":
       print "The Left Mouse Button has been pressed!!!"
+      self.actionState = "dragging"
+      self.cursorOff()
       xy = self.interactor.GetEventPosition()
-      viewName,orient = get_view_names(self.sliceWidget)
-      ijk= smart_xyToIJK(xy,self.sliceWidget)
-      if not orient:
-        print "Warning, unexpected view orientation!?"
+      self.startXYPosition = xy
+      self.currentXYPosition = xy
+      self.updateGlyph()
+      self.abortEvent(event)
+#      viewName,orient = get_view_names(self.sliceWidget)
+#      ijk= smart_xyToIJK(xy,self.sliceWidget)
+#      if not orient:
+#        print "Warning, unexpected view orientation!?"
     elif event == "LeftButtonReleaseEvent":
-        print "Left button has been released"
+      print "Left button has been released"
+      self.actionState = ""
+      self.cursorOn()
+      ##self.apply()
+      self.startXYPosition = (0,0)
+      self.currentXYPosition = (0,0)
+      #self.updateGlyph()
+      self.abortEvent(event)
+    elif event == "MouseMoveEvent":
+      if self.actionState == "dragging":
+        self.currentXYPosition = self.interactor.GetEventPosition()
+        self.updateGlyph()
+        self.sliceView.scheduleRender()
+        self.abortEvent(event)
     if event == 'EnterEvent':
       pass #print "EnterEvent in KSliceEffect."
     else:
       pass
+  def apply(self):
+    lines = self.polyData.GetLines()
+    if lines.GetNumberOfCells() == 0: return
+    self.logic.undoRedo = self.undoRedo
+    self.logic.applyPolyMask(self.polyData)
 
 #
 # QuickTCGAEffectLogic
