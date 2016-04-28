@@ -4,7 +4,7 @@ project(SlicerPathology)
 
 #-----------------------------------------------------------------------------
 # Extension meta-information
-set(EXTENSION_HOMEPAGE "http://wiki.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/SlicerOpenCV")
+set(EXTENSION_HOMEPAGE "http://wiki.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/SlicerPathology")
 set(EXTENSION_CATEGORY "Pathology")
 set(EXTENSION_CONTRIBUTORS "Erich Bremer (Stony Brook University), Yi Gao (Stony Brook University), Joel Saltz (Stony Brook University), Nicole Aucoin (BWH), Jean-Christophe Fillion-Robin (Kitware), Andrey Fedorov (BWH)")
 set(EXTENSION_DESCRIPTION "An extension to provide multiscale segmentation tools.")
