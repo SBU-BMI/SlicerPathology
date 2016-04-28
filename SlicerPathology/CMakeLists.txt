@@ -42,6 +42,6 @@ configure_file(
 message(STATUS "Colorfile: install destination: '${CMAKE_INSTALL_DIR}/Resources/Colors/${colorfile}'")
 install(
   FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Colors/${colorfile}
-  DESTINATION ${CMAKE_INSTALL_DIR}/Resources/Colors/${colorfile}
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/Resources/Colors/${colorfile}
   COMPONENT Runtime
   )
