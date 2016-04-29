@@ -6,7 +6,6 @@ from EditorLib.EditOptions import HelpButton
 from EditorLib.EditOptions import EditOptions
 from EditorLib import EditUtil
 from EditorLib import LabelEffect
-import SimpleITK as sitk
 
 # Added libs
 from EditorLib import Effect
