@@ -799,7 +799,16 @@ CSFLSSegmentor2D< TPixel >
   mp_phi = LSImageType::New();
   LSImageType::IndexType start = {{0, 0}};
 
-  LSImageType::SizeType size = {{m_nx, m_ny}};
+  if (m_nx >= itk::NumericTraits<typename ImageType::ImageDimensionType>::max()
+      || m_ny>= itk::NumericTraits<typename ImageType::ImageDimensionType>::max() )
+    {
+    std::cerr<<"CSFLSSegmentor2D::initializePhi - Overflow.\n";
+    raise(SIGABRT);
+    }
+  LSImageType::SizeType size = {{
+    static_cast<typename ImageType::ImageDimensionType>(m_nx),
+    static_cast<typename ImageType::ImageDimensionType>(m_ny)
+  }};
 
   LSImageType::RegionType region;
   region.SetSize( size );
