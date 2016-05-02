@@ -97,7 +97,7 @@ CSFLSSegmentor2D< TPixel >
       m_nx = size[0];
       m_ny = size[1];
     }
-  else if ( m_nx != (long)size[0] || m_ny != (long)size[1] )
+  else if ( m_nx != static_cast<itk::IndexValueType>(size[0]) || m_ny != static_cast<itk::IndexValueType>(size[1]) )
     {
       std::cerr<<"image sizes do not match. abort\n";
       raise(SIGABRT);
@@ -133,7 +133,7 @@ CSFLSSegmentor2D< TPixel >
       m_nx = size[0];
       m_ny = size[1];
     }
-  else if ( m_nx != (long)size[0] || m_ny != (long)size[1] )
+  else if ( m_nx != static_cast<itk::IndexValueType>(size[0]) || m_ny != static_cast<itk::IndexValueType>(size[1]) )
     {
       std::cerr<<"image sizes do not match. abort\n";
       raise(SIGABRT);
@@ -834,9 +834,9 @@ CSFLSSegmentor2D< TPixel >
   initializePhi();
   initializeLabel();
 
-  for (long ix = 0; ix < m_nx; ++ix) 
+  for (itk::IndexValueType ix = 0; ix < m_nx; ++ix)
     {
-      for (long iy = 0; iy < m_ny; ++iy) 
+      for (itk::IndexValueType iy = 0; iy < m_ny; ++iy)
         {
           typename ImageType::IndexType idx = {{ix, iy}};
           typename ImageType::IndexType idx1 = {{ix-1, iy}};
@@ -873,8 +873,8 @@ CSFLSSegmentor2D< TPixel >
   //scan Lz to create Ln1 and Lp1
   for (CSFLSLayer::const_iterator it = m_lz.begin(); it != m_lz.end(); ++it)
     {
-      long ix = (*it)[0];
-      long iy = (*it)[1];
+      itk::IndexValueType ix = (*it)[0];
+      itk::IndexValueType iy = (*it)[1];
     
       if(iy+1 < m_ny)
         {// up
@@ -963,8 +963,8 @@ CSFLSSegmentor2D< TPixel >
   //scan Ln1 to create Ln2
   for (CSFLSLayer::const_iterator it = m_ln1.begin(); it != m_ln1.end(); ++it)
     {
-      long ix = (*it)[0];
-      long iy = (*it)[1];
+      itk::IndexValueType ix = (*it)[0];
+      itk::IndexValueType iy = (*it)[1];
 
         
       typename ImageType::IndexType idx3 = {{ix, iy+1}};
@@ -1007,8 +1007,8 @@ CSFLSSegmentor2D< TPixel >
   //scan Lp1 to create Lp2
   for (CSFLSLayer::const_iterator it = m_lp1.begin(); it != m_lp1.end(); ++it)
     {
-      long ix = (*it)[0];
-      long iy = (*it)[1];
+      itk::IndexValueType ix = (*it)[0];
+      itk::IndexValueType iy = (*it)[1];
 
         
       typename ImageType::IndexType idx3 = {{ix, iy+1}};
@@ -1060,9 +1060,9 @@ CSFLSSegmentor2D< TPixel >
   initializePhi();
   initializeLabel();
 
-  for (long ix = 0; ix < m_nx; ++ix) 
+  for (itk::IndexValueType ix = 0; ix < m_nx; ++ix)
     {
-      for (long iy = 0; iy < m_ny; ++iy) 
+      for (itk::IndexValueType iy = 0; iy < m_ny; ++iy)
         {
           typename ImageType::IndexType idx = {{ix, iy}};
           typename ImageType::IndexType idx1 = {{ix-1, iy}};
@@ -1099,8 +1099,8 @@ CSFLSSegmentor2D< TPixel >
   //scan Lz to create Ln1 and Lp1
   for (CSFLSLayer::const_iterator it = m_lz.begin(); it != m_lz.end(); ++it)
     {
-      long ix = (*it)[0];
-      long iy = (*it)[1];
+      itk::IndexValueType ix = (*it)[0];
+      itk::IndexValueType iy = (*it)[1];
     
       if(iy+1 < m_ny)
         {// up
@@ -1189,8 +1189,8 @@ CSFLSSegmentor2D< TPixel >
   //scan Ln1 to create Ln2
   for (CSFLSLayer::const_iterator it = m_ln1.begin(); it != m_ln1.end(); ++it)
     {
-      long ix = (*it)[0];
-      long iy = (*it)[1];
+      itk::IndexValueType ix = (*it)[0];
+      itk::IndexValueType iy = (*it)[1];
 
         
       typename ImageType::IndexType idx3 = {{ix, iy+1}};
@@ -1233,8 +1233,8 @@ CSFLSSegmentor2D< TPixel >
   //scan Lp1 to create Lp2
   for (CSFLSLayer::const_iterator it = m_lp1.begin(); it != m_lp1.end(); ++it)
     {
-      long ix = (*it)[0];
-      long iy = (*it)[1];
+      itk::IndexValueType ix = (*it)[0];
+      itk::IndexValueType iy = (*it)[1];
 
         
       typename ImageType::IndexType idx3 = {{ix, iy+1}};        
@@ -1349,8 +1349,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label 0
 //     for (CSFLSLayer::const_iterator it = m_lz.begin(); it != m_lz.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_label->get(ix, iy) != 0)
 //           {
@@ -1370,8 +1370,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label -1
 //     for (CSFLSLayer::const_iterator it = m_ln1.begin(); it != m_ln1.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_label->get(ix, iy) != -1)
 //           {
@@ -1390,8 +1390,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label -2
 //     for (CSFLSLayer::const_iterator it = m_ln2.begin(); it != m_ln2.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_label->get(ix, iy) != -2)
 //           {
@@ -1411,8 +1411,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label 2
 //     for (CSFLSLayer::const_iterator it = m_lp2.begin(); it != m_lp2.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_label->get(ix, iy) != 2)
 //           {
@@ -1432,8 +1432,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label 1
 //     for (CSFLSLayer::const_iterator it = m_lp1.begin(); it != m_lp1.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_label->get(ix, iy) != 1)
 //           {
@@ -1460,7 +1460,7 @@ CSFLSSegmentor2D< TPixel >
 template< typename TPixel >
 double
 CSFLSSegmentor2D< TPixel >
-::computeKappa(long ix, long iy)
+::computeKappa(itk::IndexValueType ix, itk::IndexValueType iy)
 {
   //    double kappa;
 
@@ -1531,8 +1531,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label 0
 //     for (CSFLSLayer::const_iterator it = m_lz.begin(); it != m_lz.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_phi->get(ix, iy) > 0.5 || mp_phi->get(ix, iy) < -0.5)
 //           {
@@ -1546,8 +1546,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label -1
 //     for (CSFLSLayer::const_iterator it = m_ln1.begin(); it != m_ln1.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_phi->get(ix, iy) > -0.5 || mp_phi->get(ix, iy) < -1.5)
 //           {
@@ -1560,8 +1560,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label -2
 //     for (CSFLSLayer::const_iterator it = m_ln2.begin(); it != m_ln2.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_phi->get(ix, iy) > -1.5 || mp_phi->get(ix, iy) < -2.5)
 //           {
@@ -1575,8 +1575,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label 2
 //     for (CSFLSLayer::const_iterator it = m_lp2.begin(); it != m_lp2.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_phi->get(ix, iy) > 2.5 || mp_phi->get(ix, iy) < 1.5)
 //           {
@@ -1590,8 +1590,8 @@ CSFLSSegmentor2D< TPixel >
 //     // check all in m_lz has the label 1
 //     for (CSFLSLayer::const_iterator it = m_lp1.begin(); it != m_lp1.end(); ++it)
 //       {
-//         long ix = (*it)[0];
-//         long iy = (*it)[1];
+//         itk::IndexValueType ix = (*it)[0];
+//         itk::IndexValueType iy = (*it)[1];
 
 //         if (mp_phi->get(ix, iy) > 1.5 || mp_phi->get(ix, iy) < 0.5)
 //           {
