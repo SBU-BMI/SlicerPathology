@@ -392,7 +392,6 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
 handle events from the render window interactor
 """
     if event == "LeftButtonPressEvent":
-      print "The Left Mouse Button has been pressed!!!"
       self.actionState = "dragging"
       self.cursorOff()
       xy = self.interactor.GetEventPosition()
@@ -405,7 +404,11 @@ handle events from the render window interactor
 #      if not orient:
 #        print "Warning, unexpected view orientation!?"
     elif event == "LeftButtonReleaseEvent":
-      print "Left button has been released"
+      print "startXYPosition"
+      print self.startXYPosition
+      print "currentXYPosition"
+      print self.currentXYPosition
+      print "================================"
       self.actionState = ""
       self.cursorOn()
       ##self.apply()
