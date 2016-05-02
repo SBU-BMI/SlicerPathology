@@ -218,11 +218,11 @@ namespace nscale
       float *log_LMS_ptr = log_LMS.ptr<float>(i);
 
       for (int j=0; j<LMS.cols; j++){
-        LMS_ptr[j*3] = pow(10.0, log_LMS_ptr[j*3]);
-        LMS_ptr[j*3+1] = pow(10.0, log_LMS_ptr[j*3+1]);
-        LMS_ptr[j*3+2] = pow(10.0, log_LMS_ptr[j*3+2]);
+        LMS_ptr[j*3] = pow(10.0f, log_LMS_ptr[j*3]);
+        LMS_ptr[j*3+1] = pow(10.0f, log_LMS_ptr[j*3+1]);
+        LMS_ptr[j*3+2] = pow(10.0f, log_LMS_ptr[j*3+2]);
         //			if(i==0  && j <2 ){
-        //				std::cout << "pow: " << pow(10.0, log_LMS_ptr[j*3+2]) << std::endl;
+        //				std::cout << "pow: " << pow(10.0f, log_LMS_ptr[j*3+2]) << std::endl;
         //				std::cout << "lab2BGR: log_LMS(0,0): "<< log_LMS_ptr[j*3] <<" (0,1):"<<  log_LMS_ptr[j*3+1] <<" (0,2):"<< log_LMS_ptr[j*3+2] << std::endl;
         //				std::cout << "lab2BGR: LMS(0,0): "<< LMS_ptr[j*3] <<" (0,1):"<<  LMS_ptr[j*3+1] <<" (0,2):"<< LMS_ptr[j*3+2] << std::endl;
         //			}
