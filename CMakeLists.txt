@@ -17,6 +17,10 @@ set(EXTENSION_DEPENDS "SlicerOpenCV")
 find_package(Slicer REQUIRED)
 include(${Slicer_USE_FILE})
 
+# Add the CMake subdirectory which contains a FindSlicerOpenCV.cmake file
+# that will help find the package automatically
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
+
 find_package(SlicerOpenCV REQUIRED)
 
 #-----------------------------------------------------------------------------

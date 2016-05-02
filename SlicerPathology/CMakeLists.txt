@@ -18,6 +18,7 @@ set(MODULE_PYTHON_RESOURCES
   Resources/Icons/SlicerPathology-simple-small.png
   Resources/Icons/SlicerPathologyExtensionLogo.png
   Resources/Icons/SlicerPathology128px.png
+  Resources/Colors/SlicerPathology.csv
   )
 
 #-----------------------------------------------------------------------------
@@ -27,21 +28,4 @@ set(MODULE_PYTHON_RESOURCES
   SCRIPTS ${MODULE_PYTHON_SCRIPTS}
   RESOURCES ${MODULE_PYTHON_RESOURCES}
   WITH_GENERIC_TESTS
-  )
-
-# copy the color file to the build directory
-set(colorfile "SlicerPathology.csv")
-message(STATUS "Colorfile: build destination directory = ${CMAKE_BINARY_DIR}/${Slicer_SHARE_DIR}/Resources/Colors")
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Colors/${colorfile}
-  ${CMAKE_BINARY_DIR}/${Slicer_SHARE_DIR}/Resources/Colors/${colorfile}
-  COPYONLY
-  )
-
-# install the color file in the install directory
-message(STATUS "Colorfile: install destination: '${CMAKE_INSTALL_DIR}/Resources/Colors/${colorfile}'")
-install(
-  FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resources/Colors/${colorfile}
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/Resources/Colors/${colorfile}
-  COMPONENT Runtime
   )
