@@ -89,7 +89,7 @@ void FindBoundingBoxFromMask(const cv::Mat& imMask, cv::Rect& rect) {
     findContours(imTemp,contours,hierarchy,CV_RETR_CCOMP,CV_CHAIN_APPROX_SIMPLE,cv::Point(0,0));
 
     double area, maxArea;
-    int indMax;
+    int indMax = -1;
     maxArea = 0;
 
     assert(contours.size() > 0);
@@ -101,8 +101,9 @@ void FindBoundingBoxFromMask(const cv::Mat& imMask, cv::Rect& rect) {
             indMax = i;
         }
     }
-
-    rect = cv::boundingRect(contours[indMax]);
+    if (indMax >= 0) {
+      rect = cv::boundingRect(contours[indMax]);
+    }
 }
 
 } // end of TCGA namespace
