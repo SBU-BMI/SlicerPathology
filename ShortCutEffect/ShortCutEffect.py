@@ -328,8 +328,9 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
     self.attributes = ('MouseTool')
     self.displayName = 'ShortCutCore Effect'
 
-    #disconnect all shortcuts that may exist, to allow ShortCutCore's to work, reconnect once bot is turned off
-    slicer.modules.EditorWidget.removeShortcutKeys()
+    # disconnect all shortcuts that may exist, to allow ShortCutCore's to work, reconnect once bot is turned off
+    if hasattr(slicer.modules, 'EditorWidget'):
+      slicer.modules.EditorWidget.removeShortcutKeys()
     self.sliceLogic = sliceLogic
     self.editUtil = EditUtil.EditUtil()
     self.swRed = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
@@ -711,8 +712,9 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
     # remove GrowCut observer
     self.sliceLogic.RemoveObserver(self.qTCGALabMod_tag)
 
-    #put back the editor shortcuts we removed
-    slicer.modules.EditorWidget.installShortcutKeys()
+    # put back the editor shortcuts we removed
+    if hasattr(slicer.modules, 'EditorWidget'):
+      slicer.modules.EditorWidget.installShortcutKeys()
 
     print("Deletion completed")
 
