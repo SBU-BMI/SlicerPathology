@@ -54,6 +54,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     
     #create a "Start Bot" button
     self.botButton = qt.QPushButton(self.frame)
+    self.botButton.text = "Start Quick TCGA Segmenter"
 
     self.frame.layout().addWidget(self.botButton)
     self.botButton.connect('clicked()', self.onStartBot)
@@ -402,10 +403,6 @@ handle events from the render window interactor
     elif event == "LeftButtonReleaseEvent":
       self.actionState = ""
       self.cursorOn()
-      print "Selection"
-      print self.startXYPosition
-      print self.currentXYPosition
-      print "=================="
       ##self.apply()
       #self.startXYPosition = (0,0)
       #self.currentXYPosition = (0,0)

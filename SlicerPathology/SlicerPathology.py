@@ -163,11 +163,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     if currentIndex == 0:
       self.onStep1Selected()
     if currentIndex == 1:
-      print "to be implemented..."
+      print ""
     if currentIndex == 2:
-      print "to be implemented..."
+      print ""
     if currentIndex == 3:
-      print "to be implemented..."
+      print ""
 
   def setTabsEnabled(self, indexes, enabled):
     for index in indexes:
@@ -187,20 +187,20 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.setupGroupBoxLayout.addRow("Username:", self.setupUserName)
     self.setupPassword = qt.QLineEdit()
     self.setupPassword.setEchoMode(2)
-    self.setupGroupBoxLayout.addRow("Password:", self.setupPassword)
+    #self.setupGroupBoxLayout.addRow("Password:", self.setupPassword)
     
   def setupimageSelectionUI(self):
     self.loadDataButton = qt.QPushButton("Load Data")
     self.imageSelectionGroupBoxLayout.addWidget(self.loadDataButton)
     self.loadDataButton.connect('clicked()', self.loadTCGAData)
-    print "Adding WIP Button!"
-    self.WIP = qt.QPushButton("WIP")
-    self.WIP.connect('clicked()', self.onWIPButtonClicked)
-    self.imageSelectionGroupBoxLayout.addWidget(self.WIP)
+    #print "Adding WIP Button!"
+    #self.WIP = qt.QPushButton("WIP")
+    #self.WIP.connect('clicked()', self.onWIPButtonClicked)
+    #self.imageSelectionGroupBoxLayout.addWidget(self.WIP)
 
 
   def setupsegmentationUI(self):
-    print "adding this for now..."
+    print ""
     
   def setupsubmissionUI(self):
     self.dataDirButton = ctk.ctkDirectoryButton()
@@ -209,12 +209,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.SaveButton = qt.QPushButton("Save")
     self.submissionGroupBoxLayout.addWidget(self.SaveButton)
     self.SaveButton.connect('clicked()', self.onSaveButtonClicked)
-    self.WebSaveButton = qt.QPushButton("Submit to web")
-    self.submissionGroupBoxLayout.addWidget(self.WebSaveButton)
-    self.WebSaveButton.connect('clicked()', self.onWebSaveButtonClicked)
+    #self.WebSaveButton = qt.QPushButton("Submit to web")
+    #self.submissionGroupBoxLayout.addWidget(self.WebSaveButton)
+    #self.WebSaveButton.connect('clicked()', self.onWebSaveButtonClicked)
 
   def onWIPButtonClicked(self):
-    print "WIP ME!"
     from EditorLib import EditUtil
     self.editUtil = EditorLib.EditUtil.EditUtil()
     self.labelNode = self.editUtil.getLabelVolume()
