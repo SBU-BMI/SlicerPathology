@@ -13,8 +13,6 @@ from EditorLib import LabelEffectLogic
 
 from copy import copy, deepcopy
 import numpy as np
-#from vtk.util import numpy_support
-#from vtk.util.numpy_support import vtk_to_numpy
 params = {}
 cparams = {"algorithm":"Yi"}
 
@@ -382,10 +380,6 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
     points.SetPoint( 1, xlo, yhi, 0 )
     points.SetPoint( 2, xhi, yhi, 0 )
     points.SetPoint( 3, xhi, ylo, 0 )
-    #points.SetPoint( 0, 200, 200, 0 )
-    #points.SetPoint( 1, 200, 400, 0 )
-    #points.SetPoint( 2, 400, 400, 0 )
-    #points.SetPoint( 3, 400, 200, 0 )
 
   def processEvent(self, caller=None, event=None):
     """
@@ -397,6 +391,8 @@ handle events from the render window interactor
       xy = self.interactor.GetEventPosition()
       self.startXYPosition = xy
       self.currentXYPosition = xy
+      EditUtil.EditUtil().getParameterNode().SetParameter("QuickTCGAEffect,startXYPosition", str(xy))
+      EditUtil.EditUtil().getParameterNode().SetParameter("QuickTCGAEffect,currentXYPosition", str(xy))
       self.updateGlyph()
       self.abortEvent(event)
 #      viewName,orient = get_view_names(self.sliceWidget)
@@ -404,21 +400,29 @@ handle events from the render window interactor
 #      if not orient:
 #        print "Warning, unexpected view orientation!?"
     elif event == "LeftButtonReleaseEvent":
-      print "startXYPosition"
-      print self.startXYPosition
-      print "currentXYPosition"
-      print self.currentXYPosition
-      print "================================"
       self.actionState = ""
       self.cursorOn()
+      print "Selection"
+      print self.startXYPosition
+      print self.currentXYPosition
+      print "=================="
       ##self.apply()
-      self.startXYPosition = (0,0)
-      self.currentXYPosition = (0,0)
+      #self.startXYPosition = (0,0)
+      #self.currentXYPosition = (0,0)
       #self.updateGlyph()
       self.abortEvent(event)
     elif event == "MouseMoveEvent":
       if self.actionState == "dragging":
         self.currentXYPosition = self.interactor.GetEventPosition()
+        a = abs(self.currentXYPosition[0]-self.startXYPosition[0])
+        b = abs(self.currentXYPosition[1]-self.startXYPosition[1])
+        c = self.startXYPosition[0]
+        d = self.startXYPosition[1]
+        if (a<b):
+          self.currentXYPosition = (c+a,d-a)
+        else:
+          self.currentXYPosition = (c+b,d-b)
+        EditUtil.EditUtil().getParameterNode().SetParameter("QuickTCGAEffect,currentXYPosition", str(self.currentXYPosition))
         self.updateGlyph()
         self.sliceView.scheduleRender()
         self.abortEvent(event)
@@ -591,24 +595,54 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
     self.qTCGAMod.Setmpp(mpp)
     AA = self.foregroundNode.GetImageData()
-    a1 = 0
-    b1 = 0
-    ddd = AA.GetDimensions()
-    a2 = ddd[0]-1
-    b2 = ddd[1]-1
     LL = self.labelNode.GetImageData()
-    BB = self.GetTile(AA,a1,b1,a2,b2)
-    LL = self.GetTile(LL,a1,b1,a2,b2)
+    ddd = AA.GetDimensions()
+    #print "Image Dimensions"
+    #print ddd
+    currentXYPosition = eval(EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,currentXYPosition'))
+    startXYPosition = eval(EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,startXYPosition'))
+    sliceLogic = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
+    labelLogic = sliceLogic.GetLabelLayer()
+    xyToIJK = labelLogic.GetXYToIJKTransform()
+    currentXYPosition = xyToIJK.TransformDoublePoint(currentXYPosition+(0,))
+    currentXYPosition = (int(round(currentXYPosition[0])), int(round(currentXYPosition[1])))
+    startXYPosition = xyToIJK.TransformDoublePoint(startXYPosition+(0,))
+    startXYPosition = (int(round(startXYPosition[0])), int(round(startXYPosition[1])))
+    if hasattr(self,'startXYPosition'):
+      #print "whole image please"
+      a = (0,0)
+      b = (ddd[0]-1,ddd[1]-1)
+    else:
+      #print "subtile please"
+      a = startXYPosition
+      b = currentXYPosition
+    #print "TILE SPECIFICATIONS"
+    #print a
+    #print b
+    #print "=================="
+    d = abs(b[0]-a[0])
+    b = (a[0]+d,a[1]+d)
+    #print "TILE SPECIFICATIONS Modified"
+    #print a
+    #print b
+    #print d
+    #print "=================="
+    #a = (20,41)
+    #b = (108,133)
+    #a = (16,10)
+    #b = (106,100)
+    BB = self.GetTile(AA,a[0],a[1],b[0],b[1])
+    LL = self.GetTile(LL,a[0],a[1],b[0],b[1])
     self.qTCGAMod.SetSourceVol(BB)
     self.qTCGAMod.SetSeedVol(LL)
     self.qTCGAMod.Run_NucleiSegYi()
     self.qTCGASegArray[:] = seedArray[:]
-    self.MergeImages(LL,self.labelNode.GetImageData(),a1,b1)
+    self.MergeImages(LL,self.labelNode.GetImageData(),a[0],a[1])
     self.foregroundNode.GetImageData().Modified()
     self.foregroundNode.Modified()
     self.labelNode.GetImageData().Modified()
     self.labelNode.Modified()
-    self.currentMessage = "Quick TCGA done: nuclei segmetnation is done; press 'F' to enable ROI selection for refinement"
+    self.currentMessage = "Quick TCGA : nuclei segmentation is done"
     slicer.util.showStatusMessage(self.currentMessage)
 
   def GetTile(self,image,x1,y1,x2,y2):
