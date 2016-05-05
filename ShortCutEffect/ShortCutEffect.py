@@ -438,18 +438,32 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
 	import vtkSlicerShortCutCoreModuleLogicPython
 	
 	node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
-	otsuRatio = float(node.GetParameter("ShortCut,otsuRatio"))
+	otsuRatio = 1.0
+	if node.GetParameter("ShortCut,otsuRatio") is not '':
+	  otsuRatio = float(node.GetParameter("ShortCut,otsuRatio"))
 	print(otsuRatio)
-	curvatureWeight = float(node.GetParameter("ShortCut,curvatureWeight"))/10
+
+	curvatureWeight = 0.8
+	if node.GetParameter("ShortCut,curvatureWeight") is not '':
+	  curvatureWeight = float(node.GetParameter("ShortCut,curvatureWeight"))/10
 	print(curvatureWeight)
-	sizeThld = float(node.GetParameter("ShortCut,sizeThld"))
+
+	sizeThld = 3.0
+	if node.GetParameter("ShortCut,sizeThld") is not '':
+	  sizeThld = float(node.GetParameter("ShortCut,sizeThld"))
 	print(sizeThld)
-	sizeUpperThld = float(node.GetParameter("ShortCut,sizeUpperThld"))
+
+	sizeUpperThld = 200.0
+	if node.GetParameter("ShortCut,sizeUpperThld") is not '':
+	  sizeUpperThld = float(node.GetParameter("ShortCut,sizeUpperThld"))
 	print(sizeUpperThld)
-	mpp = float(node.GetParameter("ShortCut,mpp"))/100
+
+	mpp = 0.25
+	if node.GetParameter("ShortCut,mpp") is not '':
+	  mpp = float(node.GetParameter("ShortCut,mpp"))/100
 	print(mpp)
 
-	qTCGAMod =vtkSlicerShortCutCoreModuleLogicPython.vtkShortCutCore()
+	qTCGAMod = vtkSlicerShortCutCoreModuleLogicPython.vtkShortCutCore()
 	qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
 	qTCGAMod.SetotsuRatio(otsuRatio)
 	qTCGAMod.SetcurvatureWeight(curvatureWeight)
