@@ -63,6 +63,10 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frame.layout().addWidget(self.clearButton)
     self.clearButton.connect('clicked()', self.clearSelection)
 
+    #self.segButton = qt.QPushButton(self.frame)
+    #self.segButton.text = "Run Segmentation"
+    #self.frame.layout().addWidget(self.segButton)
+    #self.segButton.connect('clicked()', self.runQTCGA_NucleiSegYi)
 
     self.locRadFrame = qt.QFrame(self.frame)
     self.locRadFrame.setLayout(qt.QHBoxLayout())
@@ -254,7 +258,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
       slicer.modules.TCGAEditorBot.logic.emergencyStopFunc = self.botEstop; #save the function that stops bot, destroys ShortCut segmenter, if things go wrong
       if self.botButton:
         self.botButton.text = "Stop Quick TCGA Segmenter"  
-        self.currentMessage =  "Quick TCGA Segmenter started: Press 'Y' to start automatic nucleus segmentation; Or go to PaintEffect to edit label image or press 'S' to start global segmentation process."
+        self.currentMessage =  "Quick TCGA Segmenter started: Press 'Y' to start automatic nucleus segmentation; Or go to PaintEffect to edit label image."
         slicer.util.showStatusMessage(self.currentMessage)        
         
       if self.locRadFrame:
@@ -588,14 +592,12 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     slicer.util.showStatusMessage(self.currentMessage)
     seedArray = slicer.util.array(self.labelNode.GetName())
     self.qTCGASeedArray[:]  = seedArray[:]
-    
     node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
     otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
     curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
     sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
     sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
     mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
-
     self.qTCGAMod.SetotsuRatio(otsuRatio)
     self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
     self.qTCGAMod.SetsizeThld(sizeThld)
@@ -604,16 +606,13 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     AA = self.foregroundNode.GetImageData()
     LL = self.labelNode.GetImageData()
     ddd = AA.GetDimensions()
-    p = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,currentXYPosition')
-    print "OOO"
-    print p.__len__()
-    if p.__len__() == 0:
-      print "whole image please"
+    cp = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,currentXYPosition')
+    if cp.__len__() == 0:
       a = (0,0)
       b = (ddd[0]-1,ddd[1]-1)
+      slicer.modules.SlicerPathologyWidget.SaveButton.setEnabled(1)
     else:
-      print "subtile please"
-      currentXYPosition = eval(EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,currentXYPosition'))
+      currentXYPosition = eval(cp)
       startXYPosition = eval(EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,startXYPosition'))
       sliceLogic = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
       labelLogic = sliceLogic.GetLabelLayer()
@@ -624,21 +623,9 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
       startXYPosition = (int(round(startXYPosition[0])), int(round(startXYPosition[1])))
       a = startXYPosition
       b = currentXYPosition
-    #print "TILE SPECIFICATIONS"
-    #print a
-    #print b
-    #print "=================="
+      slicer.modules.SlicerPathologyWidget.SaveButton.setEnabled(0)
     d = abs(b[0]-a[0])
     b = (a[0]+d,a[1]+d)
-    #print "TILE SPECIFICATIONS Modified"
-    #print a
-    #print b
-    #print d
-    #print "=================="
-    #a = (20,41)
-    #b = (108,133)
-    #a = (16,10)
-    #b = (106,100)
     BB = self.GetTile(AA,a[0],a[1],b[0],b[1])
     LL = self.GetTile(LL,a[0],a[1],b[0],b[1])
     self.qTCGAMod.SetSourceVol(BB)

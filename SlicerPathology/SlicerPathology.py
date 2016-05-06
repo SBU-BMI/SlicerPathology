@@ -209,6 +209,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.SaveButton = qt.QPushButton("Save")
     self.submissionGroupBoxLayout.addWidget(self.SaveButton)
     self.SaveButton.connect('clicked()', self.onSaveButtonClicked)
+    self.SaveButton.setEnabled(0)
     #self.WebSaveButton = qt.QPushButton("Submit to web")
     #self.submissionGroupBoxLayout.addWidget(self.WebSaveButton)
     #self.WebSaveButton.connect('clicked()', self.onWebSaveButtonClicked)
