@@ -55,9 +55,14 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     #create a "Start Bot" button
     self.botButton = qt.QPushButton(self.frame)
     self.botButton.text = "Start Quick TCGA Segmenter"
-
     self.frame.layout().addWidget(self.botButton)
     self.botButton.connect('clicked()', self.onStartBot)
+
+    self.clearButton = qt.QPushButton(self.frame)
+    self.clearButton.text = "Clear Selection"
+    self.frame.layout().addWidget(self.clearButton)
+    self.clearButton.connect('clicked()', self.clearSelection)
+
 
     self.locRadFrame = qt.QFrame(self.frame)
     self.locRadFrame.setLayout(qt.QHBoxLayout())
@@ -143,6 +148,11 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.currentMessage = ""
     slicer.util.showStatusMessage(self.currentMessage)
     super(QuickTCGAEffectOptions,self).destroy()
+
+  def clearSelection(self):
+    print "Clearing Selection"
+    EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,currentXYPosition")
+    EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
 
   def updateSliders(self):
     r = self.structuresView.currentIndex().row()
@@ -594,23 +604,24 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     AA = self.foregroundNode.GetImageData()
     LL = self.labelNode.GetImageData()
     ddd = AA.GetDimensions()
-    #print "Image Dimensions"
-    #print ddd
-    currentXYPosition = eval(EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,currentXYPosition'))
-    startXYPosition = eval(EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,startXYPosition'))
-    sliceLogic = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
-    labelLogic = sliceLogic.GetLabelLayer()
-    xyToIJK = labelLogic.GetXYToIJKTransform()
-    currentXYPosition = xyToIJK.TransformDoublePoint(currentXYPosition+(0,))
-    currentXYPosition = (int(round(currentXYPosition[0])), int(round(currentXYPosition[1])))
-    startXYPosition = xyToIJK.TransformDoublePoint(startXYPosition+(0,))
-    startXYPosition = (int(round(startXYPosition[0])), int(round(startXYPosition[1])))
-    if hasattr(self,'startXYPosition'):
-      #print "whole image please"
+    p = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,currentXYPosition')
+    print "OOO"
+    print p.__len__()
+    if p.__len__() == 0:
+      print "whole image please"
       a = (0,0)
       b = (ddd[0]-1,ddd[1]-1)
     else:
-      #print "subtile please"
+      print "subtile please"
+      currentXYPosition = eval(EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,currentXYPosition'))
+      startXYPosition = eval(EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,startXYPosition'))
+      sliceLogic = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
+      labelLogic = sliceLogic.GetLabelLayer()
+      xyToIJK = labelLogic.GetXYToIJKTransform()
+      currentXYPosition = xyToIJK.TransformDoublePoint(currentXYPosition+(0,))
+      currentXYPosition = (int(round(currentXYPosition[0])), int(round(currentXYPosition[1])))
+      startXYPosition = xyToIJK.TransformDoublePoint(startXYPosition+(0,))
+      startXYPosition = (int(round(startXYPosition[0])), int(round(startXYPosition[1])))
       a = startXYPosition
       b = currentXYPosition
     #print "TILE SPECIFICATIONS"
