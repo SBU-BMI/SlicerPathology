@@ -35,7 +35,7 @@ void CopyImageVTK2OpenCV(const vtkSmartPointer<vtkImageData> imVTK, cv::Mat &imO
 //       cv::flip(imOpenCV,imOpenCV, 0);
     }
     else {
-        std::cout << "Faile to copy images, image channel doesn't match!\n";
+        std::cout << "Failed to copy images, image channel doesn't match!\n";
     }
 }
 
@@ -72,7 +72,7 @@ void CopyImageOpenCV2VTK(const cv::Mat &imOpenCV, vtkSmartPointer<vtkImageData> 
        }
     }
     else {
-        std::cout << "Faile to copy images, image channel doesn't match!\n";
+        std::cout << "Failed to copy images, image channel doesn't match!\n";
     }
 }
 
