@@ -6,6 +6,7 @@ This is work in progress to develop tools for automatic and semi-automatic patho
 
 * Lead developer: Erich Bremer (https://github.com/ebremer erich.bremer@stonybrook.edu)
 * Project PI: Joel Saltz (https://bmi.stonybrookmedicine.edu/people/joel_saltz)
+* Algorithm Development: Yi Gao (https://github.com/gaoyi)
 
 # Acknowledgments
 
