@@ -12,6 +12,7 @@ This is work in progress to develop tools for automatic and semi-automatic patho
 Additional Coding and 3D Slicer programming support:<br>
 Nicole Aucoin (https://github.com/naucoin)<br>
 Andrey Fedorov (https://github.com/fedorov)<br>
+Jean-Christophe Fillion-Robin (https://github.com/jcfr)<br>
 
 This work is supported by:
 
