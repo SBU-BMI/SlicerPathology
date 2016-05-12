@@ -20,18 +20,5 @@ This work is supported by:
 * U24 CA180924 Tools to Analyze Morphology and Spatially Mapped Molecular Data, PI Joel Saltz, Stony Brook University
 * U24 CA180918 Quantitative Image Informatics for Cancer Research (QIICR), http://qiicr.org, PIs Ron Kikinis and Andrey Fedorov, Brigham and Women's Hospital
 
-# Usage
-Go to Module, Pathology.
-
-Click "Load data directly from file" to select an image.
-
-Click the button labeled Quick TCGA Effect.
-This adds a palette to the interface where you can change the parameters of the run.
-
-Click segmentation button to run an algorithm over the image with the current parameters.
-Hit the "Y" key to continue.
-
-After a few moments it’ll come back segmented.
-
-Left-click & drag to select a subregion.
-Now you can run the function on that area only.
+# Usage instructions
+https://www.slicer.org/slicerWiki/index.php/Documentation/Nightly/Extensions/SlicerPathology
