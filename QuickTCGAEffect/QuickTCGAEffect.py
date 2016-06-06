@@ -51,7 +51,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).create()
     self.helpLabel = qt.QLabel("Press Y to run automatic segmentation on the current image using given parameters.", self.frame)
     self.frame.layout().addWidget(self.helpLabel)
-    
+   
     #create a "Start Bot" button
     self.botButton = qt.QPushButton(self.frame)
     self.botButton.text = "Start Quick TCGA Segmenter"
@@ -63,9 +63,9 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frame.layout().addWidget(self.clearButton)
     self.clearButton.connect('clicked()', self.clearSelection)
 
-    #self.segButton = qt.QPushButton(self.frame)
-    #self.segButton.text = "Run Segmentation"
-    #self.frame.layout().addWidget(self.segButton)
+    self.segButton = qt.QPushButton(self.frame)
+    self.segButton.text = "Run Segmentation"
+    self.frame.layout().addWidget(self.segButton)
     #self.segButton.connect('clicked()', self.runQTCGA_NucleiSegYi)
 
     self.locRadFrame = qt.QFrame(self.frame)
@@ -86,7 +86,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     nucleusSegFormLayout = qt.QFormLayout(nucleusSegCollapsibleButton)
     self.frameOtsuSlider = ctk.ctkSliderWidget()
     self.frameOtsuSlider.connect('valueChanged(double)', self.OtsuSliderValueChanged)
-    self.frameOtsuSlider.decimals = 0
+    self.frameOtsuSlider.decimals = 1
     self.frameOtsuSlider.minimum = 0
     self.frameOtsuSlider.maximum = 10
     self.frameOtsuSlider.value = 1.0
@@ -94,7 +94,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     
     self.frameCurvatureWeightSlider = ctk.ctkSliderWidget()
     self.frameCurvatureWeightSlider.connect('valueChanged(double)', self.CurvatureWeightSliderValueChanged)
-    self.frameCurvatureWeightSlider.decimals = 0
+    self.frameCurvatureWeightSlider.decimals = 1
     self.frameCurvatureWeightSlider.minimum = 0
     self.frameCurvatureWeightSlider.maximum = 10
     self.frameCurvatureWeightSlider.value = 8
@@ -102,7 +102,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     
     self.frameSizeThldSlider = ctk.ctkSliderWidget()
     self.frameSizeThldSlider.connect('valueChanged(double)', self.SizeThldSliderValueChanged)
-    self.frameSizeThldSlider.decimals = 0
+    self.frameSizeThldSlider.decimals = 1
     self.frameSizeThldSlider.minimum = 1
     self.frameSizeThldSlider.maximum = 100
     self.frameSizeThldSlider.value = 3
@@ -122,7 +122,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameMPPSlider.minimum = 0
     self.frameMPPSlider.maximum = 100
     self.frameMPPSlider.value = 25
-    nucleusSegFormLayout.addRow("Size Upper Threshold:", self.frameMPPSlider)
+    nucleusSegFormLayout.addRow("Kernel Size:", self.frameMPPSlider)
 
     HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
      "\n KEYS for Global Segmentation: " +
@@ -238,7 +238,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).setMRMLDefaults()
 
   def onStartBot(self):
-
+    print "onStartBot is starting..."
     """Stop Quick TCGA bot to avoid conflicts"""
     if hasattr(slicer.modules, 'editorBot'):
       slicer.modules.editorBot.stop()
@@ -314,8 +314,8 @@ so it can access tools if needed.
     self.logic = QuickTCGAEffectLogic( self.redSliceWidget.sliceLogic() )
 
   def stop(self):
-
     self.logic.destroy()
+
 #
 # QuickTCGAEffectTool
 #

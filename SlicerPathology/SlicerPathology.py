@@ -188,6 +188,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.setupPassword = qt.QLineEdit()
     self.setupPassword.setEchoMode(2)
     #self.setupGroupBoxLayout.addRow("Password:", self.setupPassword)
+    self.dataDirButton = ctk.ctkDirectoryButton()
+    self.setupGroupBoxLayout.addRow(qt.QLabel("Data directory:") )
+    self.setupGroupBoxLayout.addWidget(self.dataDirButton)
     
   def setupimageSelectionUI(self):
     self.loadDataButton = qt.QPushButton("Load Data")
@@ -203,9 +206,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     print ""
     
   def setupsubmissionUI(self):
-    self.dataDirButton = ctk.ctkDirectoryButton()
-    self.submissionGroupBoxLayout.addWidget(qt.QLabel("Data directory:") )
-    self.submissionGroupBoxLayout.addWidget(self.dataDirButton)
     self.SaveButton = qt.QPushButton("Save")
     self.submissionGroupBoxLayout.addWidget(self.SaveButton)
     self.SaveButton.connect('clicked()', self.onSaveButtonClicked)
@@ -236,7 +236,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     j['layers'] = layers
     j['username'] = self.setupUserName.text
     j['sourcetile'] = self.tilename
-    j['generator'] = "3DSlicer-4.5.0 with SlicerPathology v1.0a"
+    j['generator'] = slicer.app.applicationVersion
     j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
     savedMessage = 'Segmentations for the following series were saved:\n\n'
