@@ -66,7 +66,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.segButton = qt.QPushButton(self.frame)
     self.segButton.text = "Run Segmentation"
     self.frame.layout().addWidget(self.segButton)
-    #self.segButton.connect('clicked()', self.runQTCGA_NucleiSegYi)
+    self.segButton.connect('clicked()', self.RunSegmenter)
 
     self.locRadFrame = qt.QFrame(self.frame)
     self.locRadFrame.setLayout(qt.QHBoxLayout())
@@ -153,10 +153,17 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     slicer.util.showStatusMessage(self.currentMessage)
     super(QuickTCGAEffectOptions,self).destroy()
 
+  def RunSegmenter(self):
+    if hasattr(slicer.modules, 'TCGAEditorBot'):
+      slicer.modules.TCGAEditorBot.logic.runQTCGA_NucleiSegYi()
+
   def clearSelection(self):
     print "Clearing Selection"
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,currentXYPosition")
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
+    self.startXYPosition = (0,0)
+    self.currentXYPosition = (0,0)
+    self.updateGlyph()
 
   def updateSliders(self):
     r = self.structuresView.currentIndex().row()
