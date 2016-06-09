@@ -88,7 +88,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameOtsuSlider.connect('valueChanged(double)', self.OtsuSliderValueChanged)
     self.frameOtsuSlider.decimals = 1
     self.frameOtsuSlider.minimum = 0
-    self.frameOtsuSlider.maximum = 10
+    self.frameOtsuSlider.maximum = 2.0
     self.frameOtsuSlider.value = 1.0
     nucleusSegFormLayout.addRow("Otsu Threshold:", self.frameOtsuSlider)
     
