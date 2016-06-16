@@ -111,7 +111,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameSizeUpperThldSlider = ctk.ctkSliderWidget()
     self.frameSizeUpperThldSlider.connect('valueChanged(double)', self.SizeUpperThldSliderValueChanged)
     self.frameSizeUpperThldSlider.decimals = 0
-    self.frameSizeUpperThldSlider.minimum = 100
+    self.frameSizeUpperThldSlider.minimum = 30
     self.frameSizeUpperThldSlider.maximum = 500
     self.frameSizeUpperThldSlider.value = 300
     nucleusSegFormLayout.addRow("Size Upper Threshold:", self.frameSizeUpperThldSlider)
@@ -158,12 +158,12 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
       slicer.modules.TCGAEditorBot.logic.runQTCGA_NucleiSegYi()
 
   def clearSelection(self):
-    print "Clearing Selection"
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,currentXYPosition")
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
-    self.startXYPosition = (0,0)
-    self.currentXYPosition = (0,0)
-    self.updateGlyph()
+    slicer.modules.QuickTCGAEffectTool.startXYPosition = (0,0)
+    slicer.modules.QuickTCGAEffectTool.currentXYPosition = (0,0)
+    slicer.modules.QuickTCGAEffectTool.updateGlyph()
+    slicer.modules.QuickTCGAEffectTool.sliceView.scheduleRender()
 
   def updateSliders(self):
     r = self.structuresView.currentIndex().row()
@@ -363,6 +363,7 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
     property_.SetLineWidth(1)
     self.renderer.AddActor2D( self.actor )
     self.actors.append( self.actor )
+    slicer.modules.QuickTCGAEffectTool = self
 
   def cleanup(self):
     super(QuickTCGAEffectTool,self).cleanup()
