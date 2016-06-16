@@ -88,7 +88,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameOtsuSlider.connect('valueChanged(double)', self.OtsuSliderValueChanged)
     self.frameOtsuSlider.decimals = 1
     self.frameOtsuSlider.minimum = 0
-    self.frameOtsuSlider.maximum = 10
+    self.frameOtsuSlider.maximum = 2.0
     self.frameOtsuSlider.value = 1.0
     nucleusSegFormLayout.addRow("Otsu Threshold:", self.frameOtsuSlider)
     
@@ -113,15 +113,15 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameSizeUpperThldSlider.decimals = 0
     self.frameSizeUpperThldSlider.minimum = 30
     self.frameSizeUpperThldSlider.maximum = 500
-    self.frameSizeUpperThldSlider.value = 300
+    self.frameSizeUpperThldSlider.value = 100
     nucleusSegFormLayout.addRow("Size Upper Threshold:", self.frameSizeUpperThldSlider)
     
     self.frameMPPSlider = ctk.ctkSliderWidget()
     self.frameMPPSlider.connect('valueChanged(double)', self.MPPSliderValueChanged)
     self.frameMPPSlider.decimals = 0
-    self.frameMPPSlider.minimum = 0
-    self.frameMPPSlider.maximum = 100
-    self.frameMPPSlider.value = 25
+    self.frameMPPSlider.minimum = 1
+    self.frameMPPSlider.maximum = 30
+    self.frameMPPSlider.value = 20
     nucleusSegFormLayout.addRow("Kernel Size:", self.frameMPPSlider)
 
     HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
