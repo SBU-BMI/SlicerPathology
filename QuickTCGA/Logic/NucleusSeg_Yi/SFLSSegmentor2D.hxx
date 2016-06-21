@@ -144,7 +144,7 @@ CSFLSSegmentor2D< TPixel >
 template< typename TPixel >
 bool
 CSFLSSegmentor2D< TPixel >
-::getPhiOfTheNbhdWhoIsClosestToZeroLevelInLayerCloserToZeroLevel(long ix, long iy, long iz, double& thePhi)
+::getPhiOfTheNbhdWhoIsClosestToZeroLevelInLayerCloserToZeroLevel(itk::IndexValueType ix, itk::IndexValueType iy, itk::IndexValueType iz, double& thePhi)
 {
   /*--------------------------------------------------
    *
