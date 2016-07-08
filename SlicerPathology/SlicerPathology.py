@@ -254,6 +254,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.mutate() 
 
   def onSaveButtonClicked(self):
+    import zipfile
     bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
     tran = json.loads(bundle)
     layers = []
@@ -269,6 +270,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
     savedMessage = 'Segmentations for the following series were saved:\n\n'
+    zfname = os.path.join(self.dataDirButton.directory, self.tilename + '.zip')
+    zf = zipfile.ZipFile(zfname, mode='w')
     for label in labelNodes.values():
       labelName = label.GetName()
       labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
@@ -279,13 +282,19 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
       sNode.SetURI(None)
       success = sNode.WriteData(label)
       if success:
-        print "successful writing "+labelFileName
+        print "adding "+labelFileName+" to zipfile"
+        zf.write(labelFileName)
+        os.remove(labelFileName)
       else:
         print "failed writing "+labelFileName
     jstr = json.dumps(j,sort_keys=True, indent=4, separators=(',', ': '))
-    f = open(os.path.join(self.dataDirButton.directory, self.tilename + '.json'),'w')
+    mfname = os.path.join(self.dataDirButton.directory, 'manifest.json')
+    f = open(mfname,'w')
     f.write(jstr)
     f.close()
+    zf.write(mfname)
+    zf.close()
+    os.remove(mfname)
 
   def onWebSaveButtonClicked(self):
     print "Web Save to be implemented...."
