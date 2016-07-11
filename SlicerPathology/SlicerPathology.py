@@ -114,6 +114,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     # Add vertical spacer
     self.layout.addStretch(1)
+    self.j = {}
 
   def cleanup(self):
     pass
@@ -200,13 +201,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.loadDataButton = qt.QPushButton("Load Image from disk")
     self.imageSelectionGroupBoxLayout.addWidget(self.loadDataButton)
     self.loadDataButton.connect('clicked()', self.loadTCGAData)
-    self.WIP = qt.QPushButton("Load Image from Web")
-    self.WIP.connect('clicked()', self.onWIPButtonClicked)
-    self.imageSelectionGroupBoxLayout.addWidget(self.WIP)
-    self.WIP2 = qt.QPushButton("Load Image from Web 2")
+    #self.WIP = qt.QPushButton("Load Image from Web")
+    #self.WIP.connect('clicked()', self.onWIPButtonClicked)
+    #self.imageSelectionGroupBoxLayout.addWidget(self.WIP)
+    self.WIP2 = qt.QPushButton("Select image from web")
     self.WIP2.connect('clicked()', self.onWIP2ButtonClicked)
     self.imageSelectionGroupBoxLayout.addWidget(self.WIP2)
-    self.WIP3 = qt.QPushButton("Load Image from Web 3")
+    self.WIP3 = qt.QPushButton("Load image from web")
     self.WIP3.connect('clicked()', self.onWIP3ButtonClicked)
     self.imageSelectionGroupBoxLayout.addWidget(self.WIP3)
 
@@ -266,15 +267,16 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
       nn = tran[key]
       nn["file"] = key + '.tif'
       layers.append(tran[key])
-    j = {}
-    j['layers'] = layers
-    j['username'] = self.setupUserName.text
-    j['sourcetile'] = self.tilename
-    j['generator'] = slicer.app.applicationVersion
-    j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    self.j['layers'] = layers
+    self.j['username'] = self.setupUserName.text
+    self.j['sourcetile'] = self.tilename
+    self.j['generator'] = slicer.app.applicationVersion
+    self.j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     zfname = os.path.join(self.dataDirButton.directory, self.tilename + '.zip')
+    print "zipfile name"
+    print zfname
     zf = zipfile.ZipFile(zfname, mode='w')
     for label in labelNodes.values():
       labelName = label.GetName()
@@ -291,7 +293,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         os.remove(labelFileName)
       else:
         print "failed writing "+labelFileName
-    jstr = json.dumps(j,sort_keys=True, indent=4, separators=(',', ': '))
+    jstr = json.dumps(self.j,sort_keys=True, indent=4, separators=(',', ': '))
     mfname = os.path.join(self.dataDirButton.directory, 'manifest.json')
     f = open(mfname,'w')
     f.write(jstr)
@@ -299,15 +301,15 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     zf.write(mfname)
     zf.close()
     os.remove(mfname)
-    import sys
-    reload(sys)
-    sys.setdefaultencoding('utf8')
-    opener = urllib2.build_opener(MultipartPostHandler)
-    params = { "ss" : "0",            # show source
-               "doctype" : "Inline",
-               "uploaded_file" : open(zfname, "rb") }
-    print params
-    print opener.open('http://quip1.bmi.stonybrook.edu:4000/upload', params).read()
+    #import sys
+    #reload(sys)
+    #sys.setdefaultencoding('utf8')
+    #opener = urllib2.build_opener(MultipartPostHandler)
+    #params = { "ss" : "0",            # show source
+    #           "doctype" : "Inline",
+    #           "uploaded_file" : open(zfname, "rb") }
+    #print params
+    #print opener.open('http://quip1.bmi.stonybrook.edu:4000/upload', params).read()
 
   def onWebSaveButtonClicked(self):
     print "Web Save to be implemented...."
@@ -433,12 +435,36 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     y=imageBound[u'y']
     width=imageBound[u'width']
     height=imageBound[u'height']
+    self.j['x'] = x
+    self.j['y'] = y
+    self.j['width'] = width
+    self.j['height'] = height
     imagedata = m.evaluateJavaScript('imagedata')
     tmpfilename=  imagedata[u'metaData'][1]
     imageFileName=string.rstrip(tmpfilename,'.dzi')
+    self.tilename = imagedata[u'imageId']
+    print self.tilename
+    self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
     current_weburl ='http://quip1.uhmc.sunysb.edu/fcgi-bin/iipsrv.fcgi?IIIF=' + imageFileName +'/' + str(x) + ','+ str(y) + ',' + str(width) + ',' + str(height) + '/full/0/default.jpg'
+    print current_weburl
     self.v.setUrl(qt.QUrl(current_weburl))
     self.v.show()
+
+    reply = urllib2.urlopen(current_weburl)
+    byte_array = reply.read()
+    image = qt.QImage(qt.QImage.Format_RGB888)
+    image.loadFromData(byte_array)
+    imageData = self.QImage2vtkImage(image)
+    volumeNode = slicer.vtkMRMLVectorVolumeNode()
+    volumeNode.SetName("WEB")
+    volumeNode.SetAndObserveImageData(imageData)
+    displayNode = slicer.vtkMRMLVectorVolumeDisplayNode()
+    slicer.mrmlScene.AddNode(volumeNode)
+    slicer.mrmlScene.AddNode(displayNode)
+    volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
+    displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
+    self.mutate()
+
 
   def loadTCGAData(self):
     slicer.util.openAddVolumeDialog()
