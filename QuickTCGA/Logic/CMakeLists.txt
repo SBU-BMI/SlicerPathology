@@ -32,7 +32,9 @@ set(${KIT}_SRCS
 
 set_source_files_properties(
   ${${KIT}_WRAP_EXCLUDE_SRCS}
-  WRAP_EXCLUDE
+  PROPERTIES
+    WRAP_EXCLUDE 1
+    WRAP_EXCLUDE_PYTHON 1
   )
 
 set(${KIT}_TARGET_LIBRARIES
