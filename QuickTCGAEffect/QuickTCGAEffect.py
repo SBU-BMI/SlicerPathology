@@ -654,7 +654,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
       a = startXYPosition
       b = currentXYPosition
       slicer.modules.SlicerPathologyWidget.SaveButton.setEnabled(0)
-    d = abs(b[0]-a[0])
+    d = min(abs(b[0]-a[0]), abs(b[1]-a[1]))
     b = (a[0]+d,a[1]+d)
     BB = self.GetTile(AA,a[0],a[1],b[0],b[1])
     LL = self.GetTile(LL,a[0],a[1],b[0],b[1])
