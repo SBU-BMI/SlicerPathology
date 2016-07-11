@@ -33,6 +33,7 @@ public:
   vtkSetMacro(sizeThld, float);
   vtkSetMacro(sizeUpperThld, float);
   vtkSetMacro(mpp, double);
+  vtkSetMacro(kernelSize, double);
 
 
   //vtkSetObjectMacro(OutputVol, vtkImageData);
@@ -64,6 +65,7 @@ private:
   float sizeThld;
   float sizeUpperThld;
   double mpp;
+  double kernelSize;
 
   cv::Mat m_imSrc;
   cv::Mat m_imLab;

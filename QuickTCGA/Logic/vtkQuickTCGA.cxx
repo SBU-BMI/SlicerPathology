@@ -27,6 +27,7 @@ vtkQuickTCGA::vtkQuickTCGA( ) {
     sizeThld = 3;
     sizeUpperThld = 200;
     mpp = 0.25;
+    kernelSize = 15.0;
  }
 
 
@@ -102,7 +103,7 @@ void vtkQuickTCGA::Run_NucleiSegYi() {
     m_qTCGASeg->SetSourceImage(m_imSrc);
     m_qTCGASeg->SetLabImage(m_imLab);
 
-    m_qTCGASeg->DoNucleiSegmentationYi(otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp);
+    m_qTCGASeg->DoNucleiSegmentationYi(otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp, kernelSize);
 
     m_qTCGASeg->GetSegmentation(m_imLab);
 

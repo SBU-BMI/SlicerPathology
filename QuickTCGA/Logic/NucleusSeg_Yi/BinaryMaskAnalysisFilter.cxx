@@ -35,6 +35,8 @@ namespace gth818n
     m_objectSizeThreshold = 3; ///< smallest cell, sperm, nutraphils, platlets (may be considered as cell fragments) are around 3 micron in one dim. So set 8 um^2 as lower limit
     m_objectSizeUpperThreshold = 200;
 
+    m_kernelSize = 15.0;
+
     m_allDone = false;
 
     return;
@@ -185,7 +187,7 @@ namespace gth818n
         std::cout<<"MS cluster "<<it->first<<" label. It has "<<it->second->Size()<<" points......... "<<std::flush;
         //dbg, end
         MeanshiftClusteringFilterType ms;
-        ms.setRadius(20.0);
+        ms.setRadius(m_kernelSize);
         ms.setInputPointSet(it->second);
         ms.update();
         std::vector<long> label = ms.getLabelOfPoints();
@@ -404,6 +406,20 @@ namespace gth818n
     return;
   }
 
+
+  void BinaryMaskAnalysisFilter::setKernelSize(double ks)
+  {
+    if (ks > 0)
+      {
+        m_kernelSize = ks;
+      }
+    else
+      {
+        std::cerr<<"Error: m_kernelSize should be > 0. But got "<<ks<<std::endl;
+      }
+
+    return;
+  }
 
   void BinaryMaskAnalysisFilter::setMPP(float mpp)
   {

@@ -52,6 +52,8 @@ namespace gth818n
 
     void setMPP(float mpp);
 
+    void setKernelSize(double ks);
+
     itkFloatImageType::Pointer getFeatureColoredImage(unsigned char featureType);
     itkLabelImageType::Pointer getConnectedComponentLabelImage();
 
@@ -91,6 +93,8 @@ namespace gth818n
     LabelMapType::Pointer m_labelMap;
 
     float m_mpp; ///< Micron Per Pixel
+
+    double m_kernelSize;
 
     float m_objectSizeThreshold; ///< object smaller than this will be discarded. unit in physical spaces
 

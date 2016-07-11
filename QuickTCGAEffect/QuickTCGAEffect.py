@@ -111,18 +111,27 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameSizeUpperThldSlider = ctk.ctkSliderWidget()
     self.frameSizeUpperThldSlider.connect('valueChanged(double)', self.SizeUpperThldSliderValueChanged)
     self.frameSizeUpperThldSlider.decimals = 0
-    self.frameSizeUpperThldSlider.minimum = 30
+    self.frameSizeUpperThldSlider.minimum = 1
     self.frameSizeUpperThldSlider.maximum = 500
     self.frameSizeUpperThldSlider.value = 100
     nucleusSegFormLayout.addRow("Size Upper Threshold:", self.frameSizeUpperThldSlider)
     
+    self.frameKernelSizeSlider = ctk.ctkSliderWidget()
+    self.frameKernelSizeSlider.connect('valueChanged(double)', self.KernelSizeSliderValueChanged)
+    self.frameKernelSizeSlider.decimals = 0
+    self.frameKernelSizeSlider.minimum = 1
+    self.frameKernelSizeSlider.maximum = 30
+    self.frameKernelSizeSlider.value = 20
+    nucleusSegFormLayout.addRow("Kernel Size:", self.frameKernelSizeSlider)
+
     self.frameMPPSlider = ctk.ctkSliderWidget()
     self.frameMPPSlider.connect('valueChanged(double)', self.MPPSliderValueChanged)
-    self.frameMPPSlider.decimals = 0
-    self.frameMPPSlider.minimum = 1
-    self.frameMPPSlider.maximum = 30
-    self.frameMPPSlider.value = 20
-    nucleusSegFormLayout.addRow("Kernel Size:", self.frameMPPSlider)
+    self.frameMPPSlider.decimals = 5
+    self.frameMPPSlider.minimum = 0.01
+    self.frameMPPSlider.maximum = 1
+    self.frameMPPSlider.value = 0.25
+    nucleusSegFormLayout.addRow("Micron Per Pixel:", self.frameMPPSlider)
+
 
     HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
      "\n KEYS for Global Segmentation: " +
@@ -184,6 +193,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameSizeThldSlider.value = params[ei]["sizeThld"]
     self.frameSizeUpperThldSlider.value = params[ei]["sizeUpperThld"]
     self.frameMPPSlider.value = params[ei]["mpp"]
+    self.frameKernelSizeSlider.value = params[ei]["KernelSize"]
 
   def onStructureClickedOrAdded(self):
     self.updateSliders();
@@ -229,6 +239,12 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.parameterNode.SetParameter("QuickTCGAEffect,mpp", str(value))
     self.updateParam("mpp",value)
     self.updateMRMLFromGUI()  
+
+  def KernelSizeSliderValueChanged(self,value):
+    self.parameterNode.SetParameter("QuickTCGAEffect,kernelSize", str(value))
+    self.updateParam("kernelSize",value)
+    self.updateMRMLFromGUI()  
+
     
   # note: this method needs to be implemented exactly as-is
   # in each leaf subclass so that "self" in the observer
@@ -576,12 +592,14 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
     sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
     sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
-    mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
+    mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))
+    kernelSize = float(node.GetParameter("QuickTCGAEffect,kernelSize"))
     cparams["otsuRatio"]=otsuRatio
     cparams["curvatureWeight"]=curvatureWeight
     cparams["sizeThld"]=sizeThld
     cparams["sizeUpperThld"]=sizeUpperThld
     cparams["mpp"]=mpp
+    cparams["kernelSize"]=kernelSize
     qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()
     qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
     qTCGAMod.SetotsuRatio(otsuRatio)
@@ -589,6 +607,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     qTCGAMod.SetsizeThld(sizeThld)
     qTCGAMod.SetsizeUpperThld(sizeUpperThld)
     qTCGAMod.Setmpp(mpp)
+    qTCGAMod.SetkernelSize(kernelSize)
     qTCGAMod.Initialization()
     self.qTCGAMod = qTCGAMod   
     self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
@@ -605,12 +624,15 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
     sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
     sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
-    mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))/100
+    mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))
+    kernelSize = float(node.GetParameter("QuickTCGAEffect,kernelSize"))
     self.qTCGAMod.SetotsuRatio(otsuRatio)
     self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
     self.qTCGAMod.SetsizeThld(sizeThld)
     self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
     self.qTCGAMod.Setmpp(mpp)
+    self.qTCGAMod.SetkernelSize(kernelSize)
+    print("hererere.........")
     AA = self.foregroundNode.GetImageData()
     LL = self.labelNode.GetImageData()
     ddd = AA.GetDimensions()

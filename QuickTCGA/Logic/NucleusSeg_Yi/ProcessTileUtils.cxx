@@ -11,6 +11,7 @@
 #include "itkCastImageFilter.h"
 #include "itkOpenCVImageBridge.h"
 #include "itkBinaryFillholeImageFilter.h"
+#include "itkGradientMagnitudeImageFilter.h"
 
 // openslide
 
@@ -291,93 +292,132 @@ castItkImage( const InputImageType* inputImage )
 }
 
 //itkUCharImageType::Pointer processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25)
-cv::Mat processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25)
+cv::Mat processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25, double kernelSize = 15.0)
 {
-	float meanT[3] = {-0.632356, -0.0516004, 0.0376543};
-	float stdT[3] = {0.26235, 0.0514831, 0.0114217}; ///< These are learnt from the tempalte GBM image selected by George
-	cv::Mat newImgCV = nscale::Normalization::normalization(thisTileCV, meanT, stdT);
+  float meanT[3] = {-0.632356, -0.0516004, 0.0376543};
+  float stdT[3] = {0.26235, 0.0514831, 0.0114217}; ///< These are learnt from the tempalte GBM image selected by George
+  cv::Mat newImgCV = nscale::Normalization::normalization(thisTileCV, meanT, stdT);
 
-	float mData[8] = {-0.154, 0.035, 0.549, -45.718, -0.057, -0.817, 1.170, -49.887};
-	cv::Mat M = cv::Mat(2, 4, CV_32FC1, &mData);
+  float mData[8] = {-0.154, 0.035, 0.549, -45.718, -0.057, -0.817, 1.170, -49.887};
+  cv::Mat M = cv::Mat(2, 4, CV_32FC1, &mData);
 
-	cv::Mat maskCV = nscale::Normalization::segFG(newImgCV, M);
-	itkUCharImageType::Pointer foregroundMask = itk::OpenCVImageBridge::CVMatToITKImage< itkUCharImageType >( maskCV );
+  cv::Mat maskCV = nscale::Normalization::segFG(newImgCV, M);
+  itkUCharImageType::Pointer foregroundMask = itk::OpenCVImageBridge::CVMatToITKImage< itkUCharImageType >( maskCV );
 
-	itkRGBImageType::Pointer thisTile = itk::OpenCVImageBridge::CVMatToITKImage< itkRGBImageType >( thisTileCV );
+  itkRGBImageType::Pointer thisTile = itk::OpenCVImageBridge::CVMatToITKImage< itkRGBImageType >( thisTileCV );
 
-	itkUCharImageType::Pointer hematoxylinImage = ExtractHematoxylinChannel(thisTile);
+  itkUCharImageType::Pointer hematoxylinImage = ExtractHematoxylinChannel(thisTile);
 
 
 
-	short maskValue = 1;
+  short maskValue = 1;
 
-	itkFloatImageType::Pointer hemaFloat = castItkImage<itkUCharImageType, itkFloatImageType>(hematoxylinImage);
+  itkFloatImageType::Pointer hemaFloat = castItkImage<itkUCharImageType, itkFloatImageType>(hematoxylinImage);
 
-	itkBinaryMaskImageType::Pointer nucleusBinaryMask = otsuThresholdImage(hemaFloat, maskValue, otsuRatio);
-	long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
+  itkBinaryMaskImageType::Pointer nucleusBinaryMask = otsuThresholdImage(hemaFloat, maskValue, otsuRatio);
+  long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
 
-	if (foregroundMask)
+  if (foregroundMask)
 	{
-		const itkUCharImageType::PixelType* fgMaskBufferPointer = foregroundMask->GetBufferPointer();
-		itkBinaryMaskImageType::PixelType* nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
+      const itkUCharImageType::PixelType* fgMaskBufferPointer = foregroundMask->GetBufferPointer();
+      itkBinaryMaskImageType::PixelType* nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
 
-		for (long it = 0; it < numPixels; ++it)
+      for (long it = 0; it < numPixels; ++it)
 		{
-			if (0 == fgMaskBufferPointer[it])
+          if (0 == fgMaskBufferPointer[it])
 			{
-				// for sure glass region
-				nucleusBinaryMaskBufferPointer[it] = 0;
+              // for sure glass region
+              nucleusBinaryMaskBufferPointer[it] = 0;
 			}
 		}
 	}
 
 
-	int numiter = 100;
-	CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType > cv;
-	cv.setImage(hemaFloat);
-	cv.setMask( nucleusBinaryMask );
-	cv.setNumIter(numiter);
-	cv.setCurvatureWeight(curvatureWeight);
-	cv.doSegmenation();
+  int numiter = 100;
+  CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType > cv;
+  cv.setImage(hemaFloat);
+  cv.setMask( nucleusBinaryMask );
+  cv.setNumIter(numiter);
+  cv.setCurvatureWeight(curvatureWeight);
+  cv.doSegmenation();
 
-	CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType >::LSImageType::Pointer phi = cv.mp_phi;
+  CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType >::LSImageType::Pointer phi = cv.mp_phi;
 
-	itkUCharImageType::PixelType* nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
-	CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType >::LSImageType::PixelType* phiBufferPointer = phi->GetBufferPointer();
+  itkUCharImageType::PixelType* nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
+  CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType >::LSImageType::PixelType* phiBufferPointer = phi->GetBufferPointer();
 
-	for (long it = 0; it < numPixels; ++it)
+  for (long it = 0; it < numPixels; ++it)
 	{
-		nucleusBinaryMaskBufferPointer[it] = phiBufferPointer[it]<=1.0?1:0;
+      nucleusBinaryMaskBufferPointer[it] = phiBufferPointer[it]<=1.0?1:0;
 	}
 
-	gth818n::BinaryMaskAnalysisFilter binaryMaskAnalyzer;
-	binaryMaskAnalyzer.setMaskImage( nucleusBinaryMask );
-	binaryMaskAnalyzer.setObjectSizeThreshold(sizeThld);
-	binaryMaskAnalyzer.setObjectSizeUpperThreshold(sizeUpperThld);
-	binaryMaskAnalyzer.setMPP(mpp);
-	binaryMaskAnalyzer.update();
+  gth818n::BinaryMaskAnalysisFilter binaryMaskAnalyzer;
+  binaryMaskAnalyzer.setMaskImage( nucleusBinaryMask );
+  binaryMaskAnalyzer.setObjectSizeThreshold(sizeThld);
+  binaryMaskAnalyzer.setObjectSizeUpperThreshold(sizeUpperThld);
+  binaryMaskAnalyzer.setMPP(mpp);
+  binaryMaskAnalyzer.setKernelSize(kernelSize);
+  binaryMaskAnalyzer.update();
 
-	itkUIntImageType::Pointer sizeLabel = binaryMaskAnalyzer.getConnectedComponentLabelImage();
+  itkUIntImageType::Pointer sizeLabel = binaryMaskAnalyzer.getConnectedComponentLabelImage();
 
-	const itkUIntImageType::PixelType* sizeLabelBufferPointer = sizeLabel->GetBufferPointer();
-	for (long it = 0; it < numPixels; ++it)
+  typedef itk::GradientMagnitudeImageFilter<itkUIntImageType, itkFloatImageType >  GradientMagnitudeImageFilterType;
+  GradientMagnitudeImageFilterType::Pointer gradientMagnitudeImageFilter = GradientMagnitudeImageFilterType::New();
+  gradientMagnitudeImageFilter->SetInput(sizeLabel);
+  gradientMagnitudeImageFilter->Update();
+
+  itkFloatImageType::Pointer gradImage = gradientMagnitudeImageFilter->GetOutput();
+  itkFloatImageType::PixelType* gradImageBufferPointer = gradImage->GetBufferPointer();
+
+  itkUCharImageType::Pointer emask = itkUCharImageType::New();
+  emask->SetRegions( gradImage->GetLargestPossibleRegion() );
+  emask->Allocate();
+  emask->FillBuffer(0);
+
+  itkUCharImageType::PixelType* maskBufferPointer = emask->GetBufferPointer();
+
+  //long numPixels = emask->GetLargestPossibleRegion().GetNumberOfPixels();
+
+  for (long it = 0; it < numPixels; ++it)
+    {
+      if (gradImageBufferPointer[it] >= 0.5)
+        {
+          maskBufferPointer[it] = 1;
+        }
+    }
+
+    // const itkUCharImageType::PixelType* edgeBetweenLabelsMaskBufferPointer = edgeBetweenLabelsMask->GetBufferPointer();
+
+    // const itkUIntImageType::PixelType* labelBufferPointer = m_connectedComponentLabelImage->GetBufferPointer();
+    // std::size_t numPixels = m_connectedComponentLabelImage->GetLargestPossibleRegion().GetNumberOfPixels();
+
+    // for (std::size_t it = 0; it < numPixels; ++it)
+    //   {
+    //     ptr[it] = labelBufferPointer[it] >= 1?1:0;
+    //     ptr[it] *= (1 - edgeBetweenLabelsMaskBufferPointer[it]);
+    //   }
+
+
+
+  const itkUIntImageType::PixelType* sizeLabelBufferPointer = sizeLabel->GetBufferPointer();
+  for (long it = 0; it < numPixels; ++it)
 	{
-		nucleusBinaryMaskBufferPointer[it] = sizeLabelBufferPointer[it] >= 1?1:0;
+      nucleusBinaryMaskBufferPointer[it] = sizeLabelBufferPointer[it] >= 1?1:0;
+      nucleusBinaryMaskBufferPointer[it] *= (1 - maskBufferPointer[it]);
 	}
 
+  typedef itk::BinaryFillholeImageFilter< itkUCharImageType > FilterType;
+  FilterType::Pointer filler = FilterType::New();
+  filler->SetFullyConnected( 1 );
+  filler->SetForegroundValue( 1 );
+  filler->SetInput(nucleusBinaryMask);
+  filler->Update();
 
-        typedef itk::BinaryFillholeImageFilter< itkUCharImageType > FilterType;
-        FilterType::Pointer filler = FilterType::New();
-        filler->SetFullyConnected( 1 );
-        filler->SetForegroundValue( 1 );
-        filler->SetInput(nucleusBinaryMask);
-        filler->Update();
+  nucleusBinaryMask = filler->GetOutput();
 
-        nucleusBinaryMask = filler->GetOutput();
-
-	Mat binary = itk::OpenCVImageBridge::ITKImageToCVMat< itkUCharImageType >( nucleusBinaryMask  );
-	return binary;
-//	return nucleusBinaryMask;
+  Mat binary = itk::OpenCVImageBridge::ITKImageToCVMat< itkUCharImageType >( nucleusBinaryMask  );
+  return binary;
+  //	return nucleusBinaryMask;
 }
 
 
