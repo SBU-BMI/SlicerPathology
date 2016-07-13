@@ -28,8 +28,8 @@
 namespace TCGA
 {
 
-template<typename itkImageType>
-typename itkImageType::Pointer createImage(typename itkImageType::SizeType size, int iniValue);
+// template<typename itkImageType>
+// typename itkImageType::Pointer createImage(typename itkImageType::SizeType size, int iniValue);
 
 template<typename PixelType>
 void FindVTKImageROI(vtkImageData* im, std::vector<long>& imROI);

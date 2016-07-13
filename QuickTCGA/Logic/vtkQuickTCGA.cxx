@@ -13,9 +13,11 @@
 //vtkCxxRevisionMacro(vtkFastGrowCutSeg, "$Revision$"); //necessary?
 vtkStandardNewMacro(vtkQuickTCGA); //for the new() macro
 
-//----------------------------------------------------------------------------
-vtkQuickTCGA::vtkQuickTCGA( ) {
-
+namespace
+{
+  //----------------------------------------------------------------------------
+  vtkQuickTCGA::vtkQuickTCGA( )
+  {
     SourceVol   = NULL;
     SeedVol   = NULL;
     SegVol = NULL;
@@ -28,50 +30,53 @@ vtkQuickTCGA::vtkQuickTCGA( ) {
     sizeUpperThld = 200;
     mpp = 0.25;
     kernelSize = 15.0;
- }
+  }
 
 
-vtkQuickTCGA::~vtkQuickTCGA() {
-
+  vtkQuickTCGA::~vtkQuickTCGA()
+  {
     //these functions decrement reference count on the vtkImageData's (incremented by the SetMacros)
     if (this->SourceVol)
-    {
-      this->SetSourceVol(NULL);
-    }
+      {
+        this->SetSourceVol(NULL);
+      }
     if (this->SegVol)
-    {
-      this->SetSegVol(NULL);
-    }
+      {
+        this->SetSegVol(NULL);
+      }
 
     if (this->SeedVol)
-    {
-      this->SetSeedVol(NULL);
-    }
-    if(this->SCROIVol) {
+      {
+        this->SetSeedVol(NULL);
+      }
+    if(this->SCROIVol)
+      {
         this->SetSCROIVol(NULL);
-    }
-    if (m_qTCGASeg) {
+      }
+    if (m_qTCGASeg)
+      {
         delete m_qTCGASeg;
-    }
-}
+      }
+  }
 
-void vtkQuickTCGA::Initialization() {
-
+  void vtkQuickTCGA::Initialization()
+  {
     std::cout << "vtkQuickTCGA initialized\n";
     InitializationFlag = false;
-    if(m_qTCGASeg == NULL) {
+    if(m_qTCGASeg == NULL)
+      {
         m_qTCGASeg = new QuickTCGASegmenter();
-    }
-}
+      }
+  }
 
 
-void vtkQuickTCGA::Run_QTCGA_Segmentation() {
-
+  void vtkQuickTCGA::Run_QTCGA_Segmentation()
+  {
     //Convert vtkImage to lplImage
     int dims[3];
     SourceVol->GetDimensions(dims);
-    m_imSrc = cv::Mat(dims[0], dims[1], CV_8UC3);
-    m_imLab = cv::Mat(dims[0], dims[1], CV_8UC1);
+    m_imSrc = cv::Mat(dims[1], dims[0], CV_8UC3);
+    m_imLab = cv::Mat(dims[1], dims[0], CV_8UC1);
 
     TCGA::CopyImageVTK2OpenCV<uchar, uchar>(SourceVol, m_imSrc);
     TCGA::CopyImageVTK2OpenCV<short, uchar>(SeedVol, m_imLab);
@@ -87,15 +92,15 @@ void vtkQuickTCGA::Run_QTCGA_Segmentation() {
     TCGA::CopyImageOpenCV2VTK<uchar, short>(m_imLab, SeedVol);
 
     std::cout << "Finished TCGA segmentation\n";
-}
+  }
 
-void vtkQuickTCGA::Run_NucleiSegYi() {
-
+  void vtkQuickTCGA::Run_NucleiSegYi()
+  {
     //Convert vtkImage to lplImage
     int dims[3];
     SourceVol->GetDimensions(dims);
-    m_imSrc = cv::Mat(dims[0], dims[1], CV_8UC3);
-    m_imLab = cv::Mat(dims[0], dims[1], CV_8UC1);
+    m_imSrc = cv::Mat(dims[1], dims[0], CV_8UC3);
+    m_imLab = cv::Mat(dims[1], dims[0], CV_8UC1);
 
     TCGA::CopyImageVTK2OpenCV<uchar, uchar>(SourceVol, m_imSrc);
     TCGA::CopyImageVTK2OpenCV<short, uchar>(SeedVol, m_imLab);
@@ -111,15 +116,15 @@ void vtkQuickTCGA::Run_NucleiSegYi() {
     TCGA::CopyImageOpenCV2VTK<uchar, short>(m_imLab, SeedVol);
 
     std::cout << "Finished TCGA segmentation\n";
-}
+  }
 
-void vtkQuickTCGA::Run_Refine_Curvature() {
-
+  void vtkQuickTCGA::Run_Refine_Curvature()
+  {
     //Convert vtkImage to lplImage
     int dims[3];
     SourceVol->GetDimensions(dims);
-    m_imSrc = cv::Mat(dims[0], dims[1], CV_8UC3);
-    m_imLab = cv::Mat(dims[0], dims[1], CV_8UC1);
+    m_imSrc = cv::Mat(dims[1], dims[0], CV_8UC3);
+    m_imLab = cv::Mat(dims[1], dims[0], CV_8UC1);
 
     TCGA::CopyImageVTK2OpenCV<uchar, uchar>(SourceVol, m_imSrc);
     TCGA::CopyImageVTK2OpenCV<short, uchar>(SeedVol, m_imLab);
@@ -135,13 +140,16 @@ void vtkQuickTCGA::Run_Refine_Curvature() {
     TCGA::CopyImageOpenCV2VTK<uchar, short>(m_imLab, SeedVol);
 
     std::cout << "Finished TCGA refinement\n";
-}
+  }
 
-void vtkQuickTCGA::Run_QTCGA_Template() {
-
+  void vtkQuickTCGA::Run_QTCGA_Template()
+  {
     std::cout << "Finished TCGA template matching\n";
-}
+  }
 
-void vtkQuickTCGA::PrintSelf(ostream &os, vtkIndent indent){
+  void vtkQuickTCGA::PrintSelf(ostream &os, vtkIndent indent)
+  {
     std::cout<<"This function has been found"<<std::endl;
+  }
+
 }
