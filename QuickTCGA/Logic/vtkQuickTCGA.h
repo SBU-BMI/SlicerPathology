@@ -15,73 +15,70 @@ typedef float DistPixelType;											// float type pixel for cost function
 typedef short SrcPixelType;
 typedef unsigned char LabPixelType;
 
-namespace
+class VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT vtkQuickTCGA : public vtkObject
 {
-  class VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT vtkQuickTCGA : public vtkObject
-  {
-  public:
-    static vtkQuickTCGA* New();
-    //  vtkTypeRevisionMacro(vtkFastGrowCutSeg,vtkObject);
-    vtkTypeMacro(vtkQuickTCGA,vtkObject);
+ public:
+  static vtkQuickTCGA* New();
+  //  vtkTypeRevisionMacro(vtkFastGrowCutSeg,vtkObject);
+  vtkTypeMacro(vtkQuickTCGA,vtkObject);
 
 
-    //set parameters of Quick TCGA segmenter
-    vtkSetObjectMacro(SourceVol, vtkImageData);
-    vtkSetObjectMacro(SeedVol, vtkImageData);
-    vtkSetObjectMacro(SegVol, vtkImageData);
-    vtkSetObjectMacro(SCROIVol, vtkImageData);
-    vtkSetMacro(otsuRatio, float);
-    vtkSetMacro(curvatureWeight, double);
-    vtkSetMacro(sizeThld, float);
-    vtkSetMacro(sizeUpperThld, float);
-    vtkSetMacro(mpp, double);
-    vtkSetMacro(kernelSize, double);
+  //set parameters of Quick TCGA segmenter
+  vtkSetObjectMacro(SourceVol, vtkImageData);
+  vtkSetObjectMacro(SeedVol, vtkImageData);
+  vtkSetObjectMacro(SegVol, vtkImageData);
+  vtkSetObjectMacro(SCROIVol, vtkImageData);
+  vtkSetMacro(otsuRatio, float);
+  vtkSetMacro(curvatureWeight, double);
+  vtkSetMacro(sizeThld, float);
+  vtkSetMacro(sizeUpperThld, float);
+  vtkSetMacro(mpp, double);
+  vtkSetMacro(kernelSize, double);
 
 
-    //vtkSetObjectMacro(OutputVol, vtkImageData);
+  //vtkSetObjectMacro(OutputVol, vtkImageData);
 
-    //  vtkSetMacro(InitializationFlag, bool);
+  //  vtkSetMacro(InitializationFlag, bool);
 
-    //processing functions
-    void Run_QTCGA_Segmentation();
-    void Run_QTCGA_Template();
-    void Run_Refine_Curvature();
-    void Run_NucleiSegYi();
-    void Initialization();
-    //  void RunFGC();
-    void PrintSelf(ostream &os, vtkIndent indent);
+  //processing functions
+  void Run_QTCGA_Segmentation();
+  void Run_QTCGA_Template();
+  void Run_Refine_Curvature();
+  void Run_NucleiSegYi();
+  void Initialization();
+  //  void RunFGC();
+  void PrintSelf(ostream &os, vtkIndent indent);
 
-  protected:
-    vtkQuickTCGA();
-    virtual ~vtkQuickTCGA();
+ protected:
+  vtkQuickTCGA();
+  virtual ~vtkQuickTCGA();
 
-  private:
-    //vtk image data (from slicer)
-    vtkImageData* SourceVol;
-    vtkImageData* SeedVol;
-    vtkImageData* SegVol;
-    vtkImageData* SCROIVol;
+ private:
+  //vtk image data (from slicer)
+  vtkImageData* SourceVol;
+  vtkImageData* SeedVol;
+  vtkImageData* SegVol;
+  vtkImageData* SCROIVol;
 
-    float otsuRatio;
-    double curvatureWeight;
-    float sizeThld;
-    float sizeUpperThld;
-    double mpp;
-    double kernelSize;
+  float otsuRatio;
+  double curvatureWeight;
+  float sizeThld;
+  float sizeUpperThld;
+  double mpp;
+  double kernelSize;
 
-    cv::Mat m_imSrc;
-    cv::Mat m_imLab;
-    cv::Mat m_imPreSeg;
-    cv::Mat m_imSCROI;
+  cv::Mat m_imSrc;
+  cv::Mat m_imLab;
+  cv::Mat m_imPreSeg;
+  cv::Mat m_imSCROI;
 
-    //logic code
-    QuickTCGASegmenter* m_qTCGASeg;
+  //logic code
+  QuickTCGASegmenter* m_qTCGASeg;
 
-    //state variables
-    bool InitializationFlag;
+  //state variables
+  bool InitializationFlag;
 
-  };
+};
 
 
-}
 #endif

@@ -31,25 +31,25 @@ namespace TCGA
 // template<typename itkImageType>
 // typename itkImageType::Pointer createImage(typename itkImageType::SizeType size, int iniValue);
 
-template<typename PixelType>
-void FindVTKImageROI(vtkImageData* im, std::vector<long>& imROI);
+// template<typename PixelType>
+// void FindVTKImageROI(vtkImageData* im, std::vector<long>& imROI);
 
-template<typename PixelType>
-void ExtractVTKImageROI(vtkImageData* im, const std::vector<long>& imROI, std::vector<PixelType>& imROIVec);
+// template<typename PixelType>
+// void ExtractVTKImageROI(vtkImageData* im, const std::vector<long>& imROI, std::vector<PixelType>& imROIVec);
 
-template<typename PixelType>
-void UpdateVTKImageROI(const std::vector<PixelType>& imROIVec, const std::vector<long>& imROI,  vtkImageData* im);
+// template<typename PixelType>
+// void UpdateVTKImageROI(const std::vector<PixelType>& imROIVec, const std::vector<long>& imROI,  vtkImageData* im);
 
-template<typename ITKImageType>
-void FindITKImageROI(typename ITKImageType::Pointer im, std::vector<long>& imROI);
+// template<typename ITKImageType>
+// void FindITKImageROI(typename ITKImageType::Pointer im, std::vector<long>& imROI);
 
-template<typename PixelType>
-void ExtractITKImageROI(typename itk::Image<PixelType, 3>::Pointer  im, const std::vector<long>& imROI, \
-                        std::vector<PixelType>& imROIVec);
+// template<typename PixelType>
+// void ExtractITKImageROI(typename itk::Image<PixelType, 3>::Pointer  im, const std::vector<long>& imROI, \
+//                         std::vector<PixelType>& imROIVec);
 
-template<typename PixelType>
-void UpdateITKImageROI(const std::vector<PixelType>& imROIVec, const std::vector<long>& imROI,  \
-                       typename itk::Image<PixelType, 3>::Pointer im);
+// template<typename PixelType>
+// void UpdateITKImageROI(const std::vector<PixelType>& imROIVec, const std::vector<long>& imROI,  \
+//                        typename itk::Image<PixelType, 3>::Pointer im);
 
 template<typename VTKPixelType, typename OpenCVPixelType>
 void CopyImageVTK2OpenCV(const vtkSmartPointer<vtkImageData> imVTK, cv::Mat &imOpenCV);
