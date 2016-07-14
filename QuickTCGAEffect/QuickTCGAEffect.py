@@ -112,7 +112,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameSizeUpperThldSlider.connect('valueChanged(double)', self.SizeUpperThldSliderValueChanged)
     self.frameSizeUpperThldSlider.decimals = 0
     self.frameSizeUpperThldSlider.minimum = 1
-    self.frameSizeUpperThldSlider.maximum = 500
+    self.frameSizeUpperThldSlider.maximum = 5000
     self.frameSizeUpperThldSlider.value = 100
     nucleusSegFormLayout.addRow("Size Upper Threshold:", self.frameSizeUpperThldSlider)
     

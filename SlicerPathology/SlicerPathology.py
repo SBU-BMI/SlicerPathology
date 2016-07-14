@@ -274,7 +274,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
     savedMessage = 'Segmentations for the following series were saved:\n\n'
-    zfname = os.path.join(self.dataDirButton.directory, self.tilename + '.zip')
+    zfname = os.path.join(self.dataDirButton.directory, self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip')
     print "zipfile name"
     print zfname
     zf = zipfile.ZipFile(zfname, mode='w')
