@@ -90,6 +90,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameOtsuSlider.minimum = 0
     self.frameOtsuSlider.maximum = 2.0
     self.frameOtsuSlider.value = 1.0
+    self.frameOtsuSlider.singleStep = 0.1
     nucleusSegFormLayout.addRow("Otsu Threshold:", self.frameOtsuSlider)
     
     self.frameCurvatureWeightSlider = ctk.ctkSliderWidget()
@@ -98,6 +99,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameCurvatureWeightSlider.minimum = 0
     self.frameCurvatureWeightSlider.maximum = 10
     self.frameCurvatureWeightSlider.value = 8
+    self.frameCurvatureWeightSlider.singleStep = 0.1
     nucleusSegFormLayout.addRow("Curvature Weight:", self.frameCurvatureWeightSlider)
     
     self.frameSizeThldSlider = ctk.ctkSliderWidget()
@@ -106,6 +108,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameSizeThldSlider.minimum = 1
     self.frameSizeThldSlider.maximum = 100
     self.frameSizeThldSlider.value = 3
+    self.frameSizeThldSlider.singleStep = 0.1
     nucleusSegFormLayout.addRow("Size Threshold:", self.frameSizeThldSlider)
     
     self.frameSizeUpperThldSlider = ctk.ctkSliderWidget()
@@ -130,6 +133,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameMPPSlider.minimum = 0.01
     self.frameMPPSlider.maximum = 1
     self.frameMPPSlider.value = 0.25
+    self.frameMPPSlider.singleStep = 0.01
     nucleusSegFormLayout.addRow("Micron Per Pixel:", self.frameMPPSlider)
 
 
