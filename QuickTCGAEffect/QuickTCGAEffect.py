@@ -32,7 +32,6 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
 
   def __init__(self, parent=0):
     super(QuickTCGAEffectOptions,self).__init__(parent)
-
     editUtil = EditorLib.EditUtil.EditUtil()
     parameterNode = editUtil.getParameterNode()
     lm = slicer.app.layoutManager()
@@ -40,9 +39,9 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.yellowSliceWidget = lm.sliceWidget('Yellow')
     self.greenSliceWidget = lm.sliceWidget('Green')
     self.parameterNode=parameterNode
-    
     self.attributes = ('MouseTool')
     self.displayName = 'QuickTCGAEffect Effect'
+    self.omode = 0
 
   def __del__(self):
     super(QuickTCGAEffectOptions,self).__del__()
@@ -67,6 +66,11 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.segButton.text = "Run Segmentation"
     self.frame.layout().addWidget(self.segButton)
     self.segButton.connect('clicked()', self.RunSegmenter)
+
+    self.outlineButton = qt.QPushButton(self.frame)
+    self.outlineButton.text = "Toggle Outline"
+    self.frame.layout().addWidget(self.outlineButton)
+    self.outlineButton.connect('clicked()', self.toggleOutline)
 
     self.locRadFrame = qt.QFrame(self.frame)
     self.locRadFrame.setLayout(qt.QHBoxLayout())
@@ -160,6 +164,8 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
       self.botButton.text = "Start Quick TCGA Segmenter"
     if self.locRadFrame:
       self.locRadFrame.show()
+    self.omode = 0
+    self.toggleOutline()
 
   def destroy(self):
     self.currentMessage = ""
@@ -169,6 +175,13 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
   def RunSegmenter(self):
     if hasattr(slicer.modules, 'TCGAEditorBot'):
       slicer.modules.TCGAEditorBot.logic.runQTCGA_NucleiSegYi()
+
+  def toggleOutline(self):
+    if (self.omode == 1):
+      self.omode = 0
+    else:
+      self.omode = 1
+    self.editUtil.setLabelOutline(self.omode) 
 
   def clearSelection(self):
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,currentXYPosition")
