@@ -649,7 +649,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
     self.qTCGAMod.Setmpp(mpp)
     self.qTCGAMod.SetkernelSize(kernelSize)
-    print("hererere.........")
     AA = self.foregroundNode.GetImageData()
     LL = self.labelNode.GetImageData()
     ddd = AA.GetDimensions()
@@ -677,7 +676,22 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     LL = self.GetTile(LL,a[0],a[1],b[0],b[1])
     self.qTCGAMod.SetSourceVol(BB)
     self.qTCGAMod.SetSeedVol(LL)
+    print("*** Segmentation Parameters ***")
+    print "otsuRatio"
+    print otsuRatio
+    print "curvatureWeight"
+    print curvatureWeight
+    print "sizeThld"
+    print sizeThld
+    print "sizeUpperThld"
+    print sizeUpperThld
+    print "mpp"
+    print mpp
+    print "kernelSize"
+    print kernelSize
+    print "executing segmentation now!"
     self.qTCGAMod.Run_NucleiSegYi()
+    print "nd hello we are back from Yi Segmentation Land!"
     self.qTCGASegArray[:] = seedArray[:]
     self.MergeImages(LL,self.labelNode.GetImageData(),a[0],a[1])
     self.foregroundNode.GetImageData().Modified()
