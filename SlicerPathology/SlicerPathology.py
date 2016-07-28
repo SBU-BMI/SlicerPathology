@@ -465,9 +465,32 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
     self.mutate()
 
+  def Four2ThreeChannel(self, image):
+    dim = image.GetDimensions()
+    i = vtk.vtkImageData().NewInstance()
+    i.SetDimensions(dim[0],dim[1],1)
+    i.AllocateScalars(vtk.VTK_UNSIGNED_CHAR,3)
+    for x in range(0,dim[0]):
+      for y in range(0,dim[1]):
+        for c in range(0,3):
+          i.SetScalarComponentFromDouble(x,y,0,c,image.GetScalarComponentAsDouble(x,y,0,c))
+    i.Modified()
+    return i
 
   def loadTCGAData(self):
     slicer.util.openAddVolumeDialog()
+
+    import EditorLib
+    editUtil = EditorLib.EditUtil.EditUtil()
+    imsainode = editUtil.getBackgroundVolume()
+    imsai = imsainode.GetImageData()
+    print imsai.GetNumberOfScalarComponents()
+    if imsai.GetNumberOfScalarComponents() > 3:
+      lala = self.Four2ThreeChannel(imsai)
+      print lala.GetNumberOfScalarComponents()
+      imsainode.SetAndObserveImageData(lala)
+      imsainode.Modified()
+
     red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
     red_cn = red_logic.GetSliceCompositeNode()
     fgrdVolID = red_cn.GetBackgroundVolumeID()
