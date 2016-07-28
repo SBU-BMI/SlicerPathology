@@ -629,18 +629,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.qTCGAMod = qTCGAMod
     self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
 
-  def Four2ThreeChannel(self, image):
-    dim = image.GetDimensions()
-    i = vtk.vtkImageData().NewInstance()
-    i.SetDimensions(image.width(),image.height(),1)
-    i.AllocateScalars(vtk.VTK_UNSIGNED_CHAR,3)
-    for x in range(0,dim[0]):
-      for y in range(0,dim[1]):
-        for c in range(0,3):
-          i.SetScalarComponentFromDouble(x,y,0,c,image.GetScalarComponentAsDouble(x,y,0,c))
-    i.Modified()
-    return i
-
     # run Quick TCGA segmenter for the current master volume and label volume
 
   def runQTCGA_NucleiSegYi(self):
