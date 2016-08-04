@@ -278,14 +278,25 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     print "zipfile name"
     print zfname
     zf = zipfile.ZipFile(zfname, mode='w')
+    red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
+    red_cn = red_logic.GetSliceCompositeNode()
+    fg = red_cn.GetForegroundVolumeID()
+    ff = slicer.util.getNode(fg)
+    sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
+    sNode.SetFileName("original.tif")
+    sNode.SetWriteFileFormat('tif')
+    sNode.SetURI(None)
+    success = sNode.WriteData(ff)
+    zf.write("original.tif")
+    os.remove("original.tif")
     for label in labelNodes.values():
       labelName = label.GetName()
       labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
       print "labelFileName : "+labelFileName
-      sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
+      #sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
       sNode.SetFileName(labelFileName)
-      sNode.SetWriteFileFormat('tif')
-      sNode.SetURI(None)
+      #sNode.SetWriteFileFormat('tif')
+      #sNode.SetURI(None)
       success = sNode.WriteData(label)
       if success:
         print "adding "+labelFileName+" to zipfile"
