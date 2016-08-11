@@ -196,6 +196,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.dataDirButton = ctk.ctkDirectoryButton()
     self.setupGroupBoxLayout.addRow(qt.QLabel("Data directory:") )
     self.setupGroupBoxLayout.addWidget(self.dataDirButton)
+    self.setupExecutionID = qt.QLineEdit()
+    self.setupGroupBoxLayout.addRow("Execution ID:", self.setupExecutionID)
     
   def setupimageSelectionUI(self):
     self.loadDataButton = qt.QPushButton("Load Image from disk")
@@ -260,6 +262,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
   def onSaveButtonClicked(self):
     import zipfile
+    import os.path
     bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
     tran = json.loads(bundle)
     layers = []
@@ -293,14 +296,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
       labelName = label.GetName()
       labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
       print "labelFileName : "+labelFileName
-      #sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
       sNode.SetFileName(labelFileName)
-      #sNode.SetWriteFileFormat('tif')
-      #sNode.SetURI(None)
       success = sNode.WriteData(label)
       if success:
         print "adding "+labelFileName+" to zipfile"
-        zf.write(labelFileName)
+        zf.write(labelFileName,os.path.basename(labelFileName))
         os.remove(labelFileName)
       else:
         print "failed writing "+labelFileName
@@ -309,7 +309,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     f = open(mfname,'w')
     f.write(jstr)
     f.close()
-    zf.write(mfname)
+    zf.write(mfname,os.path.basename(mfname))
     zf.close()
     os.remove(mfname)
     #import sys
