@@ -138,7 +138,7 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frameMPPSlider.maximum = 1
     self.frameMPPSlider.value = 0.25
     self.frameMPPSlider.singleStep = 0.01
-    nucleusSegFormLayout.addRow("Micron Per Pixel:", self.frameMPPSlider)
+    nucleusSegFormLayout.addRow("Microns Per Pixel:", self.frameMPPSlider)
 
 
     HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
@@ -201,8 +201,10 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
 
     if hasattr(slicer.modules, 'TCGAEditorBot'):
       slicer.modules.TCGAEditorBot.logic.runQTCGA_NucleiSegYi()
-      slicer.modules.editorBot.stop()
-      del(slicer.modules.editorBot)
+      #slicer.modules.editorBot.stop()
+      slicer.modules.TCGAEditorBot.stop()
+      #del(slicer.modules.editorBot)
+      del(slicer.modules.TCGAEditorBot)
 
   def toggleOutline(self):
     if (self.omode == 1):
@@ -591,22 +593,22 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     # QuickTCGA shortcuts
   ##resetQTCGAKey = qt.QKeySequence(qt.Qt.Key_R) # reset initialization flag
   ##runQTCGAClusterKey = qt.QKeySequence(qt.Qt.Key_S) # run fast growcut
-    runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
+    ##runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
   ##editTCGAKey = qt.QKeySequence(qt.Qt.Key_E) # edit seed labels
   ##runQTCGATemplateKey = qt.QKeySequence(qt.Qt.Key_T)
   ##runQTCGARefineCurvatureKey = qt.QKeySequence(qt.Qt.Key_U)
   ##runQTCGAShortCutKey = qt.QKeySequence(qt.Qt.Key_C)
   ##runQTCGAShortEditCutKey = qt.QKeySequence(qt.Qt.Key_F)
 
-    print " key to run QuickTCGA segmentation is  Y"
+    #print " key to run QuickTCGA segmentation is  Y"
 
     self.qtkeyconnections = []
-    self.qtkeydefsQTCGA = [[runNucleiSegKey, self.runQTCGA_NucleiSegYi]]
+    #self.qtkeydefsQTCGA = [[runNucleiSegKey, self.runQTCGA_NucleiSegYi]]
 
-    for keydef in self.qtkeydefsQTCGA:
-      s = qt.QShortcut(keydef[0], slicer.util.mainWindow()) # connect this qt event to mainWindow focus
-      s.connect('activated()', keydef[1])
-      self.qtkeyconnections.append(s)
+    #for keydef in self.qtkeydefsQTCGA:
+    #  s = qt.QShortcut(keydef[0], slicer.util.mainWindow()) # connect this qt event to mainWindow focus
+    #  s.connect('activated()', keydef[1])
+    #  self.qtkeyconnections.append(s)
 
     self.qTCGALabMod_tag = self.sliceLogic.AddObserver("ModifiedEvent", self.QTCGAChangeLabelInput) # put test listener on the whole window
 
@@ -719,7 +721,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     print kernelSize
     print "executing segmentation now!"
     self.qTCGAMod.Run_NucleiSegYi()
-    print "nd hello we are back from Yi Segmentation Land!"
+    print "hello we are back from Yi Segmentation Land!"
     self.qTCGASegArray[:] = seedArray[:]
     self.MergeImages(LL,self.labelNode.GetImageData(),a[0],a[1])
     self.foregroundNode.GetImageData().Modified()
@@ -749,15 +751,15 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 
   def destroy(self):
     #destroy GrowCut key shortcuts
-    for i in range(len(self.qtkeydefsQTCGA)):  #this will be an empty list if the KSlice part has been reached (all growcut functionality disabled)
-        keyfun = self.qtkeydefsQTCGA[i]
-        keydef = self.qtkeyconnections[i]
-        test1=keydef.disconnect('activated()', keyfun[1])
-        test2=keydef.disconnect('activatedAmbiguously()', keyfun[1])
-        #self.qtkeyconnections.remove(keydef) #remove from list
-        keydef.setParent(None)
-        #why is this necessary for full disconnect (if removed, get the error that more and more keypresses are required if module is repetedly erased and created
-        keydef.delete() #this causes errors
+    #for i in range(len(self.qtkeydefsQTCGA)):  #this will be an empty list if the KSlice part has been reached (all growcut functionality disabled)
+    #    keyfun = self.qtkeydefsQTCGA[i]
+    #    keydef = self.qtkeyconnections[i]
+    #    test1=keydef.disconnect('activated()', keyfun[1])
+    #    test2=keydef.disconnect('activatedAmbiguously()', keyfun[1])
+    #    #self.qtkeyconnections.remove(keydef) #remove from list
+    #    keydef.setParent(None)
+    #    #why is this necessary for full disconnect (if removed, get the error that more and more keypresses are required if module is repetedly erased and created
+    #    keydef.delete() #this causes errors
 
     # destroy QuickTCGA objects
     self.qTCGASeedArray = None
@@ -769,10 +771,8 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.imgFgrdName = None
     self.labelNode = None
     self.backgroundNode = None
-
     #put back the editor shortcuts we removed
     slicer.modules.SlicerPathologyWidget.editorWidget.installShortcutKeys()
-
     print("Deletion completed")
 
 

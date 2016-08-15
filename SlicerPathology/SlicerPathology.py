@@ -263,6 +263,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
   def onSaveButtonClicked(self):
     import zipfile
     import os.path
+    import uuid
     bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
     tran = json.loads(bundle)
     layers = []
@@ -275,6 +276,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.j['sourcetile'] = self.tilename
     self.j['generator'] = slicer.app.applicationVersion
     self.j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    self.j['execution_id'] = self.setupExecutionID.text + "-"+ uuid.uuid4().get_urn()
     labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
     savedMessage = 'Segmentations for the following series were saved:\n\n'
     zfname = os.path.join(self.dataDirButton.directory, self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip')
