@@ -52,10 +52,10 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.frame.layout().addWidget(self.helpLabel)
 
     #create a "Start Bot" button
-    self.botButton = qt.QPushButton(self.frame)
-    self.botButton.text = "Start Quick TCGA Segmenter"
-    self.frame.layout().addWidget(self.botButton)
-    self.botButton.connect('clicked()', self.onStartBot)
+    #self.botButton = qt.QPushButton(self.frame)
+    #self.botButton.text = "Start Quick TCGA Segmenter"
+    #self.frame.layout().addWidget(self.botButton)
+    #self.botButton.connect('clicked()', self.onStartBot)
 
     self.clearButton = qt.QPushButton(self.frame)
     self.clearButton.text = "Clear Selection"
@@ -173,8 +173,36 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).destroy()
 
   def RunSegmenter(self):
+    print "Running segmenter"
+    """Stop Quick TCGA bot to avoid conflicts"""
+    if hasattr(slicer.modules, 'editorBot'):
+      slicer.modules.editorBot.stop()
+      del(slicer.modules.editorBot)
+
+    """create the bot for background editing"""
+    if hasattr(slicer.modules, 'TCGAEditorBot'):
+      slicer.modules.TCGAEditorBot.stop()
+      del(slicer.modules.TCGAEditorBot)
+      if self.botButton:
+        self.botButton.text = "Start Quick TCGA Segmenter"
+        slicer.util.showStatusMessage("TCGA Segmenter: stopped")
+      if self.locRadFrame:
+        self.locRadFrame.show()
+    else:
+      TCGASegBot(self)
+      slicer.modules.TCGAEditorBot.logic.emergencyStopFunc = self.botEstop; #save the function that stops bot, destroys ShortCut segmenter, if things go wrong
+      #if self.botButton:
+      #  self.botButton.text = "Stop Quick TCGA Segmenter"
+      #  self.currentMessage =  "Quick TCGA Segmenter started: Press 'Y' to start automatic nucleus segmentation; Or go to PaintEffect to edit label image."
+      #  slicer.util.showStatusMessage(self.currentMessage)
+
+      if self.locRadFrame:
+        self.locRadFrame.hide()
+
     if hasattr(slicer.modules, 'TCGAEditorBot'):
       slicer.modules.TCGAEditorBot.logic.runQTCGA_NucleiSegYi()
+      slicer.modules.editorBot.stop()
+      del(slicer.modules.editorBot)
 
   def toggleOutline(self):
     if (self.omode == 1):
@@ -277,32 +305,32 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
   def setMRMLDefaults(self):
     super(QuickTCGAEffectOptions,self).setMRMLDefaults()
 
-  def onStartBot(self):
-    print "onStartBot is starting..."
-    """Stop Quick TCGA bot to avoid conflicts"""
-    if hasattr(slicer.modules, 'editorBot'):
-      slicer.modules.editorBot.stop()
-      del(slicer.modules.editorBot)
-
-    """create the bot for background editing"""
-    if hasattr(slicer.modules, 'TCGAEditorBot'):
-      slicer.modules.TCGAEditorBot.stop()
-      del(slicer.modules.TCGAEditorBot)
-      if self.botButton:
-        self.botButton.text = "Start Quick TCGA Segmenter"
-        slicer.util.showStatusMessage("TCGA Segmenter: stopped")
-      if self.locRadFrame:
-        self.locRadFrame.show()
-    else:
-      TCGASegBot(self)
-      slicer.modules.TCGAEditorBot.logic.emergencyStopFunc = self.botEstop; #save the function that stops bot, destroys ShortCut segmenter, if things go wrong
-      if self.botButton:
-        self.botButton.text = "Stop Quick TCGA Segmenter"
-        self.currentMessage =  "Quick TCGA Segmenter started: Press 'Y' to start automatic nucleus segmentation; Or go to PaintEffect to edit label image."
-        slicer.util.showStatusMessage(self.currentMessage)
-
-      if self.locRadFrame:
-        self.locRadFrame.hide()
+#  def onStartBot(self):
+#    print "onStartBot is starting..."
+#    """Stop Quick TCGA bot to avoid conflicts"""
+#    if hasattr(slicer.modules, 'editorBot'):
+#      slicer.modules.editorBot.stop()
+#      del(slicer.modules.editorBot)
+#
+#    """create the bot for background editing"""
+#    if hasattr(slicer.modules, 'TCGAEditorBot'):
+#      slicer.modules.TCGAEditorBot.stop()
+#      del(slicer.modules.TCGAEditorBot)
+#      if self.botButton:
+#        self.botButton.text = "Start Quick TCGA Segmenter"
+#        slicer.util.showStatusMessage("TCGA Segmenter: stopped")
+#      if self.locRadFrame:
+#        self.locRadFrame.show()
+#    else:
+#      TCGASegBot(self)
+#      slicer.modules.TCGAEditorBot.logic.emergencyStopFunc = self.botEstop; #save the function that stops bot, destroys ShortCut segmenter, if things go wrong
+#      if self.botButton:
+#        self.botButton.text = "Stop Quick TCGA Segmenter"
+#        self.currentMessage =  "Quick TCGA Segmenter started: Press 'Y' to start automatic nucleus segmentation; Or go to PaintEffect to edit label image."
+#        slicer.util.showStatusMessage(self.currentMessage)
+#
+#      if self.locRadFrame:
+#        self.locRadFrame.hide()
 
   def updateGUIFromMRML(self,caller,event):
     self.disconnectWidgets()
