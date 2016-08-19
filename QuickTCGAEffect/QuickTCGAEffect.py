@@ -214,12 +214,18 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     self.editUtil.setLabelOutline(self.omode)
 
   def clearSelection(self):
+    print "clearing selection..."
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,currentXYPosition")
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
     slicer.modules.QuickTCGAEffectTool.startXYPosition = (0,0)
     slicer.modules.QuickTCGAEffectTool.currentXYPosition = (0,0)
-    slicer.modules.QuickTCGAEffectTool.updateGlyph()
-    slicer.modules.QuickTCGAEffectTool.sliceView.scheduleRender()
+    #slicer.modules.QuickTCGAEffectTool.updateGlyph()
+    #slicer.modules.QuickTCGAEffectTool.sliceView.scheduleRender()
+    #self.updateGlyph()
+    #self.renderer.RemoveActor2D(self.actor)
+    self.actor.VisibilityOff()
+    self.sliceView.scheduleRender()
+    self.abortEvent(event)
 
   def updateSliders(self):
     r = self.structuresView.currentIndex().row()
@@ -458,6 +464,7 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
 
   def updateGlyph(self):
     if not self.startXYPosition or not self.currentXYPosition:
+      print "updateGlyyph returning..."
       return
     points = self.polyData.GetPoints()
     xlo,ylo = self.startXYPosition
@@ -506,12 +513,18 @@ handle events from the render window interactor
           self.currentXYPosition = (c+b,d-b)
         EditUtil.EditUtil().getParameterNode().SetParameter("QuickTCGAEffect,currentXYPosition", str(self.currentXYPosition))
         self.updateGlyph()
+        #self.actor.VisibilityOn()
         self.sliceView.scheduleRender()
         self.abortEvent(event)
     if event == 'EnterEvent':
-      pass #print "EnterEvent in KSliceEffect."
+      pass
+      #print "EnterEvent in SliceEffect."
+      #self.renderer.RemoveActor2D(self.actor)
+      #self.actor.VisibilityOff()
+      #self.sliceView.scheduleRender()
     else:
       pass
+
   def apply(self):
     lines = self.polyData.GetLines()
     if lines.GetNumberOfCells() == 0: return
