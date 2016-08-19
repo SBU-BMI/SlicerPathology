@@ -219,13 +219,13 @@ class QuickTCGAEffectOptions(EditorLib.LabelEffectOptions):
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
     slicer.modules.QuickTCGAEffectTool.startXYPosition = (0,0)
     slicer.modules.QuickTCGAEffectTool.currentXYPosition = (0,0)
-    #slicer.modules.QuickTCGAEffectTool.updateGlyph()
-    #slicer.modules.QuickTCGAEffectTool.sliceView.scheduleRender()
-    #self.updateGlyph()
-    #self.renderer.RemoveActor2D(self.actor)
-    self.actor.VisibilityOff()
-    self.sliceView.scheduleRender()
-    self.abortEvent(event)
+    slicer.modules.QuickTCGAEffectTool.updateGlyph()
+    tool = slicer.modules.QuickTCGAEffectTool
+    tool.actors.remove(tool.actor)
+    tool.renderer.RemoveActor2D(tool.actor)
+    tool.actor.Modified()
+    tool.sliceView.scheduleRender()
+    #self.actor.VisibilityOff()
 
   def updateSliders(self):
     r = self.structuresView.currentIndex().row()
@@ -464,7 +464,6 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
 
   def updateGlyph(self):
     if not self.startXYPosition or not self.currentXYPosition:
-      print "updateGlyyph returning..."
       return
     points = self.polyData.GetPoints()
     xlo,ylo = self.startXYPosition
