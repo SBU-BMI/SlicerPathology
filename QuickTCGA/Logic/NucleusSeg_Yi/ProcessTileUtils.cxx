@@ -424,3 +424,67 @@ cv::Mat processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureW
 template void writeImage<itkUCharImageType>(itkUCharImageType::Pointer img, const char *fileName, bool compress);
 
 
+cv::Mat processTileNoDeclump(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25, double kernelSize = 15.0)
+{
+  float meanT[3] = {-0.632356, -0.0516004, 0.0376543};
+  float stdT[3] = {0.26235, 0.0514831, 0.0114217}; ///< These are learnt from the tempalte GBM image selected by George
+  cv::Mat newImgCV = nscale::Normalization::normalization(thisTileCV, meanT, stdT);
+
+  float mData[8] = {-0.154, 0.035, 0.549, -45.718, -0.057, -0.817, 1.170, -49.887};
+  cv::Mat M = cv::Mat(2, 4, CV_32FC1, &mData);
+
+  cv::Mat maskCV = nscale::Normalization::segFG(newImgCV, M);
+  itkUCharImageType::Pointer foregroundMask = itk::OpenCVImageBridge::CVMatToITKImage< itkUCharImageType >( maskCV );
+
+  itkRGBImageType::Pointer thisTile = itk::OpenCVImageBridge::CVMatToITKImage< itkRGBImageType >( thisTileCV );
+
+  itkUCharImageType::Pointer hematoxylinImage = ExtractHematoxylinChannel(thisTile);
+
+
+
+  short maskValue = 1;
+
+  itkFloatImageType::Pointer hemaFloat = castItkImage<itkUCharImageType, itkFloatImageType>(hematoxylinImage);
+
+  itkBinaryMaskImageType::Pointer nucleusBinaryMask = otsuThresholdImage(hemaFloat, maskValue, otsuRatio);
+  long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
+
+  if (foregroundMask)
+	{
+      const itkUCharImageType::PixelType* fgMaskBufferPointer = foregroundMask->GetBufferPointer();
+      itkBinaryMaskImageType::PixelType* nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
+
+      for (long it = 0; it < numPixels; ++it)
+		{
+          if (0 == fgMaskBufferPointer[it])
+			{
+              // for sure glass region
+              nucleusBinaryMaskBufferPointer[it] = 0;
+			}
+		}
+	}
+
+
+  int numiter = 100;
+  CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType > cv;
+  cv.setImage(hemaFloat);
+  cv.setMask( nucleusBinaryMask );
+  cv.setNumIter(numiter);
+  cv.setCurvatureWeight(curvatureWeight);
+  cv.doSegmenation();
+
+  CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType >::LSImageType::Pointer phi = cv.mp_phi;
+
+  itkUCharImageType::PixelType* nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
+  CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType >::LSImageType::PixelType* phiBufferPointer = phi->GetBufferPointer();
+
+  for (long it = 0; it < numPixels; ++it)
+	{
+      nucleusBinaryMaskBufferPointer[it] = phiBufferPointer[it]<=1.0?1:0;
+	}
+
+
+  Mat binary = itk::OpenCVImageBridge::ITKImageToCVMat< itkUCharImageType >( nucleusBinaryMask  );
+  return binary;
+  //	return nucleusBinaryMask;
+}
