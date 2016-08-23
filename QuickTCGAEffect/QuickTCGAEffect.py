@@ -137,6 +137,12 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameMPPSlider.singleStep = 0.01
     nucleusSegFormLayout.addRow("Microns Per Pixel:", self.frameMPPSlider)
 
+    self.DefaultsButton = qt.QPushButton(self.frame)
+    self.DefaultsButton.text = "Default Parameter Values"
+    nucleusSegFormLayout.addWidget(self.DefaultsButton)
+    self.DefaultsButton.connect('clicked()', self.ResetToDefaults)
+
+
 
     HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
      "\n KEYS for Global Segmentation: " +
@@ -146,6 +152,14 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
 
     self.omode = 0
     self.toggleOutline()
+
+  def ResetToDefaults(self):
+    self.frameOtsuSlider.value = 1.0
+    self.frameCurvatureWeightSlider.value = 8
+    self.frameSizeThldSlider.value = 3
+    self.frameSizeUpperThldSlider.value = 50
+    self.frameKernelSizeSlider.value = 20
+    self.frameMPPSlider.value = 0.25
 
   def destroy(self):
     self.currentMessage = ""
