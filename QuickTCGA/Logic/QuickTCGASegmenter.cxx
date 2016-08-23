@@ -146,16 +146,18 @@ void QuickTCGASegmenter::DoSegmentation() {
     std::cout << "Do segmentation at QuickTCGASegmenter\n";
 }
 
-void QuickTCGASegmenter::DoNucleiSegmentationYi(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, double kernelSize) {
+void QuickTCGASegmenter::DoNucleiSegmentationYi(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, double kernelSize)
+{
 
-    // Resize image for higher efficiency
-    double samratio = 1;
-     cv::resize(m_imSrc, m_imSrcSample, cv::Size(m_imSrc.cols*samratio, m_imSrc.rows*samratio), cv::INTER_LINEAR);
+  // Resize image for higher efficiency
+  double samratio = 1;
+  cv::resize(m_imSrc, m_imSrcSample, cv::Size(m_imSrc.cols*samratio, m_imSrc.rows*samratio), cv::INTER_LINEAR);
 
-     cv::Mat seg = processTile(m_imSrcSample, otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp, kernelSize);
-     cv::resize(seg, m_imLab, cv::Size(m_imLab.cols, m_imLab.rows), cv::INTER_NEAREST);
+  //cv::Mat seg = processTile(m_imSrcSample, otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp, kernelSize);
+  cv::Mat seg = processTileNoDeclump(m_imSrcSample, otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp, kernelSize);
+  cv::resize(seg, m_imLab, cv::Size(m_imLab.cols, m_imLab.rows), cv::INTER_NEAREST);
 
-//     seg.copyTo(m_imLab);
+  //     seg.copyTo(m_imLab);
 }
 
 void QuickTCGASegmenter::RefineCurvature() {
