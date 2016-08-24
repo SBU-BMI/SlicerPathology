@@ -54,10 +54,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
 #    self.helpLabel = qt.QLabel("Press Y to run automatic segmentation on the current image using given parameters.", self.frame)
 #    self.frame.layout().addWidget(self.helpLabel)
 
-    self.clearButton = qt.QPushButton(self.frame)
-    self.clearButton.text = "Clear Selection"
-    self.frame.layout().addWidget(self.clearButton)
-    self.clearButton.connect('clicked()', self.clearSelection)
+    #self.clearButton = qt.QPushButton(self.frame)
+    #self.clearButton.text = "Clear Selection"
+    #self.frame.layout().addWidget(self.clearButton)
+    #self.clearButton.connect('clicked()', self.clearSelection)
 
     self.segButton = qt.QPushButton(self.frame)
     self.segButton.text = "Run Segmentation"
@@ -142,8 +142,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     nucleusSegFormLayout.addWidget(self.DefaultsButton)
     self.DefaultsButton.connect('clicked()', self.ResetToDefaults)
 
-
-
     HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
      "\n KEYS for Global Segmentation: " +
       "\n Q: quit ShortCut" +
@@ -152,8 +150,13 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
 
     self.omode = 0
     self.toggleOutline()
+    #self.runyi = qt.QShortcut(slicer.util.mainWindow())
+    #self.runyi.setKey(qt.QKeySequence(qt.Qt.Key_Y))
+    #self.runyi.activated.connect(self.clearSelection)
+
 
   def ResetToDefaults(self):
+    print "reset to defaults..."
     self.frameOtsuSlider.value = 1.0
     self.frameCurvatureWeightSlider.value = 8
     self.frameSizeThldSlider.value = 3
@@ -180,13 +183,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     print "clearSelection"
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,currentXYPosition")
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
-    #slicer.modules.QuickTCGAEffectTool.startXYPosition = (0,0)
-    #slicer.modules.QuickTCGAEffectTool.currentXYPosition = (0,0)
-    #slicer.modules.QuickTCGAEffectTool.updateGlyph()
-    tool = slicer.modules.QuickTCGAEffectTool
-    tool.actor.VisibilityOff()
-    tool.actor.Modified()
-    tool.sliceView.scheduleRender()
 
   def updateSliders(self):
     r = self.structuresView.currentIndex().row()
@@ -326,7 +322,7 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
     self.actor.SetMapper(self.mapper)
     property_ = self.actor.GetProperty()
     property_.SetColor(1,1,0)
-    property_.SetLineWidth(1)
+    #property_.SetLineWidth(1)
     self.renderer.AddActor2D( self.actor )
     self.actors.append( self.actor )
     slicer.modules.QuickTCGAEffectTool = self
@@ -402,10 +398,17 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
         self.updateGlyph()
         self.sliceView.scheduleRender()
         self.abortEvent(event)
-    elif event == "RightButtonPressEvent":
-      self.cursorOff()
-    elif event == "RightButtonReleaseEvent":
-      self.cursorOn()
+    #elif event == "RightButtonPressEvent":
+    #  print "RightButtonPressEvent"
+    #  prop = self.actor.GetProperty()
+    #  prop.SetColor(0,0,1)
+    #  #self.actor.VisibilityOff()
+    #  self.sliceView.scheduleRender()
+    #  self.abortEvent(event)
+    #elif event == "RightButtonReleaseEvent":
+    #  x = 5
+    elif event == "KeyPressEvent":
+      slicer.modules.QuickTCGAEffectOptions.clearSelection()
       self.actor.VisibilityOff()
       self.sliceView.scheduleRender()
       self.abortEvent(event)
@@ -481,15 +484,16 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         return
 
     # QuickTCGAEffect shortcuts
-    runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
-    clearSelectionKey = qt.QKeySequence(qt.Qt.Key_Escape)
-    self.qtkeyconnections = []
-    self.qtkeydefsQTCGA = [[runNucleiSegKey, self.runQTCGA_NucleiSegYi],[clearSelectionKey, self.runQTCGA_clearSelection]]
+    #runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
+    #clearSelectionKey = qt.QKeySequence(qt.Qt.Key_Escape)
+    #self.qtkeyconnections = []
+    #self.qtkeydefsQTCGA = [[runNucleiSegKey, self.runQTCGA_NucleiSegYi],[clearSelectionKey, self.runQTCGA_clearSelection]]
 
-    for keydef in self.qtkeydefsQTCGA:
-      s = qt.QShortcut(slicer.util.mainWindow())
-      s.setKey(keydef[0])
-      s.connect('activated()',keydef[1])
+    #for keydef in self.qtkeydefsQTCGA:
+    #self.runyi = qt.QShortcut(slicer.util.mainWindow())
+    #self.runyi.setKey(qt.QKeySequence(qt.Qt.Key_Y))
+    #self.runyi.activated.connect(self.runQTCGA_NucleiSegYi)
+    #s.connect('activated()', self.runQTCGA_NucleiSegYi)
       #s = qt.QShortcut(keydef[0], slicer.util.mainWindow())
       #s.connect('activated()', keydef[1])
       #self.qtkeyconnections.append(s)
