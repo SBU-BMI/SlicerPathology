@@ -74,7 +74,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.parameterNode = editUtil.getParameterNode()
     
     # Instantiate and connect widgets ...
-
     #
     # Parameters Area
     #
@@ -203,21 +202,27 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.loadDataButton = qt.QPushButton("Load Image from disk")
     self.imageSelectionGroupBoxLayout.addWidget(self.loadDataButton)
     self.loadDataButton.connect('clicked()', self.loadTCGAData)
-    #self.WIP = qt.QPushButton("Load Image from Web")
-    #self.WIP.connect('clicked()', self.onWIPButtonClicked)
-    #self.imageSelectionGroupBoxLayout.addWidget(self.WIP)
     self.WIP2 = qt.QPushButton("Select image from web")
     self.WIP2.connect('clicked()', self.onWIP2ButtonClicked)
     self.imageSelectionGroupBoxLayout.addWidget(self.WIP2)
     self.WIP3 = qt.QPushButton("Load image from web")
     self.WIP3.connect('clicked()', self.onWIP3ButtonClicked)
     self.imageSelectionGroupBoxLayout.addWidget(self.WIP3)
+#    self.WIP = qt.QPushButton("Center Image")
+#    self.WIP.connect('clicked()', self.ebCenter)
+#    self.imageSelectionGroupBoxLayout.addWidget(self.WIP)
+
+#  def ebCenter(self):
+#    r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
+#    r.fitSliceToBackground()
 
   def onWIP2ButtonClicked(self):
     self.openTargetImage0()
 
   def onWIP3ButtonClicked(self):
     self.openTargetImage()
+    r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
+    r.fitSliceToBackground()
 
   def setupsegmentationUI(self):
     print ""
@@ -424,9 +429,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             if not success:
                 print "color %s could not be set" % row['Label']
             structureNames.append(row['Label'])
-
-
-
     volumesLogic = slicer.modules.volumes.logic()
     labelName = bgrdName+'-label'
     refLabel = volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene,bgrdNode,labelName)
