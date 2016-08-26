@@ -156,7 +156,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
 
 
   def ResetToDefaults(self):
-    print "reset to defaults..."
     self.frameOtsuSlider.value = 1.0
     self.frameCurvatureWeightSlider.value = 8
     self.frameSizeThldSlider.value = 3
@@ -180,7 +179,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.editUtil.setLabelOutline(self.omode)
 
   def clearSelection(self):
-    print "clearSelection"
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,currentXYPosition")
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
 
@@ -435,7 +433,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
   """
 
   def __init__(self,sliceLogic):
-    print "QuickTCGAEffectLogic __init__"
     self.sliceLogic = sliceLogic
     self.attributes = ('MouseTool')
     self.displayName = 'QuickTCGAEffect'
@@ -452,7 +449,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     pass
 
   def init_QuickTCGA(self):
-    print "init_QuickTCGA....."
     self.emergencyStopFunc = None
     self.dialogBox=qt.QMessageBox() #will display messages to draw users attention if he does anything wrong
     self.dialogBox.setWindowTitle("QuickTCGA Error")
@@ -639,7 +635,6 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     image2.Modified()
 
   def destroy(self):
-    print "DESTROY!!!!"
     for i in range(len(self.qtkeydefsQTCGA)):  #this will be an empty list if the KSlice part has been reached (all growcut functionality disabled)
         keyfun = self.qtkeydefsQTCGA[i]
         keydef = self.qtkeyconnections[i]
@@ -683,14 +678,14 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
             self.emergencyStopFunc()
         return False
 
-    if (self.imgBgrdName== imgNode.GetName()) and (self.labelName == labelNode.GetName()):
-        return True
-    else:
-        self.dialogBox.setText("Set image to values used for starting the FastGrowCut .")
-        self.dialogBox.show()
-        if self.emergencyStopFunc:
-            self.emergencyStopFunc()
-        return False
+    #if (self.imgBgrdName == imgNode.GetName()) and (self.labelName == labelNode.GetName()):
+    #    return True
+    #else:
+    #    self.dialogBox.setText("Set image to values used for starting FastGrowCut.")
+    #    self.dialogBox.show()
+    #    if self.emergencyStopFunc:
+    #        self.emergencyStopFunc()
+    #    return False
 
   def QTCGAChangeLabelInput(self, caller, event):
 
