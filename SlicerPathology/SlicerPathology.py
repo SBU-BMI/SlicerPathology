@@ -208,9 +208,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.WIP3 = qt.QPushButton("Load image from web")
     self.WIP3.connect('clicked()', self.onWIP3ButtonClicked)
     self.imageSelectionGroupBoxLayout.addWidget(self.WIP3)
-#    self.WIP = qt.QPushButton("Center Image")
-#    self.WIP.connect('clicked()', self.ebCenter)
-#    self.imageSelectionGroupBoxLayout.addWidget(self.WIP)
+    self.RestoreButton = qt.QPushButton("Restore Session")
+    self.RestoreButton.connect('clicked()', self.RestoreSession)
+    self.imageSelectionGroupBoxLayout.addWidget(self.RestoreButton)
 
 #  def ebCenter(self):
 #    r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
@@ -264,6 +264,19 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
     displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
     self.mutate() 
+
+  def RestoreSession(self):
+    import zipfile
+    import os.path
+    f = qt.QFileDialog.getOpenFileName()
+    zf = zipfile.ZipFile(f)
+    for filename in zf.namelist():
+      try:
+        data = zf.read(filename)
+      except KeyError:
+        print 'ERROR: Did not find %s in zip file' % filename
+      else:
+        print filename
 
   def onSaveButtonClicked(self):
     import zipfile

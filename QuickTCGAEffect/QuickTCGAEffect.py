@@ -261,10 +261,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.updateParam("kernelSize",value)
     self.updateMRMLFromGUI()
 
-
   # note: this method needs to be implemented exactly as-is
   # in each leaf subclass so that "self" in the observer
   # is of the correct type
+
   def updateParameterNode(self, caller, event):
     node = EditUtil.EditUtil().getParameterNode()
     if node != self.parameterNode:
@@ -599,32 +599,19 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     LL = self.GetTile(LL,a[0],a[1],b[0],b[1])
     self.qTCGAMod.SetSourceVol(BB)
     self.qTCGAMod.SetSeedVol(LL)
-    print("*** Segmentation Parameters ***")
-    print "otsuRatio"
-    print otsuRatio
-    print "curvatureWeight"
-    print curvatureWeight
-    print "sizeThld"
-    print sizeThld
-    print "sizeUpperThld"
-    print sizeUpperThld
-    print "mpp"
-    print mpp
-    print "kernelSize"
-    print kernelSize
-    print "executing segmentation now!"
+    print "executing segmentation..."
     if (declump):
       self.qTCGAMod.Run_NucleiSegYi()
     else:
       self.qTCGAMod.Run_NucleiSegYiwo()
-    print "hello we are back from Yi Segmentation Land!"
+    print "segmentation is done"
     self.qTCGASegArray[:] = seedArray[:]
     self.MergeImages(LL,self.labelNode.GetImageData(),a[0],a[1])
     self.foregroundNode.GetImageData().Modified()
     self.foregroundNode.Modified()
     self.labelNode.GetImageData().Modified()
     self.labelNode.Modified()
-    self.currentMessage = "Quick TCGA : nuclei segmentation is done"
+    self.currentMessage = "Nuclei segmentation is done"
     slicer.util.showStatusMessage(self.currentMessage)
 
   def GetTile(self,image,x1,y1,x2,y2):

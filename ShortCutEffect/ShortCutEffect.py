@@ -272,7 +272,6 @@ class ShortCutTool(LabelEffect.LabelEffectTool):
   """
 
   def __init__(self, sliceWidget):
-    print "ShortCutTool __init__"
     super(ShortCutTool,self).__init__(sliceWidget)
     # create a logic instance to do the non-gui work
     #self.logic = ShortCutLogic(self.sliceWidget.sliceLogic())
