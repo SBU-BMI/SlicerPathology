@@ -302,7 +302,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     for label in labelNodes.values():
       labelName = label.GetName()
       labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
-      print "labelFileName : "+labelFileName
+      compFileName = os.path.join(self.dataDirButton.directory, labelName + '-comp.tif')
       sNode.SetFileName(labelFileName)
       success = sNode.WriteData(label)
       if success:
@@ -311,6 +311,18 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         os.remove(labelFileName)
       else:
         print "failed writing "+labelFileName
+      comp = self.WriteLonI(label.GetImageData(),ff.GetImageData())
+      volumeNode = slicer.vtkMRMLVectorVolumeNode()
+      volumeNode.SetName("COMP")
+      volumeNode.SetAndObserveImageData(comp)
+      sNode.SetFileName(compFileName)
+      success = sNode.WriteData(volumeNode)
+      if success:
+        print "adding "+compFileName+" to zipfile"
+        zf.write(compFileName,os.path.basename(compFileName))
+        os.remove(compFileName)
+      else:
+        print "failed writing "+compFileName
     jstr = json.dumps(self.j,sort_keys=True, indent=4, separators=(',', ': '))
     mfname = os.path.join(self.dataDirButton.directory, 'manifest.json')
     f = open(mfname,'w')
@@ -328,6 +340,35 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     #           "uploaded_file" : open(zfname, "rb") }
     #print params
     #print opener.open('http://quip1.bmi.stonybrook.edu:4000/upload', params).read()
+
+  def WriteLonI(self, src, dest):
+    dim = src.GetDimensions()
+    i = vtk.vtkImageData().NewInstance()
+    i.SetDimensions(dim[0],dim[1],1)
+    i.AllocateScalars(vtk.VTK_UNSIGNED_CHAR,3)
+    for x in range(0,dim[0]):
+      for y in range(0,dim[1]):
+        if (src.GetScalarComponentAsDouble(x,y,0,0)==0):
+          for c in range(0,3):
+            i.SetScalarComponentFromDouble(x,y,0,c,dest.GetScalarComponentAsDouble(x,y,0,c))
+        else:
+          if (
+             (src.GetScalarComponentAsDouble(x+1,y-1,0,0)==1) and
+             (src.GetScalarComponentAsDouble(x+1,y,0,0)==1) and
+             (src.GetScalarComponentAsDouble(x+1,y+1,0,0)==1) and
+             (src.GetScalarComponentAsDouble(x,y+1,0,0)==1) and
+             (src.GetScalarComponentAsDouble(x,y-1,0,0)==1) and
+             (src.GetScalarComponentAsDouble(x-1,y+1,0,0)==1) and
+             (src.GetScalarComponentAsDouble(x-1,y,0,0)==1) and
+             (src.GetScalarComponentAsDouble(x-1,y-1,0,0)==1)):
+            for c in range(0,3):
+              i.SetScalarComponentFromDouble(x,y,0,c,dest.GetScalarComponentAsDouble(x,y,0,c))
+          else:
+            i.SetScalarComponentFromDouble(x,y,0,0,0)
+            i.SetScalarComponentFromDouble(x,y,0,1,250)
+            i.SetScalarComponentFromDouble(x,y,0,2,0)
+    i.Modified()
+    return i
 
   def onWebSaveButtonClicked(self):
     print "Web Save to be implemented...."
