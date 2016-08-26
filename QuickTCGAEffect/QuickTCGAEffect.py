@@ -60,9 +60,14 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     #self.clearButton.connect('clicked()', self.clearSelection)
 
     self.segButton = qt.QPushButton(self.frame)
-    self.segButton.text = "Run Segmentation"
+    self.segButton.text = "Run Segmentation No Declumping"
     self.frame.layout().addWidget(self.segButton)
-    self.segButton.connect('clicked()', self.RunSegmenter)
+    self.segButton.connect('clicked()', self.RunSegmenterWO)
+
+    self.segnoButton = qt.QPushButton(self.frame)
+    self.segnoButton.text = "Run Segmentation With Declumping"
+    self.frame.layout().addWidget(self.segnoButton)
+    self.segnoButton.connect('clicked()', self.RunSegmenter)
 
     self.outlineButton = qt.QPushButton(self.frame)
     self.outlineButton.text = "Toggle Outline"
@@ -169,7 +174,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).destroy()
 
   def RunSegmenter(self):
-    slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi()
+    slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(True)
+
+  def RunSegmenterWO(self):
+    slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(False)
 
   def toggleOutline(self):
     if (self.omode == 1):
@@ -548,7 +556,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 
     # run Quick TCGA segmenter for the current master volume and label volume
 
-  def runQTCGA_NucleiSegYi(self):
+  def runQTCGA_NucleiSegYi(self,declump):
     self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
     slicer.util.showStatusMessage(self.currentMessage)
     seedArray = slicer.util.array(self.labelNode.GetName())
@@ -605,7 +613,10 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     print "kernelSize"
     print kernelSize
     print "executing segmentation now!"
-    self.qTCGAMod.Run_NucleiSegYi()
+    if (declump):
+      self.qTCGAMod.Run_NucleiSegYi()
+    else:
+      self.qTCGAMod.Run_NucleiSegYiwo()
     print "hello we are back from Yi Segmentation Land!"
     self.qTCGASegArray[:] = seedArray[:]
     self.MergeImages(LL,self.labelNode.GetImageData(),a[0],a[1])

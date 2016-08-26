@@ -45,6 +45,7 @@ class VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT vtkQuickTCGA : public vtkObject
   void Run_QTCGA_Template();
   void Run_Refine_Curvature();
   void Run_NucleiSegYi();
+  void Run_NucleiSegYiwo();
   void Initialization();
   //  void RunFGC();
   void PrintSelf(ostream &os, vtkIndent indent);
