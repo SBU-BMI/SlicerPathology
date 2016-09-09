@@ -94,6 +94,7 @@ namespace gth818n
     subsample->PushBack(m_inputPointSet->GetMeasurementVector(0) ); ///< so the subsample is never empty.
 
     vnl_random rg;
+    rg.reseed(1);
     for (unsigned int i = 1 ; i < m_inputPointSet->Size() ; ++i ) ///< since 0-th has been pushed in, here start with 1
       {
         if (rg.drand64() <= m_subsampleRatio)
