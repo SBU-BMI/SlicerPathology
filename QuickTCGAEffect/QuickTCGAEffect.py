@@ -60,12 +60,12 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     #self.clearButton.connect('clicked()', self.clearSelection)
 
     self.segButton = qt.QPushButton(self.frame)
-    self.segButton.text = "Run Segmentation No Declumping"
+    self.segButton.text = "Run Segmentation No Declumping (fast)"
     self.frame.layout().addWidget(self.segButton)
     self.segButton.connect('clicked()', self.RunSegmenterWO)
 
     self.segnoButton = qt.QPushButton(self.frame)
-    self.segnoButton.text = "Run Segmentation With Declumping"
+    self.segnoButton.text = "Run Segmentation With Declumping (slow)"
     self.frame.layout().addWidget(self.segnoButton)
     self.segnoButton.connect('clicked()', self.RunSegmenter)
 
@@ -74,22 +74,40 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frame.layout().addWidget(self.outlineButton)
     self.outlineButton.connect('clicked()', self.toggleOutline)
 
+    self.wipeButton = qt.QPushButton(self.frame)
+    self.wipeButton.text = "Clear current segmentation label"
+    self.frame.layout().addWidget(self.wipeButton)
+    self.wipeButton.connect('clicked()', self.wipeSegmentation())
+
     self.locRadFrame = qt.QFrame(self.frame)
     self.locRadFrame.setLayout(qt.QHBoxLayout())
     self.frame.layout().addWidget(self.locRadFrame)
     self.widgets.append(self.locRadFrame)
 
-    # Nucleus segmentation parameters (Yi Gao's algorithm)
+    # Nucleus segmentation parameters
     nucleusSegCollapsibleButton = ctk.ctkCollapsibleButton()
     nucleusSegCollapsibleButton.text = "Nucleus Segmentation Parameters"
     nucleusSegCollapsibleButton.collapsed = False;
     self.frame.layout().addWidget(nucleusSegCollapsibleButton)
 
+    # Nucleus declumping parameters
+    nucleusDeclumpingCollapsibleButton = ctk.ctkCollapsibleButton()
+    nucleusDeclumpingCollapsibleButton.text = "Nucleus Declumping Parameters"
+    nucleusDeclumpingCollapsibleButton.collapsed = False;
+    self.frame.layout().addWidget(nucleusDeclumpingCollapsibleButton)
+
     self.structuresView = slicer.util.findChildren(slicer.modules.SlicerPathologyWidget.editorWidget.volumes, 'StructuresView')[0]
     self.structuresView.connect("activated(QModelIndex)", self.onStructureClickedOrAdded)
 
-    # Layout within the parameter button
+    # Layout within the seg parameter button
     nucleusSegFormLayout = qt.QFormLayout(nucleusSegCollapsibleButton)
+
+    # Layout within the declumping parameter button
+    nucleusDeclumpingFormLayout = qt.QFormLayout(nucleusDeclumpingCollapsibleButton)
+
+    sr = vtk.vtkSliderRepresentation2D()
+    sr.SetHandleSize(10) 
+
     self.frameOtsuSlider = ctk.ctkSliderWidget()
     self.frameOtsuSlider.connect('valueChanged(double)', self.OtsuSliderValueChanged)
     self.frameOtsuSlider.decimals = 1
@@ -97,6 +115,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameOtsuSlider.maximum = 1.5
     self.frameOtsuSlider.value = 1.0
     self.frameOtsuSlider.singleStep = 0.1
+    self.frameOtsuSlider.setToolTip("Threshold gain for calling something in the image as nucleus. Run as default value 1.0. Then, if undersegment, increase this to 1.2 and re-run. If oversegment, decrease to 0.8 and re-run. Smaller value of this parameter will give fewer regions segmented as nucleus.")
     nucleusSegFormLayout.addRow("Otsu Threshold:", self.frameOtsuSlider)
 
     self.frameCurvatureWeightSlider = ctk.ctkSliderWidget()
@@ -106,6 +125,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameCurvatureWeightSlider.maximum = 10
     self.frameCurvatureWeightSlider.value = 8
     self.frameCurvatureWeightSlider.singleStep = 0.1
+    self.frameCurvatureWeightSlider.setToolTip("Large value will result in smoother boundary in the resulting segmentation.")
     nucleusSegFormLayout.addRow("Curvature Weight:", self.frameCurvatureWeightSlider)
 
     self.frameSizeThldSlider = ctk.ctkSliderWidget()
@@ -115,7 +135,8 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameSizeThldSlider.maximum = 30
     self.frameSizeThldSlider.value = 3
     self.frameSizeThldSlider.singleStep = 0.1
-    nucleusSegFormLayout.addRow("Size Threshold:", self.frameSizeThldSlider)
+    self.frameSizeThldSlider.setToolTip("Any object smaller than this value will be discarded.")
+    nucleusDeclumpingFormLayout.addRow("Size Lower Threshold:", self.frameSizeThldSlider)
 
     self.frameSizeUpperThldSlider = ctk.ctkSliderWidget()
     self.frameSizeUpperThldSlider.connect('valueChanged(double)', self.SizeUpperThldSliderValueChanged)
@@ -123,7 +144,8 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameSizeUpperThldSlider.minimum = 1
     self.frameSizeUpperThldSlider.maximum = 500
     self.frameSizeUpperThldSlider.value = 50
-    nucleusSegFormLayout.addRow("Size Upper Threshold:", self.frameSizeUpperThldSlider)
+    self.frameSizeUpperThldSlider.setToolTip("Any object larger than this value will be de-clumped.")
+    nucleusDeclumpingFormLayout.addRow("Size Upper Threshold:", self.frameSizeUpperThldSlider)
 
     self.frameKernelSizeSlider = ctk.ctkSliderWidget()
     self.frameKernelSizeSlider.connect('valueChanged(double)', self.KernelSizeSliderValueChanged)
@@ -131,7 +153,8 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameKernelSizeSlider.minimum = 1
     self.frameKernelSizeSlider.maximum = 30
     self.frameKernelSizeSlider.value = 20
-    nucleusSegFormLayout.addRow("Kernel Size:", self.frameKernelSizeSlider)
+    self.frameKernelSizeSlider.setToolTip("Lower this value will result in smaller object in the declumping.")
+    nucleusDeclumpingFormLayout.addRow("Kernel Size:", self.frameKernelSizeSlider)
 
     self.frameMPPSlider = ctk.ctkSliderWidget()
     self.frameMPPSlider.connect('valueChanged(double)', self.MPPSliderValueChanged)
@@ -140,25 +163,24 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameMPPSlider.maximum = 1
     self.frameMPPSlider.value = 0.25
     self.frameMPPSlider.singleStep = 0.01
-    nucleusSegFormLayout.addRow("Microns Per Pixel:", self.frameMPPSlider)
+    self.frameMPPSlider.setToolTip("For 40x, this is around 0.25. For 20x, this is around 0.5.")
+    nucleusDeclumpingFormLayout.addRow("Microns Per Pixel:", self.frameMPPSlider)
 
     self.DefaultsButton = qt.QPushButton(self.frame)
     self.DefaultsButton.text = "Default Parameter Values"
-    nucleusSegFormLayout.addWidget(self.DefaultsButton)
+    self.frame.layout().addWidget(self.DefaultsButton)
     self.DefaultsButton.connect('clicked()', self.ResetToDefaults)
+    #nucleusSegFormLayout.addWidget(self.DefaultsButton)
 
-    HelpButton(self.frame, ("TO USE: \n Start the QuickTCGA segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
-     "\n KEYS for Global Segmentation: " +
-      "\n Q: quit ShortCut" +
-      "\n Mouse: LEFT for foreground, RIGHT for background") )
+    HelpButton(self.frame, ("Otsu threshold:\n Threshold gain for calling something in the image as nucleus. Run as default value 1.0. Then, if undersegment, increase this to 1.2 and re-run. If oversegment, decrease to 0.8 and re-run. Smaller value of this parameter will give fewer regions segmented as nucleus.\n" +
+                            "\nCurvature Weight:\n Large value will result in smoother boundary in the resulting segmentation.\n" +
+                            "\nSize Threshold:\n Any object smaller than this value will be discarded.\n" +
+                            "\nSize Upper Threshold:\n Any object larger than this value will be de-clumped.\n" +
+                            "\nKernel size:\n Lower this value will result in smaller object in the declumping.\n" +
+                            "\nMicrons Per Pixel:\n For 40x, this is around 0.25. For 20x, this is around 0.5.\n"))
     self.frame.layout().addStretch(1) # Add vertical spacer
-
     self.omode = 0
     self.toggleOutline()
-    #self.runyi = qt.QShortcut(slicer.util.mainWindow())
-    #self.runyi.setKey(qt.QKeySequence(qt.Qt.Key_Y))
-    #self.runyi.activated.connect(self.clearSelection)
-
 
   def ResetToDefaults(self):
     self.frameOtsuSlider.value = 1.0
@@ -167,6 +189,24 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameSizeUpperThldSlider.value = 50
     self.frameKernelSizeSlider.value = 20
     self.frameMPPSlider.value = 0.25
+    self.parameterNode.SetParameter("QuickTCGAEffect,otsuRatio", str(self.frameOtsuSlider.value))
+    self.updateParam("otsuRatio",self.frameOtsuSlider.value)
+    self.parameterNode.SetParameter("QuickTCGAEffect,curvatureWeight", str(self.frameCurvatureWeightSlider.value))
+    self.updateParam("curvatureWeight",self.frameCurvatureWeightSlider.value)
+    self.parameterNode.SetParameter("QuickTCGAEffect,sizeThld", str(self.frameSizeThldSlider.value))
+    self.updateParam("sizeThld",self.frameSizeThldSlider.value)
+    self.parameterNode.SetParameter("QuickTCGAEffect,sizeUpperThld", str(self.frameSizeUpperThldSlider.value))
+    self.updateParam("sizeUpperThld",self.frameSizeUpperThldSlider.value)
+    self.parameterNode.SetParameter("QuickTCGAEffect,mpp", str(self.frameMPPSlider.value))
+    self.updateParam("mpp",self.frameMPPSlider.value)
+    self.parameterNode.SetParameter("QuickTCGAEffect,kernelSize", str(self.frameKernelSizeSlider.value))
+    self.updateParam("kernelSize",self.frameKernelSizeSlider.value)
+    self.updateMRMLFromGUI()
+
+  def wipeSegmentation(self):
+    sl = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
+    logic = QuickTCGAEffectLogic(sl)
+    logic.wipeSegmentation()
 
   def destroy(self):
     self.currentMessage = ""
@@ -527,29 +567,30 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     import vtkSlicerQuickTCGAModuleLogicPython
 
     node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
-    otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
-    curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
-    sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
-    sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
-    mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))
-    kernelSize = float(node.GetParameter("QuickTCGAEffect,kernelSize"))
-    cparams["otsuRatio"]=otsuRatio
-    cparams["curvatureWeight"]=curvatureWeight
-    cparams["sizeThld"]=sizeThld
-    cparams["sizeUpperThld"]=sizeUpperThld
-    cparams["mpp"]=mpp
-    cparams["kernelSize"]=kernelSize
-    qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()
-    qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
-    qTCGAMod.SetotsuRatio(otsuRatio)
-    qTCGAMod.SetcurvatureWeight(curvatureWeight)
-    qTCGAMod.SetsizeThld(sizeThld)
-    qTCGAMod.SetsizeUpperThld(sizeUpperThld)
-    qTCGAMod.Setmpp(mpp)
-    qTCGAMod.SetkernelSize(kernelSize)
-    qTCGAMod.Initialization()
-    self.qTCGAMod = qTCGAMod
-    self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
+    if node.GetParameter("QuickTCGAEffect,otsuRatio") != "":
+      otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
+      curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
+      sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
+      sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
+      mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))
+      kernelSize = float(node.GetParameter("QuickTCGAEffect,kernelSize"))
+      cparams["otsuRatio"]=otsuRatio
+      cparams["curvatureWeight"]=curvatureWeight
+      cparams["sizeThld"]=sizeThld
+      cparams["sizeUpperThld"]=sizeUpperThld
+      cparams["mpp"]=mpp
+      cparams["kernelSize"]=kernelSize
+      qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()
+      qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
+      qTCGAMod.SetotsuRatio(otsuRatio)
+      qTCGAMod.SetcurvatureWeight(curvatureWeight)
+      qTCGAMod.SetsizeThld(sizeThld)
+      qTCGAMod.SetsizeUpperThld(sizeUpperThld)
+      qTCGAMod.Setmpp(mpp)
+      qTCGAMod.SetkernelSize(kernelSize)
+      qTCGAMod.Initialization()
+      self.qTCGAMod = qTCGAMod
+      self.QuickTCGACreated=True #tracks if completed the initializtion (so can do stop correctly) of KSlice
 
   def runQTCGA_clearSelection(self):
     print "wipe them out.  all of them."
@@ -613,6 +654,20 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     self.labelNode.Modified()
     self.currentMessage = "Nuclei segmentation is done"
     slicer.util.showStatusMessage(self.currentMessage)
+
+  def wipeSegmentation(self):
+    self.BlankLabelImage(self.labelNode.GetImageData())
+    self.labelNode.GetImageData().Modified()
+    self.labelNode.Modified()
+
+  def BlankLabelImage(self,image):
+    dim = image.GetDimensions()
+    for x in range(0,dim[0]):
+      for y in range(0,dim[1]):
+        for c in range(0,image.GetNumberOfScalarComponents()):
+          image.SetScalarComponentFromDouble(x,y,0,c,0.0)
+    image.Modified()
+
 
   def GetTile(self,image,x1,y1,x2,y2):
     i = vtk.vtkImageData().NewInstance()
