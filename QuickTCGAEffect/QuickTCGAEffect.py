@@ -136,7 +136,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameSizeThldSlider.value = 3
     self.frameSizeThldSlider.singleStep = 0.1
     self.frameSizeThldSlider.setToolTip("Any object smaller than this value will be discarded.")
-    nucleusDeclumpingFormLayout.addRow("Size Lower Threshold:", self.frameSizeThldSlider)
+    nucleusSegFormLayout.addRow("Size Lower Threshold:", self.frameSizeThldSlider)
 
     self.frameSizeUpperThldSlider = ctk.ctkSliderWidget()
     self.frameSizeUpperThldSlider.connect('valueChanged(double)', self.SizeUpperThldSliderValueChanged)
