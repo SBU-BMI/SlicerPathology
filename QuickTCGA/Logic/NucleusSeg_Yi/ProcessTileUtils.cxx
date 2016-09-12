@@ -12,6 +12,9 @@
 #include "itkOpenCVImageBridge.h"
 #include "itkBinaryFillholeImageFilter.h"
 #include "itkGradientMagnitudeImageFilter.h"
+#include "itkConnectedComponentImageFilter.h"
+#include "itkLabelImageToShapeLabelMapFilter.h"
+#include "itkRelabelComponentImageFilter.h"
 
 // openslide
 
@@ -482,6 +485,32 @@ cv::Mat processTileNoDeclump(cv::Mat thisTileCV, float otsuRatio = 1.0, double c
 	{
       nucleusBinaryMaskBufferPointer[it] = phiBufferPointer[it]<=1.0?1:0;
 	}
+
+
+
+  {
+    typedef itk::ConnectedComponentImageFilter <itkBinaryMaskImageType, itkIntImageType > ConnectedComponentImageFilterType;
+    ConnectedComponentImageFilterType::Pointer connected = ConnectedComponentImageFilterType::New ();
+    connected->SetInput(nucleusBinaryMask);
+    connected->Update();
+
+    typedef itk::RelabelComponentImageFilter<itkIntImageType, itkIntImageType> FilterType;
+    FilterType::Pointer relabelFilter = FilterType::New();
+    relabelFilter->SetInput(connected->GetOutput());
+    //std::cout<<static_cast<FilterType::ObjectSizeType>(m_objectSizeThreshold/m_mpp/m_mpp)<<std::endl;
+    relabelFilter->SetMinimumObjectSize(static_cast<FilterType::ObjectSizeType>(sizeThld/mpp/mpp)); // This command takes number of pixels as input
+    relabelFilter->Update();
+
+    itkIntImageType::Pointer tmp = relabelFilter->GetOutput();
+
+    itkIntImageType::PixelType* tmpBufferPointer = tmp->GetBufferPointer();
+
+    for (long it = 0; it < numPixels; ++it)
+      {
+        nucleusBinaryMaskBufferPointer[it] = tmpBufferPointer[it]>=0.5?1:0;
+      }
+
+  }
 
 
   Mat binary = itk::OpenCVImageBridge::ITKImageToCVMat< itkUCharImageType >( nucleusBinaryMask  );

@@ -116,7 +116,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameOtsuSlider.value = 1.0
     self.frameOtsuSlider.singleStep = 0.1
     self.frameOtsuSlider.setToolTip("Threshold gain for calling something in the image as nucleus. Run as default value 1.0. Then, if undersegment, increase this to 1.2 and re-run. If oversegment, decrease to 0.8 and re-run. Smaller value of this parameter will give fewer regions segmented as nucleus.")
-    nucleusSegFormLayout.addRow("Otsu Threshold:", self.frameOtsuSlider)
+    nucleusSegFormLayout.addRow("Threshold Grain:", self.frameOtsuSlider)
 
     self.frameCurvatureWeightSlider = ctk.ctkSliderWidget()
     self.frameCurvatureWeightSlider.connect('valueChanged(double)', self.CurvatureWeightSliderValueChanged)
@@ -126,7 +126,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameCurvatureWeightSlider.value = 8
     self.frameCurvatureWeightSlider.singleStep = 0.1
     self.frameCurvatureWeightSlider.setToolTip("Large value will result in smoother boundary in the resulting segmentation.")
-    nucleusSegFormLayout.addRow("Curvature Weight:", self.frameCurvatureWeightSlider)
+    nucleusSegFormLayout.addRow("Expected Roundness/Smoothness:", self.frameCurvatureWeightSlider)
 
     self.frameSizeThldSlider = ctk.ctkSliderWidget()
     self.frameSizeThldSlider.connect('valueChanged(double)', self.SizeThldSliderValueChanged)
