@@ -522,9 +522,9 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 
     #perform safety check on right images/labels being selected, #set up images
     #if red slice doesnt have a label or image, go no further
-    if type(self.backgroundNode)==type(None) or type(self.labelNode)==type(None):
-      self.dialogBox.setText("Either Image (must be Background Image) or Label not set in slice views.")
-      self.dialogBox.show()
+    #if type(self.backgroundNode)==type(None) or type(self.labelNode)==type(None):
+    #  self.dialogBox.setText("Either Image (must be Background Image) or Label not set in slice views.")
+    #  self.dialogBox.show()
 
     if self.emergencyStopFunc:
       self.emergencyStopFunc()
@@ -729,12 +729,12 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     imgNode = sliceLogic.GetBackgroundLayer().GetVolumeNode()
     labelNode = sliceLogic.GetLabelLayer().GetVolumeNode()
 
-    if type(imgNode)==type(None) or type(labelNode)==type(None) :
-        self.dialogBox.setText("Either image (must be Background Image) or label not set in slice views.")
-        self.dialogBox.show()
-        if self.emergencyStopFunc:
-            self.emergencyStopFunc()
-        return False
+#    if type(imgNode)==type(None) or type(labelNode)==type(None) :
+#        self.dialogBox.setText("Either image (must be Background Image) or label not set in slice views.")
+#        self.dialogBox.show()
+#        if self.emergencyStopFunc:
+#            self.emergencyStopFunc()
+#        return False
 
     dimImg=self.backgroundNode.GetImageData().GetDimensions()
     dimLab=self.labelNode.GetImageData().GetDimensions()

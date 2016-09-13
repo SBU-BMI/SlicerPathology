@@ -547,8 +547,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     return i
 
   def loadTCGAData(self):
+    slicer.mrmlScene.Clear(0)
     slicer.util.openAddVolumeDialog()
-
     import EditorLib
     editUtil = EditorLib.EditUtil.EditUtil()
     imsainode = editUtil.getBackgroundVolume()
