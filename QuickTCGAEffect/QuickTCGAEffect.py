@@ -59,15 +59,15 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     #self.frame.layout().addWidget(self.clearButton)
     #self.clearButton.connect('clicked()', self.clearSelection)
 
-    self.segButton = qt.QPushButton(self.frame)
-    self.segButton.text = "Run Segmentation No Declumping (fast)"
-    self.frame.layout().addWidget(self.segButton)
-    self.segButton.connect('clicked()', self.RunSegmenterWO)
-
     self.segnoButton = qt.QPushButton(self.frame)
-    self.segnoButton.text = "Run Segmentation With Declumping (slow)"
+    self.segnoButton.text = "Run Segmentation No Declumping (fast)"
     self.frame.layout().addWidget(self.segnoButton)
     self.segnoButton.connect('clicked()', self.RunSegmenter)
+
+    self.segButton = qt.QPushButton(self.frame)
+    self.segButton.text = "Run Segmentation With Declumping (slow)"
+    self.frame.layout().addWidget(self.segButton)
+    self.segButton.connect('clicked()', self.RunSegmenterWO)
 
     self.outlineButton = qt.QPushButton(self.frame)
     self.outlineButton.text = "Toggle Outline"
@@ -214,10 +214,26 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).destroy()
 
   def RunSegmenter(self):
-    slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(True)
+    self.segnoButton.setEnabled(0)
+    self.segButton.setEnabled(0)
+    self.segButton.text = "Run Segmentation With Declumping (slow)"
+    self.segnoButton.text = "*****Run Segmentation No Declumping (fast)"
+    slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(False)
+    self.segnoButton.setEnabled(1)
+    self.segButton.setEnabled(1)
+    self.segnoButton.text = "Run Segmentation With Declumping (slow)"
+    self.segButton.text = "Run Segmentation No Declumping (fast)"
 
   def RunSegmenterWO(self):
-    slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(False)
+    self.segnoButton.setEnabled(0)
+    self.segButton.setEnabled(0)
+    self.segButton.text = "**** Run Segmentation With Declumping (slow)"
+    self.segnoButton.text = "Run Segmentation No Declumping (fast)"
+    slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(True)
+    self.segnoButton.setEnabled(1)
+    self.segButton.setEnabled(1)
+    self.segnoButton.text = "Run Segmentation With Declumping (slow)"
+    self.segButton.text = "Run Segmentation No Declumping (fast)"
 
   def toggleOutline(self):
     if (self.omode == 1):
@@ -609,6 +625,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
     mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))
     kernelSize = float(node.GetParameter("QuickTCGAEffect,kernelSize"))
+    print otsuRatio, " ", curvatureWeight, " ", sizeThld, " ", sizeUpperThld, " ", mpp, " ", kernelSize
     self.qTCGAMod.SetotsuRatio(otsuRatio)
     self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
     self.qTCGAMod.SetsizeThld(sizeThld)
