@@ -7,7 +7,6 @@
 #include "itkConnectedComponentImageFilter.h"
 #include "itkLabelImageToShapeLabelMapFilter.h"
 #include "itkRelabelComponentImageFilter.h"
-#include "itkRelabelComponentImageFilter.h"
 
 
 // local
