@@ -21,9 +21,6 @@ __all__ = [
   'QuickTCGAEffect'
   ]
 
-params = {}
-cparams = {"algorithm":"Yi"}
-
 #
 # QuickTCGAEffectOptions - see LabelEffect, EditOptions and Effect for superclasses
 #
@@ -35,12 +32,11 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
   def __init__(self, parent=0):
     super(QuickTCGAEffectOptions,self).__init__(parent)
     editUtil = EditorLib.EditUtil.EditUtil()
-    parameterNode = editUtil.getParameterNode()
+    self.parameterNode = editUtil.getParameterNode()
     lm = slicer.app.layoutManager()
     self.redSliceWidget = lm.sliceWidget('Red')
     self.yellowSliceWidget = lm.sliceWidget('Yellow')
     self.greenSliceWidget = lm.sliceWidget('Green')
-    self.parameterNode=parameterNode
     self.attributes = ('MouseTool')
     self.displayName = 'QuickTCGAEffect'
     self.omode = 0
@@ -50,6 +46,12 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     super(QuickTCGAEffectOptions,self).__del__()
 
   def create(self):
+    self.params = {}
+    self.cparams = {"algorithm":"Yi"}
+    status = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
+    if (status == "reset"):
+      print "clear the old..."
+      params = {}
     super(QuickTCGAEffectOptions,self).create()
 #    self.helpLabel = qt.QLabel("Press Y to run automatic segmentation on the current image using given parameters.", self.frame)
 #    self.frame.layout().addWidget(self.helpLabel)
@@ -274,15 +276,15 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
       ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,3).text()
     else:
       ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename')+'-label'
-    if ei not in params:
-      params[ei] = cparams.copy()
+    if ei not in self.params:
+      self.params[ei] = self.cparams.copy()
       if (r<0):
-        params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
+        self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
       else:
-        params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
-    params[ei][p] = v
-    cparams[p] = v
-    jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
+        self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
+    self.params[ei][p] = v
+    self.cparams[p] = v
+    jstr = json.dumps(self.params,sort_keys=True, indent=4, separators=(',', ': '))
     self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
 
   def OtsuSliderValueChanged(self,value):
@@ -588,12 +590,13 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
       sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
       mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))
       kernelSize = float(node.GetParameter("QuickTCGAEffect,kernelSize"))
-      cparams["otsuRatio"]=otsuRatio
-      cparams["curvatureWeight"]=curvatureWeight
-      cparams["sizeThld"]=sizeThld
-      cparams["sizeUpperThld"]=sizeUpperThld
-      cparams["mpp"]=mpp
-      cparams["kernelSize"]=kernelSize
+      opt = slicer.modules.QuickTCGAEffectOptions
+      opt.cparams["otsuRatio"]=otsuRatio
+      opt.cparams["curvatureWeight"]=curvatureWeight
+      opt.cparams["sizeThld"]=sizeThld
+      opt.params["sizeUpperThld"]=sizeUpperThld
+      opt.cparams["mpp"]=mpp
+      opt.cparams["kernelSize"]=kernelSize
       qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()
       qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
       qTCGAMod.SetotsuRatio(otsuRatio)

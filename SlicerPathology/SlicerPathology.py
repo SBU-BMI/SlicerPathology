@@ -47,6 +47,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.currentStep = 1
   
   def setup(self):
+    #self.editUtil = EditorLib.EditUtil.EditUtil()
+    self.parameterNode = EditorLib.EditUtil.EditUtil().getParameterNode()
+    self.parameterNode.SetParameter("QuickTCGAEffect,erich", "reset")
     ScriptedLoadableModuleWidget.setup(self)
     # this section is for custom color box
     infoGroupBox = qt.QWidget()
@@ -547,19 +550,18 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     return i
 
   def loadTCGAData(self):
+    EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich',"reset")
     slicer.mrmlScene.Clear(0)
     slicer.util.openAddVolumeDialog()
     import EditorLib
     editUtil = EditorLib.EditUtil.EditUtil()
     imsainode = editUtil.getBackgroundVolume()
     imsai = imsainode.GetImageData()
-    print imsai.GetNumberOfScalarComponents()
     if imsai.GetNumberOfScalarComponents() > 3:
       lala = self.Four2ThreeChannel(imsai)
       print lala.GetNumberOfScalarComponents()
       imsainode.SetAndObserveImageData(lala)
       imsainode.Modified()
-
     red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
     red_cn = red_logic.GetSliceCompositeNode()
     fgrdVolID = red_cn.GetBackgroundVolumeID()
