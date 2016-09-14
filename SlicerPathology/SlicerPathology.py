@@ -47,6 +47,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     self.currentStep = 1
   
   def setup(self):
+    self.dirty=False
     #self.editUtil = EditorLib.EditUtil.EditUtil()
     self.parameterNode = EditorLib.EditUtil.EditUtil().getParameterNode()
     self.parameterNode.SetParameter("QuickTCGAEffect,erich", "reset")
@@ -282,6 +283,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         print filename
 
   def onSaveButtonClicked(self):
+    self.dirty=False
     import zipfile
     import os.path
     import uuid
@@ -550,9 +552,19 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     return i
 
   def loadTCGAData(self):
-    EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich',"reset")
-    slicer.mrmlScene.Clear(0)
-    slicer.util.openAddVolumeDialog()
+    print self.dirty
+    if self.dirty:
+      if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
+        EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich',"reset")
+        slicer.mrmlScene.Clear(0)
+        dirty=False
+        if slicer.util.openAddVolumeDialog():
+          self.loademup()
+    elif slicer.util.openAddVolumeDialog():
+      self.loademup() 
+
+  def loademup(self):
+    self.dirty=True
     import EditorLib
     editUtil = EditorLib.EditUtil.EditUtil()
     imsainode = editUtil.getBackgroundVolume()
@@ -585,13 +597,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     red_cn.SetBackgroundVolumeID(bgrdVolID)
     red_cn.SetForegroundOpacity(1)   
     self.checkAndSetLUT() 
-    print bgrdName
     cv = slicer.util.getNode(bgrdName)
     self.volumesLogic = slicer.modules.volumes.logic()
     labelName = bgrdName+'-label'
     refLabel = self.volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene,cv,labelName)
     refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
     self.editorWidget.helper.setMasterVolume(cv)
+
 #
 # SlicerPathologyLogic
 #
