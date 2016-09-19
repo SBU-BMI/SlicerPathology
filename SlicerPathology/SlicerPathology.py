@@ -289,8 +289,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     import uuid
     bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
     tran = json.loads(bundle)
+    print bundle
     layers = []
+    print "huh?"
     for key in tran:
+      print key
       nn = tran[key]
       nn["file"] = key + '.tif'
       layers.append(tran[key])
@@ -560,8 +563,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         dirty=False
         if slicer.util.openAddVolumeDialog():
           self.loademup()
-    elif slicer.util.openAddVolumeDialog():
-      self.loademup() 
+    else:
+      EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich',"reset")
+      slicer.mrmlScene.Clear(0)
+      dirty=False
+      sel=slicer.util.openAddVolumeDialog()
+      if sel:
+        self.loademup() 
 
   def loademup(self):
     self.dirty=True
