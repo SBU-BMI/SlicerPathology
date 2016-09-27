@@ -50,7 +50,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.cparams = {"algorithm":"Yi"}
     status = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
     if (status == "reset"):
-      print "clear the old..."
       params = {}
     super(QuickTCGAEffectOptions,self).create()
 #    self.helpLabel = qt.QLabel("Press Y to run automatic segmentation on the current image using given parameters.", self.frame)
@@ -247,6 +246,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
 
   def updateSliders(self):
+    #print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
     r = self.structuresView.currentIndex().row()
     if (r>-1):
       ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,3).text()
@@ -429,7 +429,6 @@ class QuickTCGAEffectTool(LabelEffect.LabelEffectTool):
     points.SetPoint( 3, xhi, ylo, 0 )
 
   def processEvent(self, caller=None, event=None):
-    #print event
     if event == "LeftButtonPressEvent":
       self.actionState = "dragging"
       self.cursorOff()
@@ -594,7 +593,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
       opt.cparams["otsuRatio"]=otsuRatio
       opt.cparams["curvatureWeight"]=curvatureWeight
       opt.cparams["sizeThld"]=sizeThld
-      opt.params["sizeUpperThld"]=sizeUpperThld
+      opt.cparams["sizeUpperThld"]=sizeUpperThld
       opt.cparams["mpp"]=mpp
       opt.cparams["kernelSize"]=kernelSize
       qTCGAMod =vtkSlicerQuickTCGAModuleLogicPython.vtkQuickTCGA()

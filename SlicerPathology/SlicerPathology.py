@@ -283,6 +283,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         print filename
 
   def onSaveButtonClicked(self):
+    print "SAVING"
+    print slicer.modules.QuickTCGAEffectOptions.params
     self.dirty=False
     import zipfile
     import os.path
