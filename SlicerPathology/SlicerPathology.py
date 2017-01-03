@@ -446,7 +446,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     fgrdNode = slicer.util.getNode("WEB")
     fgrdVolID = fgrdNode.GetID()
     fMat=vtk.vtkMatrix4x4()
-    fgrdNode.GetIJKToRASDirectionMatrix(fMat)
+    #fgrdNode.GetIJKToRASDirectionMatrix(fMat)
     bgrdName = fgrdNode.GetName() + '_gray'
     magnitude = vtk.vtkImageMagnitude()
     magnitude.SetInputData(fgrdNode.GetImageData())
@@ -454,7 +454,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     bgrdNode = slicer.vtkMRMLScalarVolumeNode()
     bgrdNode.SetImageDataConnection(magnitude.GetOutputPort())
     bgrdNode.SetName(bgrdName)
-    bgrdNode.SetIJKToRASDirectionMatrix(fMat)
+    #bgrdNode.SetIJKToRASDirectionMatrix(fMat)
     slicer.mrmlScene.AddNode(bgrdNode)
     bgrdVolID = bgrdNode.GetID()  
     red_cn.SetForegroundVolumeID(fgrdVolID)
@@ -501,7 +501,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
   def openTargetImage0(self):
     self.v = qt.QWebView()
-    weburl='http://quip1.bmi.stonybrook.edu:4000/'
+    weburl='http://quip1.bmi.stonybrook.edu:3000/'
     self.v.setUrl(qt.QUrl(weburl))
     self.v.show()
 
