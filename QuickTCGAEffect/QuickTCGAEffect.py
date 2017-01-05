@@ -115,7 +115,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameOtsuSlider.minimum = 0.5
     self.frameOtsuSlider.maximum = 1.5
     self.frameOtsuSlider.value = 1.0
-    self.frameOtsuSlider.singleStep = 0.1
+    self.frameOtsuSlider.singleStep = 0.01
     self.frameOtsuSlider.setToolTip("Threshold gain for calling something in the image as nucleus. Run as default value 1.0. Then, if undersegment, increase this to 1.2 and re-run. If oversegment, decrease to 0.8 and re-run. Smaller value of this parameter will give fewer regions segmented as nucleus.")
     nucleusSegFormLayout.addRow("Threshold Grain:", self.frameOtsuSlider)
 
@@ -125,7 +125,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameCurvatureWeightSlider.minimum = 0
     self.frameCurvatureWeightSlider.maximum = 10
     self.frameCurvatureWeightSlider.value = 8
-    self.frameCurvatureWeightSlider.singleStep = 0.1
+    self.frameCurvatureWeightSlider.singleStep = 0.01
     self.frameCurvatureWeightSlider.setToolTip("Large value will result in smoother boundary in the resulting segmentation.")
     nucleusSegFormLayout.addRow("Expected Roundness/Smoothness:", self.frameCurvatureWeightSlider)
 
@@ -135,7 +135,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     self.frameSizeThldSlider.minimum = 1
     self.frameSizeThldSlider.maximum = 30
     self.frameSizeThldSlider.value = 3
-    self.frameSizeThldSlider.singleStep = 0.1
+    self.frameSizeThldSlider.singleStep = 0.01
     self.frameSizeThldSlider.setToolTip("Any object smaller than this value will be discarded.")
     nucleusSegFormLayout.addRow("Size Lower Threshold:", self.frameSizeThldSlider)
 
@@ -584,7 +584,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
     node = EditUtil.EditUtil().getParameterNode() # get the parameters from MRML
     if node.GetParameter("QuickTCGAEffect,otsuRatio") != "":
       otsuRatio = float(node.GetParameter("QuickTCGAEffect,otsuRatio"))
-      curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))/10
+      curvatureWeight = float(node.GetParameter("QuickTCGAEffect,curvatureWeight"))
       sizeThld = float(node.GetParameter("QuickTCGAEffect,sizeThld"))
       sizeUpperThld = float(node.GetParameter("QuickTCGAEffect,sizeUpperThld"))
       mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))
