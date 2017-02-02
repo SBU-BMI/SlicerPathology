@@ -501,7 +501,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
   def openTargetImage0(self):
     self.v = qt.QWebView()
-    weburl='http://quip1.bmi.stonybrook.edu:3000/'
+    weburl='http://quip1.bmi.stonybrook.edu/slicer/cancer_select.html'
     self.v.setUrl(qt.QUrl(weburl))
     self.v.show()
 
