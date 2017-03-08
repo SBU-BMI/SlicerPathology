@@ -90,13 +90,13 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # Nucleus segmentation parameters
         nucleusSegCollapsibleButton = ctk.ctkCollapsibleButton()
         nucleusSegCollapsibleButton.text = "Nucleus Segmentation Parameters"
-        nucleusSegCollapsibleButton.collapsed = False;
+        nucleusSegCollapsibleButton.collapsed = False
         self.frame.layout().addWidget(nucleusSegCollapsibleButton)
 
         # Nucleus declumping parameters
         nucleusDeclumpingCollapsibleButton = ctk.ctkCollapsibleButton()
         nucleusDeclumpingCollapsibleButton.text = "Nucleus Declumping Parameters"
-        nucleusDeclumpingCollapsibleButton.collapsed = False;
+        nucleusDeclumpingCollapsibleButton.collapsed = False
         self.frame.layout().addWidget(nucleusDeclumpingCollapsibleButton)
 
         self.structuresView = \
