@@ -258,8 +258,8 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
       else:
         params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,2).text()
-      jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
-      self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
+    jstr = json.dumps(params,sort_keys=True, indent=4, separators=(',', ': '))
+    self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
     self.frameOtsuSlider.value = params[ei]["otsuRatio"]
     self.frameCurvatureWeightSlider.value = params[ei]["curvatureWeight"]
     self.frameSizeThldSlider.value = params[ei]["sizeThld"]
