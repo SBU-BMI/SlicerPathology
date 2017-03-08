@@ -260,7 +260,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename') + '-label'
         if ei not in params:
             params[ei] = cparams.copy()
-            if (r < 0):
+            if r < 0:
                 params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
             else:
                 params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,
