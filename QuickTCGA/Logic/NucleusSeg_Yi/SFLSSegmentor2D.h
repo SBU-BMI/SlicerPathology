@@ -63,7 +63,7 @@ public:
   void initializeLabel();
   void initializePhi();
 
-  virtual void doSegmenation() = 0;
+  virtual void doSegmentation() = 0;
 
 
   // geometry

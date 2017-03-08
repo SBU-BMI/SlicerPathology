@@ -1286,11 +1286,11 @@ CSFLSSegmentor2D< TPixel >
 
 
 // /* ============================================================
-//    doSegmenation    */
+//    doSegmentation    */
 // template< typename TPixel >
 // void
 // CSFLSSegmentor2D< TPixel >
-// ::doSegmenation()
+// ::doSegmentation()
 // {
 //   // gth818n::saveAsImage2< double >(mp_phi, "init0.nrrd");
 
