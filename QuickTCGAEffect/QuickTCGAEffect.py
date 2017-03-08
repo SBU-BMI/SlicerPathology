@@ -798,7 +798,7 @@ class QuickTCGAEffectExtension(LabelEffect.LabelEffect):
         # name is used to define the name of the icon image resource (e.g. RectangleEffect.png)
         self.name = "QuickTCGAEffect"
         # tool tip is displayed on mouse hover
-        self.toolTip = "hahahahaha"
+        self.toolTip = "QuickTCGAEffect: tool for automatic pathology segmentation"
 
         self.options = QuickTCGAEffectOptions
         self.tool = QuickTCGAEffectTool
