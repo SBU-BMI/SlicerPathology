@@ -85,7 +85,7 @@ namespace gth818n
 
     int m_epoch; ///< after mean shift on input data, will recursively
                  ///run mean shift on the obtained data. This give the
-                 ///number of recusion. If 0, just run MS for once:
+                 ///number of recursion. If 0, just run MS for once:
                  ///there may be some close but not too close mode
                  ///centers.
 
