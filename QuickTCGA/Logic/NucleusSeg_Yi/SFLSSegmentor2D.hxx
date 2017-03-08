@@ -81,7 +81,7 @@ CSFLSSegmentor2D< TPixel >
   typename ImageType::IndexType origin = {{0, 0}};
   if (start != origin)
     {
-      std::cout<<"Warrning: Force image start to be (0, 0)\n";
+      std::cout<<"Warning: Force image start to be (0, 0)\n";
 
       typename ImageType::RegionType region = mp_img->GetLargestPossibleRegion();
       region.SetIndex(origin);
@@ -117,7 +117,7 @@ CSFLSSegmentor2D< TPixel >
   typename ImageType::IndexType origin = {{0, 0}};
   if (start != origin)
     {
-      std::cout<<"Warrning: Force mask start to be (0, 0)\n";
+      std::cout<<"Warning: Force mask start to be (0, 0)\n";
 
       typename ImageType::RegionType region = mp_mask->GetLargestPossibleRegion();
       region.SetIndex(origin);
@@ -334,7 +334,7 @@ CSFLSSegmentor2D< TPixel >
 
         /*----------------------------------------------------------------------
           Update the lists of pt who change the state, for faster
-          energy fnal computation. */
+          energy final computation. */
         if ( phi_old <= 0 && phi_new > 0 )
           {
             m_lIn2out.push_back(NodeType(ix, iy, 0));
@@ -425,7 +425,7 @@ CSFLSSegmentor2D< TPixel >
         {
           /*--------------------------------------------------
             No nbhd in inner (closer to zero contour) layer, so
-            should go to Sn2. And the phi shold be further -1
+            should go to Sn2. And the phi should be further -1
           */
           Sn2.push_back(*itn1);
           itn1 = m_ln1.erase(itn1);
@@ -478,7 +478,7 @@ CSFLSSegmentor2D< TPixel >
         {
           /*--------------------------------------------------
             No nbhd in inner (closer to zero contour) layer, so
-            should go to Sp2. And the phi shold be further +1
+            should go to Sp2. And the phi should be further +1
           */
 
           Sp2.push_back(*itp1);
@@ -1286,11 +1286,11 @@ CSFLSSegmentor2D< TPixel >
 
 
 // /* ============================================================
-//    doSegmenation    */
+//    doSegmentation    */
 // template< typename TPixel >
 // void
 // CSFLSSegmentor2D< TPixel >
-// ::doSegmenation()
+// ::doSegmentation()
 // {
 //   // gth818n::saveAsImage2< double >(mp_phi, "init0.nrrd");
 

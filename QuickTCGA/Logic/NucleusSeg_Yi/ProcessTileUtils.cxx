@@ -342,7 +342,7 @@ cv::Mat processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureW
   cv.setMask( nucleusBinaryMask );
   cv.setNumIter(numiter);
   cv.setCurvatureWeight(curvatureWeight);
-  cv.doSegmenation();
+  cv.doSegmentation();
 
   CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType >::LSImageType::Pointer phi = cv.mp_phi;
 
@@ -474,7 +474,7 @@ cv::Mat processTileNoDeclump(cv::Mat thisTileCV, float otsuRatio = 1.0, double c
   cv.setMask( nucleusBinaryMask );
   cv.setNumIter(numiter);
   cv.setCurvatureWeight(curvatureWeight);
-  cv.doSegmenation();
+  cv.doSegmentation();
 
   CSFLSLocalChanVeseSegmentor2D< itkFloatImageType::PixelType >::LSImageType::Pointer phi = cv.mp_phi;
 

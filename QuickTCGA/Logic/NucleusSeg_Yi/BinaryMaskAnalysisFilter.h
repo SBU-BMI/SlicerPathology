@@ -88,7 +88,7 @@ namespace gth818n
     itkBinaryMaskImageType::Pointer m_binaryMask;
     itkLabelImageType::Pointer m_connectedComponentLabelImage;
 
-    itkFloatImageType::Pointer m_featureColoredImage; ///< as the genearl output channel if want to color the object by some feature. So that we don't have to have separated "colorBySize", "colorBySizePerimeterRatio" etc.
+    itkFloatImageType::Pointer m_featureColoredImage; ///< as the general output channel if want to color the object by some feature. So that we don't have to have separated "colorBySize", "colorBySizePerimeterRatio" etc.
 
     LabelMapType::Pointer m_labelMap;
 
@@ -101,14 +101,14 @@ namespace gth818n
     float m_objectSizeUpperThreshold; ///< object larger than this will be broken. unit in physical spaces
 
 
-    /// coputed features
+    /// computed features
     unsigned int m_numberOfObjects; ///< I will use "Object" as well as "Connected Component"
     std::vector<double> m_objectAreas;
     std::vector<double> m_objectPerimeters;
     std::vector<double> m_objectEquivalentSphericalRadius;
     //std::vector<double> m_objectNecessityOfBreaking;
     std::vector<char> m_objectToBreak;
-    /// coputed features, end
+    /// computed features, end
 
 
     bool m_allDone;

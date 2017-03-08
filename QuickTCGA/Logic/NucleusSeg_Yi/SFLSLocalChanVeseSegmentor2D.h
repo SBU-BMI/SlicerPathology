@@ -62,8 +62,8 @@ public:
   void computeMeansAt(long ix, long iy);
   //  void updateMeans();
 
-  //void doChanVeseSegmenation();
-  void doSegmenation();
+  //void doChanVeseSegmentation();
+  void doSegmentation();
 
 
   /* ============================================================
