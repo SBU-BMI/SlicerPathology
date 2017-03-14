@@ -20,7 +20,7 @@ public:
   //    typedef boost::shared_ptr< CSFLSLocalChanVeseSegmentor2D< TPixel > > Pointer;
 
   typedef typename SuperClassType::NodeType NodeType;
-  typedef typename SuperClassType::CSFLSLayer CSFLSLayer; 
+  typedef typename SuperClassType::CSFLSLayer CSFLSLayer;
 
 
  /*================================================================================
@@ -41,7 +41,7 @@ public:
 
   //     /* ============================================================
   //        New    */
-  //     static Pointer New() 
+  //     static Pointer New()
   //     {
   //       return Pointer(new CSFLSLocalChanVeseSegmentor2D< TPixel >);
   //     }
@@ -62,8 +62,8 @@ public:
   void computeMeansAt(long ix, long iy);
   //  void updateMeans();
 
-  //void doChanVeseSegmenation();
-  void doSegmenation();
+  //void doChanVeseSegmentation();
+  void doSegmentation();
 
 
   /* ============================================================

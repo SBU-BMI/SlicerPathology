@@ -78,11 +78,11 @@ CSFLSLocalChanVeseSegmentor2D< TPixel >
 
 
 /* ============================================================
-   doSegmenation    */
+   doSegmentation    */
 template< typename TPixel >
 void
 CSFLSLocalChanVeseSegmentor2D< TPixel >
-::doSegmenation()
+::doSegmentation()
 {
   /*============================================================
    * From the initial mask, generate: 1. SFLS, 2. mp_label and
@@ -138,7 +138,7 @@ CSFLSLocalChanVeseSegmentor2D< TPixel >
                   m_meanIn += imgVal;
 
                 }
-              else 
+              else
                 {
                   ++m_areaOut;
                   m_meanOut += imgVal;;

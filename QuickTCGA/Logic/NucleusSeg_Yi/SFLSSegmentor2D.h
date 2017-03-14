@@ -59,7 +59,7 @@ public:
   void initializeLabel();
   void initializePhi();
 
-  virtual void doSegmenation() = 0;
+  virtual void doSegmentation() = 0;
 
 
   // geometry
@@ -98,11 +98,11 @@ protected:
 
 
   /*----------------------------------------------------------------------
-    These two record the pts which change status 
+    These two record the pts which change status
 
     Because they are created and visited sequentially, and when not
     needed, are clear-ed as a whole. No random insertion or removal is
-    needed. So use vector is faster than list.  */ 
+    needed. So use vector is faster than list.  */
   CSFLSLayer m_lIn2out;
   CSFLSLayer m_lOut2in;
 
