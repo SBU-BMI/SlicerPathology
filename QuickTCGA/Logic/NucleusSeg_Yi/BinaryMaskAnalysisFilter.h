@@ -100,14 +100,14 @@ namespace gth818n
     float m_meanshiftSigma;
 
 
-    /// coputed features
+    /// computed features
     unsigned int m_numberOfObjects; ///< I will use "Object" as well as "Connected Component"
     std::vector<double> m_objectAreas;
     std::vector<double> m_objectPerimeters;
     std::vector<double> m_objectEquivalentSphericalRadius;
     //std::vector<double> m_objectNecessityOfBreaking;
     std::vector<char> m_objectToBreak;
-    /// coputed features, end
+    /// computed features, end
 
 
     bool m_allDone;
