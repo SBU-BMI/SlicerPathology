@@ -27,7 +27,7 @@ vtkQuickTCGA::vtkQuickTCGA( )
   sizeThld = 3;
   sizeUpperThld = 200;
   mpp = 0.25;
-  kernelSize = 15.0;
+  kernelSize = 20.0;
 }
 
 
@@ -173,4 +173,3 @@ void vtkQuickTCGA::PrintSelf(ostream &os, vtkIndent indent)
 {
   std::cout<<"This function has been found"<<std::endl;
 }
-
