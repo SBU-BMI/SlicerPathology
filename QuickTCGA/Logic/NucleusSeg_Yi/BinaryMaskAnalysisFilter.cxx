@@ -338,7 +338,7 @@ namespace gth818n
       }
 
     ////////////////////////////////////////////////////////////////////////////////
-    /// Now save the resuts:
+    /// Now save the results:
     /// Only save on average 1/100 of tiles to save space and perform random check if needed
     // cv::RNG rng;
     // rng.state = cv::getTickCount();
@@ -380,7 +380,7 @@ namespace gth818n
     //   }
 
     // fclose (pFile);
-    // /// Now save the resuts
+    // /// Now save the results
     // ////////////////////////////////////////////////////////////////////////////////
 
     return;
