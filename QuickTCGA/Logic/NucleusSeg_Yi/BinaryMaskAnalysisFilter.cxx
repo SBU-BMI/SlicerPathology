@@ -30,8 +30,8 @@ namespace gth818n
 
     m_numberOfObjects = 0;
 
-    //m_objectSizeThreshold = 8; ///< smallest cell, sperm, nutraphils, platlets (may be considered as cell fragments) are around 3 micron in one dim. So set 8 um^2 as lower limit
-    m_objectSizeThreshold = 3; ///< smallest cell, sperm, nutraphils, platlets (may be considered as cell fragments) are around 3 micron in one dim. So set 8 um^2 as lower limit
+    //m_objectSizeThreshold = 8; ///< smallest cell, sperm, neutrophils, platelets (may be considered as cell fragments) are around 3 micron in one dim. So set 8 um^2 as lower limit
+    m_objectSizeThreshold = 3; ///< smallest cell, sperm, neutrophils, platelets (may be considered as cell fragments) are around 3 micron in one dim. So set 8 um^2 as lower limit
     m_objectSizeUpperThreshold = 200;
 
     m_meanshiftSigma = 20.0;
@@ -324,17 +324,17 @@ namespace gth818n
         m_objectEquivalentSphericalRadius[n] = labelObject->GetEquivalentSphericalRadius();
         //m_objectNecessityOfBreaking[n] = m_objectPerimeters[n]*m_objectPerimeters[n]/m_objectAreas[n];
 
-        // m_fileForOutputNucluesFeatures << labelObject->GetNumberOfPixels() << ",";
-        // m_fileForOutputNucluesFeatures << m_mpp*m_mpp*static_cast<float>(labelObject->GetNumberOfPixels()) << ",";
-        // m_fileForOutputNucluesFeatures << labelObject->GetNumberOfPixelsOnBorder() << ",";
-        // m_fileForOutputNucluesFeatures << labelObject->GetFeretDiameter() << ",";
-        // m_fileForOutputNucluesFeatures << labelObject->GetPrincipalMoments()[0] << "," << labelObject->GetPrincipalMoments()[1] << ",";
-        // m_fileForOutputNucluesFeatures << labelObject->GetElongation() << ",";
-        // m_fileForOutputNucluesFeatures << labelObject->GetRoundness() << ",";
-        // m_fileForOutputNucluesFeatures << labelObject->GetEquivalentSphericalRadius() << ",";
-        // m_fileForOutputNucluesFeatures << labelObject->GetEquivalentSphericalPerimeter() << ",";
-        // m_fileForOutputNucluesFeatures << labelObject->GetEquivalentEllipsoidDiameter()[0] << "," << labelObject->GetEquivalentEllipsoidDiameter()[1] << ",";
-        // m_fileForOutputNucluesFeatures << labelObject->GetFlatness() << std::endl << std::flush;
+        // m_fileForOutputNucleusFeatures << labelObject->GetNumberOfPixels() << ",";
+        // m_fileForOutputNucleusFeatures << m_mpp*m_mpp*static_cast<float>(labelObject->GetNumberOfPixels()) << ",";
+        // m_fileForOutputNucleusFeatures << labelObject->GetNumberOfPixelsOnBorder() << ",";
+        // m_fileForOutputNucleusFeatures << labelObject->GetFeretDiameter() << ",";
+        // m_fileForOutputNucleusFeatures << labelObject->GetPrincipalMoments()[0] << "," << labelObject->GetPrincipalMoments()[1] << ",";
+        // m_fileForOutputNucleusFeatures << labelObject->GetElongation() << ",";
+        // m_fileForOutputNucleusFeatures << labelObject->GetRoundness() << ",";
+        // m_fileForOutputNucleusFeatures << labelObject->GetEquivalentSphericalRadius() << ",";
+        // m_fileForOutputNucleusFeatures << labelObject->GetEquivalentSphericalPerimeter() << ",";
+        // m_fileForOutputNucleusFeatures << labelObject->GetEquivalentEllipsoidDiameter()[0] << "," << labelObject->GetEquivalentEllipsoidDiameter()[1] << ",";
+        // m_fileForOutputNucleusFeatures << labelObject->GetFlatness() << std::endl << std::flush;
       }
 
     ////////////////////////////////////////////////////////////////////////////////
