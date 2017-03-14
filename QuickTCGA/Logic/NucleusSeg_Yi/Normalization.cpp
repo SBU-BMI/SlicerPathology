@@ -16,7 +16,7 @@ namespace nscale
     %M - a 4x2 matrix containing the Fisher's linear discriminant function coefficients.
     % DiscriminantF_BG =  M(1,1)*R + M(1,2)*G + M(1,3)*B + M(1,4);
     % DiscriminantF_FG =  M(2,1)*R + M(2,2)*G + M(2,3)*B + M(2,4);
-    %ouput:
+    %output:
     %I_seg_fg - segmented binary image*/
   cv::Mat Normalization::segFG(cv::Mat I, cv::Mat M)
   {
@@ -60,7 +60,7 @@ namespace nscale
     % Convert  RGB to lab(l,alpha,beta) to RGB
     % Reinhard et al. Color Transfer between Images, IEEE Computer Graphics and Application,2001
     %input:
-    %RGB - RGB sginals
+    %RGB - RGB signals
     %output:
     %LAB - lab(l,alpha,beta)signals*/
   cv::Mat Normalization::bgr2Lab(cv::Mat I)
@@ -209,7 +209,7 @@ namespace nscale
         //			}
       }
     }
-    /*	% conver back from log space to linear space
+    /*	% convert back from log space to linear space
         LMS = 10.^log_LMS; */
     cv::Mat LMS(LAB.size(), CV_32FC3);
     for (int i=0; i<LMS.rows; i++){
@@ -297,13 +297,13 @@ namespace nscale
 
   }
 
-  /*%fg - RGB sginals(foreground)
-    %bg - RGB signals(backgorund)
+  /*%fg - RGB signals(foreground)
+    %bg - RGB signals(background)
     %output:
     %idx_fg - indices of foreground pixels
     %idx_bg - indices of background pixels
-    %fg_lab - converted lab sginals(foreground)
-    %bg_lab - converted lab signals(backgorund)*/
+    %fg_lab - converted lab signals(foreground)
+    %bg_lab - converted lab signals(background)*/
   void nscale::Normalization::PixelClass(cv::Mat I, cv::Mat o_fg, cv::Mat o_bg, cv::Mat& o_fg_lab, cv::Mat& o_bg_lab)
   {
 
@@ -495,7 +495,7 @@ namespace nscale
     %M - a 4x2 matrix containing the Fisher's linear discriminant function coefficients.
     % DiscriminantF_BG =  M(1,1)*R + M(1,2)*G + M(1,3)*B + M(1,4);
     % DiscriminantF_FG =  M(2,1)*R + M(2,2)*G + M(2,3)*B + M(2,4);
-    %ouputs:
+    %outputs:
     %Mean - scalar mean parameter for mapping.
     %Std - scalar variance parameter for mapping.*/
   void Normalization::targetParameters(const cv::Mat& originalI, float (&targetMean)[3], float (&targetStd)[3])
@@ -573,5 +573,3 @@ namespace nscale
   }
 
 }// nscale namespace
-
-
