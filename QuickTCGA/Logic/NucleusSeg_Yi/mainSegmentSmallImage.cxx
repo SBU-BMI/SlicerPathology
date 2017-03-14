@@ -68,7 +68,7 @@ int main(int argc, char **argv)
   ++optionalParameterStartIndex;
 
   /*--------------------------------------------------------------------------------
-    Higher value will cause smoother nucelear boundary.
+    Higher value will cause smoother nuclear boundary.
 
     range: [0, 1]
     --------------------------------------------------------------------------------*/
