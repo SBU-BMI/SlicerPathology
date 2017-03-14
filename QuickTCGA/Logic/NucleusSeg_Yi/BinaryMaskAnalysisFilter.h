@@ -49,7 +49,7 @@ namespace gth818n
 
     void setObjectSizeThreshold(float sizeThld) {m_objectSizeThreshold = sizeThld;}
     void setObjectSizeUpperThreshold(float sizeUpperThld) {m_objectSizeUpperThreshold = sizeUpperThld;}
-    void setMeanshiftSigma(float s) {m_meanshiftSigma = s;}
+    void setKernelSize(float s) {m_meanshiftSigma = s;}
 
     void setMPP(float mpp);
 
