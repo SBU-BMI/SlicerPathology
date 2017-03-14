@@ -74,8 +74,6 @@ namespace gth818n
     typename VectorSampleType::Pointer m_seedPoints;
     typename VectorSampleType::Pointer m_centers;
 
-    typedef typename VectorSampleType::InstanceIdentifier VectorSampleSizeType;
-
     VectorType m_inputPointSetRange;
 
 
@@ -85,7 +83,7 @@ namespace gth818n
 
     int m_epoch; ///< after mean shift on input data, will recursively
                  ///run mean shift on the obtained data. This give the
-                 ///number of recursion. If 0, just run MS for once:
+                 ///number of recusion. If 0, just run MS for once:
                  ///there may be some close but not too close mode
                  ///centers.
 

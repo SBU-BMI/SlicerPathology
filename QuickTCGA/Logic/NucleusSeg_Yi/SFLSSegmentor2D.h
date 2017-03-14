@@ -45,13 +45,9 @@ public:
 
   void normalizeForce();
 
-  //     double maxPhi(itk::IndexValueType ix, itk::IndexValueType iy, itk::IndexValueType iz, double level);
-  //     double minPhi(itk::IndexValueType ix, itk::IndexValueType iy, itk::IndexValueType iz, double level);
-  bool getPhiOfTheNbhdWhoIsClosestToZeroLevelInLayerCloserToZeroLevel(
-    itk::IndexValueType ix,
-    itk::IndexValueType iy,
-    itk::IndexValueType iz,
-    double& thePhi);
+  //     double maxPhi(long ix, long iy, long iz, double level);
+  //     double minPhi(long ix, long iy, long iz, double level);
+  bool getPhiOfTheNbhdWhoIsClosestToZeroLevelInLayerCloserToZeroLevel(long ix, long iy, long iz, double& thePhi);
 
   void oneStepLevelSetEvolution();
 
@@ -63,11 +59,11 @@ public:
   void initializeLabel();
   void initializePhi();
 
-  virtual void doSegmentation() = 0;
+  virtual void doSegmenation() = 0;
 
 
   // geometry
-  double computeKappa(itk::IndexValueType ix, itk::IndexValueType iy);
+  double computeKappa(long ix, long iy);
 
   void setCurvatureWeight(double a);
 
@@ -84,8 +80,9 @@ public:
 protected:
   double m_curvatureWeight;
 
-  typename itk::IndexValueType m_nx;
-  typename itk::IndexValueType m_ny;
+  long m_nx;
+  long m_ny;
+
 
   std::vector< double > m_force;
 
