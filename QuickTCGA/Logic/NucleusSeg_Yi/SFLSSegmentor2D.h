@@ -45,13 +45,9 @@ public:
 
   void normalizeForce();
 
-  //     double maxPhi(itk::IndexValueType ix, itk::IndexValueType iy, itk::IndexValueType iz, double level);
-  //     double minPhi(itk::IndexValueType ix, itk::IndexValueType iy, itk::IndexValueType iz, double level);
-  bool getPhiOfTheNbhdWhoIsClosestToZeroLevelInLayerCloserToZeroLevel(
-    itk::IndexValueType ix,
-    itk::IndexValueType iy,
-    itk::IndexValueType iz,
-    double& thePhi);
+  //     double maxPhi(long ix, long iy, long iz, double level);
+  //     double minPhi(long ix, long iy, long iz, double level);
+  bool getPhiOfTheNbhdWhoIsClosestToZeroLevelInLayerCloserToZeroLevel(long ix, long iy, long iz, double& thePhi);
 
   void oneStepLevelSetEvolution();
 
@@ -67,7 +63,7 @@ public:
 
 
   // geometry
-  double computeKappa(itk::IndexValueType ix, itk::IndexValueType iy);
+  double computeKappa(long ix, long iy);
 
   void setCurvatureWeight(double a);
 
@@ -84,8 +80,9 @@ public:
 protected:
   double m_curvatureWeight;
 
-  typename itk::IndexValueType m_nx;
-  typename itk::IndexValueType m_ny;
+  long m_nx;
+  long m_ny;
+
 
   std::vector< double > m_force;
 
@@ -101,11 +98,11 @@ protected:
 
 
   /*----------------------------------------------------------------------
-    These two record the pts which change status 
+    These two record the pts which change status
 
     Because they are created and visited sequentially, and when not
     needed, are clear-ed as a whole. No random insertion or removal is
-    needed. So use vector is faster than list.  */ 
+    needed. So use vector is faster than list.  */
   CSFLSLayer m_lIn2out;
   CSFLSLayer m_lOut2in;
 

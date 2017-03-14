@@ -66,7 +66,7 @@ class VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT vtkQuickTCGA : public vtkObject
   float sizeThld;
   float sizeUpperThld;
   double mpp;
-  double kernelSize;
+  float kernelSize;
 
   cv::Mat m_imSrc;
   cv::Mat m_imLab;

@@ -26,8 +26,8 @@ public:
     void SetPreSegmentation(const cv::Mat& imSeg);
     void DoSegmentation();
     void DoTemplateMatching();
-    void DoNucleiSegmentationYi(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, double kernelSize);
-    void DoNucleiSegmentationYiwo(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, double kernelSize);
+    void DoNucleiSegmentationYi(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, float kernelSize);
+    void DoNucleiSegmentationYiwo(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, float kernelSize);
     void GetSegmentation(cv::Mat& imSeg);
     void RefineCurvature();
     void RefineShortCut();

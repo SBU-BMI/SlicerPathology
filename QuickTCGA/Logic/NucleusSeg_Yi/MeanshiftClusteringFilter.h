@@ -74,8 +74,6 @@ namespace gth818n
     typename VectorSampleType::Pointer m_seedPoints;
     typename VectorSampleType::Pointer m_centers;
 
-    typedef typename VectorSampleType::InstanceIdentifier VectorSampleSizeType;
-
     VectorType m_inputPointSetRange;
 
 
