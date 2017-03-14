@@ -108,8 +108,8 @@ private:
 	std::string name;
 	long long starttime;
 	long long endtime;
-	int eventtype;
 	std::string annotation;
+	int eventtype;
 };
 
 
@@ -195,7 +195,7 @@ public :
 	virtual ~Logger() {
 		values.clear();
 	};
-	
+
 	// session id is something like a filename or image name or hostname.
 	virtual cci::common::LogSession* getSession(const std::string &session_name);
 
