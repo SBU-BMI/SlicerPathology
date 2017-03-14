@@ -171,7 +171,7 @@ namespace gth818n
 
             m_seedPoints->SetMeasurementVector(itp, newPosition);
 
-            /// If relative increamental is small enough, break
+            /// If relative incremental is small enough, break
             VectorType del = queryPoint - newPosition;
             for (unsigned int idim = 0; idim < NPointDimension; ++idim)
               {
