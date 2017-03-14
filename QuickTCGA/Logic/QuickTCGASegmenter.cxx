@@ -146,7 +146,7 @@ void QuickTCGASegmenter::DoSegmentation() {
     std::cout << "Do segmentation at QuickTCGASegmenter\n";
 }
 
-void QuickTCGASegmenter::DoNucleiSegmentationYi(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, double kernelSize)
+void QuickTCGASegmenter::DoNucleiSegmentationYi(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, float kernelSize)
 {
 
   // Resize image for higher efficiency
@@ -160,7 +160,7 @@ void QuickTCGASegmenter::DoNucleiSegmentationYi(float otsuRatio, double curvatur
   //     seg.copyTo(m_imLab);
 }
 
-void QuickTCGASegmenter::DoNucleiSegmentationYiwo(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, double kernelSize)
+void QuickTCGASegmenter::DoNucleiSegmentationYiwo(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp, float kernelSize)
 {
 
   // Resize image for higher efficiency
