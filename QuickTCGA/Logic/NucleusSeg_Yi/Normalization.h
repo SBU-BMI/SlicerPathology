@@ -11,6 +11,7 @@
 // Includes to use opencv2/GPU
 #include "opencv2/opencv.hpp"
 //#include "opencv2/gpu/gpu.hpp"
+#include <sys/time.h>
 
 #include "PixelOperations.h"
 

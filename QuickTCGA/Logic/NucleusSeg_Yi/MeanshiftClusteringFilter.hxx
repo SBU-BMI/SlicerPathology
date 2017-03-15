@@ -129,7 +129,7 @@ namespace gth818n
     VectorType inputPointSetMax;
     inputPointSetMax.Fill(itk::NumericTraits< RealType >::min());
 
-    for (VectorSampleSizeType itp = 0; itp < m_inputPointSet->Size(); ++itp)
+    for (long itp = 0; itp < m_inputPointSet->Size(); ++itp)
       {
         VectorType thisPoint = m_inputPointSet->GetMeasurementVector(itp);
 
@@ -153,7 +153,7 @@ namespace gth818n
 
     for (long it = 0; it < m_numberOfMSIteration; ++it)
       {
-        for (VectorSampleSizeType itp = 0; itp < m_seedPoints->Size(); ++itp)
+        for (unsigned int itp = 0; itp < m_seedPoints->Size(); ++itp)
           {
             queryPoint = m_seedPoints->GetMeasurementVector(itp);
             m_tree->Search( queryPoint, m_radius, neighbors ) ;
@@ -161,7 +161,7 @@ namespace gth818n
             VectorType newPosition;
             newPosition.Fill(0);
 
-            for ( VectorSampleSizeType i = 0 ; i < neighbors.size() ; ++i )
+            for ( unsigned int i = 0 ; i < neighbors.size() ; ++i )
               {
                 newPosition += m_tree->GetMeasurementVector( neighbors[i] );
                 //std::cout << m_tree->GetMeasurementVector( neighbors[i] ) << std::endl;
@@ -228,12 +228,12 @@ namespace gth818n
     m_centers = VectorSampleType::New();
     m_centers->PushBack( m_seedPoints->GetMeasurementVector(0) );
 
-    for (VectorSampleSizeType i = 1 ; i < m_seedPoints->Size() ; ++i )
+    for (unsigned int i = 1 ; i < m_seedPoints->Size() ; ++i )
       {
         const VectorType& newCenterCandidate = m_seedPoints->GetMeasurementVector(i);
         bool IAmNotCloseToAnyExistingCenter = true;
 
-        for (VectorSampleSizeType ii = 0 ; ii < m_centers->Size() ; ++ii )
+        for (unsigned int ii = 0 ; ii < m_centers->Size() ; ++ii )
           {
             VectorType distVector = newCenterCandidate - m_centers->GetMeasurementVector(ii);
             if (distVector.GetNorm() < m_radius )
@@ -301,7 +301,7 @@ namespace gth818n
     m_seedPoints = VectorSampleType::New();
     m_seedPoints->Resize(m_inputPointSet->Size() );
 
-    for (VectorSampleSizeType i = 0 ; i < m_inputPointSet->Size() ; ++i )
+    for (unsigned int i = 0 ; i < m_inputPointSet->Size() ; ++i )
       {
         m_seedPoints->SetMeasurementVector( i, m_inputPointSet->GetMeasurementVector(i) );
       }
