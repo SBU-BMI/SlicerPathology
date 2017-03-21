@@ -31,38 +31,6 @@
 
 #include "SFLSLocalChanVeseSegmentor2D.h"
 
-/**
- * writeImage
- */
-template< typename itkImage_t > void writeImage(typename itkImage_t::Pointer img, const char *fileName, bool compress)
-{
-	typedef itk::ImageFileWriter< itkImage_t > WriterType;
-
-	typename WriterType::Pointer writer = WriterType::New();
-	writer->SetFileName( fileName );
-	writer->SetInput(img);
-	if (compress)
-	{
-		writer->UseCompressionOn();
-	}
-	else
-	{
-		writer->UseCompressionOff();
-	}
-
-	try
-	{
-		writer->Update();
-	}
-	catch ( itk::ExceptionObject &err)
-	{
-		std::cout << "ExceptionObject caught !" << std::endl;
-		std::cout << err << std::endl;
-		raise(SIGABRT);
-	}
-}
-
-
 itkUCharImageType::Pointer ExtractHematoxylinChannel(itkRGBImageType::Pointer HAndEImage)
 {
 	int width = HAndEImage->GetLargestPossibleRegion().GetSize()[0];
@@ -422,9 +390,6 @@ cv::Mat processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureW
   return binary;
   //	return nucleusBinaryMask;
 }
-
-
-template void writeImage<itkUCharImageType>(itkUCharImageType::Pointer img, const char *fileName, bool compress);
 
 
 cv::Mat processTileNoDeclump(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25, float kernelSize = 20.0)
