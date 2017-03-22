@@ -25,9 +25,9 @@ class SlicerPathology(ScriptedLoadableModule):
     self.parent.title = "Slicer Pathology"
     self.parent.categories = ["Pathology"]
     self.parent.dependencies = []
-    self.parent.contributors = ["Erich Bremer, Yi Gao, Tammy DiPrima (Stony Brook University)"]
+    self.parent.contributors = ["Erich Bremer, Joel Saltz, Yi Gao, Tammy DiPrima (Stony Brook University)"]
     self.parent.helpText = """
-    Put some useful help text in here at some point....
+    Automatic and semi-automatic pathology segmentation tools.
     """
     self.parent.acknowledgementText = """
     This file was originally developed by Jean-Christophe Fillion-Robin, Kitware Inc.
