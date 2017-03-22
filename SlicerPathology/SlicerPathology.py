@@ -25,7 +25,7 @@ class SlicerPathology(ScriptedLoadableModule):
     self.parent.title = "Slicer Pathology"
     self.parent.categories = ["Pathology"]
     self.parent.dependencies = []
-    self.parent.contributors = ["John Doe (AnyWare Corp.)"] # replace with "Firstname Lastname (Organization)"
+    self.parent.contributors = ["Erich Bremer, Yi Gao, Tammy DiPrima (Stony Brook University)"]
     self.parent.helpText = """
     Put some useful help text in here at some point....
     """
