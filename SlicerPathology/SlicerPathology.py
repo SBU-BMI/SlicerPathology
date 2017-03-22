@@ -22,7 +22,7 @@ class SlicerPathology(ScriptedLoadableModule):
 
   def __init__(self, parent):
     ScriptedLoadableModule.__init__(self, parent)
-    self.parent.title = "SlicerPathology" # TODO make this more human readable by adding spaces
+    self.parent.title = "Slicer Pathology"
     self.parent.categories = ["Pathology"]
     self.parent.dependencies = []
     self.parent.contributors = ["John Doe (AnyWare Corp.)"] # replace with "Firstname Lastname (Organization)"
