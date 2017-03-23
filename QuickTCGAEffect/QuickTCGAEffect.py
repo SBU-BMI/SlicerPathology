@@ -73,7 +73,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.frame.layout().addWidget(self.segButton)
         self.segButton.connect('clicked()', self.RunSegmenter)
         
-        # Jun button not active yet:
+        # TODO: Jun button not active yet:
         self.junButton = qt.QPushButton(self.frame)
         self.junButton.text = "Run Segmentation Watershed Declumping (slow)"
         self.frame.layout().addWidget(self.junButton)
