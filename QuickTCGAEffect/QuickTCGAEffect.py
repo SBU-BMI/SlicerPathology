@@ -74,9 +74,9 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.segButton.connect('clicked()', self.RunSegmenter)
         
         # TODO: Jun button not active yet:
-        self.junButton = qt.QPushButton(self.frame)
-        self.junButton.text = "Run Segmentation Watershed Declumping (slow)"
-        self.frame.layout().addWidget(self.junButton)
+        # self.junButton = qt.QPushButton(self.frame)
+        # self.junButton.text = "Run Segmentation Watershed Declumping (slow)"
+        # self.frame.layout().addWidget(self.junButton)
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
@@ -628,6 +628,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
             qTCGAMod.Setmpp(mpp)
             qTCGAMod.SetkernelSize(kernelSize)
             qTCGAMod.Initialization()
+            # print("qTCGAMod:", qTCGAMod)
             self.qTCGAMod = qTCGAMod
             self.QuickTCGACreated = True  # tracks if completed the initializtion (so can do stop correctly) of KSlice
 
@@ -649,12 +650,15 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         mpp = float(node.GetParameter("QuickTCGAEffect,mpp"))
         kernelSize = float(node.GetParameter("QuickTCGAEffect,kernelSize"))
         print otsuRatio, " ", curvatureWeight, " ", sizeThld, " ", sizeUpperThld, " ", mpp, " ", kernelSize
+
+        # print("self.qTCGAMod: ", self.qTCGAMod)
         self.qTCGAMod.SetotsuRatio(otsuRatio)
         self.qTCGAMod.SetcurvatureWeight(curvatureWeight)
         self.qTCGAMod.SetsizeThld(sizeThld)
         self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
         self.qTCGAMod.Setmpp(mpp)
         self.qTCGAMod.SetkernelSize(kernelSize)
+        
         AA = self.foregroundNode.GetImageData()
         LL = self.labelNode.GetImageData()
         ddd = AA.GetDimensions()
@@ -684,8 +688,10 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         print "executing segmentation..."
         if (declump):
             self.qTCGAMod.Run_NucleiSegYi()
+            # print "Run_NucleiSegYi"
         else:
             self.qTCGAMod.Run_NucleiSegYiwo()
+            # print "Run_NucleiSegYiwo"
         print "segmentation is done"
         self.qTCGASegArray[:] = seedArray[:]
         self.MergeImages(LL, self.labelNode.GetImageData(), a[0], a[1])
