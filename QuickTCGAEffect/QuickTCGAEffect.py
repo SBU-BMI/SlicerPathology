@@ -68,9 +68,15 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.segnoButton.connect('clicked()', self.RunSegmenterWO)
 
         self.segButton = qt.QPushButton(self.frame)
-        self.segButton.text = "Run Segmentation With Declumping (slow)"
+        # self.segButton.text = "Run Segmentation With Declumping (slow)"
+        self.segButton.text = "Run Segmentation Mean Shift Declumping (slow)"
         self.frame.layout().addWidget(self.segButton)
         self.segButton.connect('clicked()', self.RunSegmenter)
+        
+        # Jun button not active yet:
+        self.junButton = qt.QPushButton(self.frame)
+        self.junButton.text = "Run Segmentation Watershed Declumping (slow)"
+        self.frame.layout().addWidget(self.junButton)
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
