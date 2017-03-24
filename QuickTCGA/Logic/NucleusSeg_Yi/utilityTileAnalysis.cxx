@@ -25,13 +25,12 @@
 #include "BinaryMaskAnalysisFilter.h"
 #include "SFLSLocalChanVeseSegmentor2D.h"
 
-
 #include "itkTypedefs.h"
 
 #include "utilityScalarImage.h"
 #include "utilityIO.h"
 
-#include "time.h"
+// #include "time.h"
 
 namespace ImagenomicAnalytics {
     namespace TileAnalysis {
@@ -424,19 +423,19 @@ namespace ImagenomicAnalytics {
 
             if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
                 std::cout << "before CV\n" << std::flush;
+                // int numiter = 100;
 
-                //int numiter = 100;
-                time_t start, end;
-                time(&start);
+                // time_t start, end;
+                // time(&start);
                 CSFLSLocalChanVeseSegmentor2D<itkFloatImageType::PixelType> cv;
                 cv.setImage(hemaFloat);
                 cv.setMask(nucleusBinaryMask);
                 cv.setNumIter(levelsetNumberOfIteration);
                 cv.setCurvatureWeight(curvatureWeight);
                 cv.doSegmentation();
-                time(&end);
-                double dif = difftime(end, start);
-                printf("Elasped time is %.2lf seconds.\n", dif);
+                // time(&end);
+                // double dif = difftime(end, start);
+                // std::cout << "Elasped time is " << dif << " seconds.\n" << std::flush;
 
                 std::cout << "after CV\n" << std::flush;
 
@@ -526,6 +525,12 @@ namespace ImagenomicAnalytics {
                 }
             }
 
+            // "FIX hole in object" (Yi's commit 3/23/17)
+            fhFilterType::Pointer fhfilter1 = fhFilterType::New();
+            fhfilter1->SetInput(nucleusBinaryMask);
+            fhfilter1->SetForegroundValue(1);
+            fhfilter1->Update();
+
             //std::cout << "before ConnectedComponent\n" << std::flush;
             //typedef itk::ConnectedComponentImageFilter <itkUCharImageType, itkUShortImageType > ConnectedComponentImageFilterType;
             //ConnectedComponentImageFilterType::Pointer connected = ConnectedComponentImageFilterType::New ();
@@ -534,7 +539,8 @@ namespace ImagenomicAnalytics {
             //outputLabelImageUShort = connected->GetOutput();
             //std::cout << "after ConnectedComponent\n" << std::flush;
 
-            return nucleusBinaryMask;
+            return fhfilter1->GetOutput();
+            //return nucleusBinaryMask;
         }
 
 
@@ -590,19 +596,19 @@ namespace ImagenomicAnalytics {
 
             if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
                 std::cout << "before CV\n" << std::flush;
-
                 //int numiter = 100;
-                time_t start, end;
-                time(&start);
+
+                // time_t start, end;
+                // time(&start);
                 CSFLSLocalChanVeseSegmentor2D<itkFloatImageType::PixelType> cv;
                 cv.setImage(hemaFloat);
                 cv.setMask(nucleusBinaryMask);
                 cv.setNumIter(levelsetNumberOfIteration);
                 cv.setCurvatureWeight(curvatureWeight);
                 cv.doSegmentation();
-                time(&end);
-                double dif = difftime(end, start);
-                printf("Elasped time is %.2lf seconds.\n", dif);
+                // time(&end);
+                // double dif = difftime(end, start);
+                // std::cout << "Elasped time is " << dif << " seconds.\n" << std::flush;
 
                 std::cout << "after CV\n" << std::flush;
 
@@ -727,19 +733,19 @@ namespace ImagenomicAnalytics {
 
             if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
                 std::cout << "before CV\n" << std::flush;
+                // int numiter = 100;
 
-                //int numiter = 100;
-                time_t start, end;
-                time(&start);
+                // time_t start, end;
+                // time(&start);
                 CSFLSLocalChanVeseSegmentor2D<itkFloatImageType::PixelType> cv;
                 cv.setImage(hemaFloat);
                 cv.setMask(nucleusBinaryMask);
                 cv.setNumIter(levelsetNumberOfIteration);
                 cv.setCurvatureWeight(curvatureWeight);
                 cv.doSegmentation();
-                time(&end);
-                double dif = difftime(end, start);
-                printf("Elasped time is %.2lf seconds.\n", dif);
+                // time(&end);
+                // double dif = difftime(end, start);
+                // std::cout << "Elasped time is " << dif << " seconds.\n" << std::flush;
 
                 std::cout << "after CV\n" << std::flush;
 
@@ -827,4 +833,3 @@ namespace ImagenomicAnalytics {
 
     }
 }// namespace
-
