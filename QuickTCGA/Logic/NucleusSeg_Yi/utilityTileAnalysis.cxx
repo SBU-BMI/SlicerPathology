@@ -526,6 +526,12 @@ namespace ImagenomicAnalytics {
                 }
             }
 
+            // "FIX hole in object" (Yi's commit 3/23/17)
+            fhFilterType::Pointer fhfilter1 = fhFilterType::New();
+            fhfilter1->SetInput( nucleusBinaryMask );
+            fhfilter1->SetForegroundValue( 1 );
+            fhfilter1->Update();
+
             //std::cout << "before ConnectedComponent\n" << std::flush;
             //typedef itk::ConnectedComponentImageFilter <itkUCharImageType, itkUShortImageType > ConnectedComponentImageFilterType;
             //ConnectedComponentImageFilterType::Pointer connected = ConnectedComponentImageFilterType::New ();
@@ -534,7 +540,8 @@ namespace ImagenomicAnalytics {
             //outputLabelImageUShort = connected->GetOutput();
             //std::cout << "after ConnectedComponent\n" << std::flush;
 
-            return nucleusBinaryMask;
+            return fhfilter1->GetOutput();
+            //return nucleusBinaryMask;
         }
 
 
