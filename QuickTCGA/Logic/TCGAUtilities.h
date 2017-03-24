@@ -69,60 +69,6 @@ void VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT
 FindBoundingBoxFromMask(const cv::Mat& imMask, cv::Rect& rect);
 
 
-
-
-
-  /**
-   * readImage
-   */
-  template< typename itkImage_t >
-  typename itkImage_t::Pointer readImage(const char *fileName)
-  {
-    typedef itk::ImageFileReader< itkImage_t > ImageReaderType;
-    typename ImageReaderType::Pointer reader = ImageReaderType::New();
-    reader->SetFileName(fileName);
-
-    typename itkImage_t::Pointer image;
-
-    try
-      {
-        reader->Update();
-        image = reader->GetOutput();
-      }
-    catch ( itk::ExceptionObject &err)
-      {
-        std::cerr<< "ExceptionObject caught !" << std::endl;
-        std::cerr<< err << std::endl;
-        raise(SIGABRT);
-      }
-
-    return image;
-  }
-
-  /**
-   * writeImage
-   */
-  template< typename itkImage_t > void writeImage(typename itkImage_t::Pointer img, const char *fileName)
-  {
-    typedef itk::ImageFileWriter< itkImage_t > WriterType;
-
-    typename WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName( fileName );
-    writer->SetInput(img);
-    writer->UseCompressionOn();
-
-    try
-      {
-        writer->Update();
-      }
-    catch ( itk::ExceptionObject &err)
-      {
-        std::cout << "ExceptionObject caught !" << std::endl;
-        std::cout << err << std::endl;
-        raise(SIGABRT);
-      }
-  }
-
    template<typename VType>
     void WriteVectorIntoFile(const char* fnSave, const std::vector<VType>& vec) {
 

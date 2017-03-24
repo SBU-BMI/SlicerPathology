@@ -138,7 +138,7 @@ CSFLSLocalChanVeseSegmentor2D< TPixel >
                   m_meanIn += imgVal;
 
                 }
-              else 
+              else
                 {
                   ++m_areaOut;
                   m_meanOut += imgVal;;

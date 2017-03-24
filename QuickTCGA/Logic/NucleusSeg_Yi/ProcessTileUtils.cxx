@@ -31,38 +31,6 @@
 
 #include "SFLSLocalChanVeseSegmentor2D.h"
 
-/**
- * writeImage
- */
-template< typename itkImage_t > void writeImage(typename itkImage_t::Pointer img, const char *fileName, bool compress)
-{
-	typedef itk::ImageFileWriter< itkImage_t > WriterType;
-
-	typename WriterType::Pointer writer = WriterType::New();
-	writer->SetFileName( fileName );
-	writer->SetInput(img);
-	if (compress)
-	{
-		writer->UseCompressionOn();
-	}
-	else
-	{
-		writer->UseCompressionOff();
-	}
-
-	try
-	{
-		writer->Update();
-	}
-	catch ( itk::ExceptionObject &err)
-	{
-		std::cout << "ExceptionObject caught !" << std::endl; 
-		std::cout << err << std::endl; 
-		raise(SIGABRT);   
-	}
-}
-
-
 itkUCharImageType::Pointer ExtractHematoxylinChannel(itkRGBImageType::Pointer HAndEImage)
 {
 	int width = HAndEImage->GetLargestPossibleRegion().GetSize()[0];
@@ -295,7 +263,7 @@ castItkImage( const InputImageType* inputImage )
 }
 
 //itkUCharImageType::Pointer processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25)
-cv::Mat processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25, double kernelSize = 15.0)
+cv::Mat processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25, float kernelSize = 20.0)
 {
   float meanT[3] = {-0.632356, -0.0516004, 0.0376543};
   float stdT[3] = {0.26235, 0.0514831, 0.0114217}; ///< These are learnt from the tempalte GBM image selected by George
@@ -424,10 +392,7 @@ cv::Mat processTile(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureW
 }
 
 
-template void writeImage<itkUCharImageType>(itkUCharImageType::Pointer img, const char *fileName, bool compress);
-
-
-cv::Mat processTileNoDeclump(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25, double kernelSize = 15.0)
+cv::Mat processTileNoDeclump(cv::Mat thisTileCV, float otsuRatio = 1.0, double curvatureWeight = 0.8, float sizeThld = 3, float sizeUpperThld = 200, double mpp = 0.25, float kernelSize = 20.0)
 {
   float meanT[3] = {-0.632356, -0.0516004, 0.0376543};
   float stdT[3] = {0.26235, 0.0514831, 0.0114217}; ///< These are learnt from the tempalte GBM image selected by George

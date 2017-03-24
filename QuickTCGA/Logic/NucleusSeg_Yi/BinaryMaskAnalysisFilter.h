@@ -49,10 +49,9 @@ namespace gth818n
 
     void setObjectSizeThreshold(float sizeThld) {m_objectSizeThreshold = sizeThld;}
     void setObjectSizeUpperThreshold(float sizeUpperThld) {m_objectSizeUpperThreshold = sizeUpperThld;}
+    void setKernelSize(float s) {m_meanshiftSigma = s;}
 
     void setMPP(float mpp);
-
-    void setKernelSize(double ks);
 
     itkFloatImageType::Pointer getFeatureColoredImage(unsigned char featureType);
     itkLabelImageType::Pointer getConnectedComponentLabelImage();
@@ -88,17 +87,17 @@ namespace gth818n
     itkBinaryMaskImageType::Pointer m_binaryMask;
     itkLabelImageType::Pointer m_connectedComponentLabelImage;
 
-    itkFloatImageType::Pointer m_featureColoredImage; ///< as the general output channel if want to color the object by some feature. So that we don't have to have separated "colorBySize", "colorBySizePerimeterRatio" etc.
+    itkFloatImageType::Pointer m_featureColoredImage; ///< as the genearl output channel if want to color the object by some feature. So that we don't have to have separated "colorBySize", "colorBySizePerimeterRatio" etc.
 
     LabelMapType::Pointer m_labelMap;
 
     float m_mpp; ///< Micron Per Pixel
 
-    double m_kernelSize;
-
     float m_objectSizeThreshold; ///< object smaller than this will be discarded. unit in physical spaces
 
     float m_objectSizeUpperThreshold; ///< object larger than this will be broken. unit in physical spaces
+
+    float m_meanshiftSigma;
 
 
     /// computed features
