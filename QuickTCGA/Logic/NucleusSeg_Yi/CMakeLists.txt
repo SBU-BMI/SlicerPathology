@@ -11,7 +11,6 @@ set(NucleiSegSrc
   Normalization.cpp
   HistologicalEntities.cpp
   PixelOperations.cpp
-  # UtilsCVImageIO.cpp
   ConnComponents.cpp
   MorphologicOperations.cpp
   NeighborOperations.cpp
