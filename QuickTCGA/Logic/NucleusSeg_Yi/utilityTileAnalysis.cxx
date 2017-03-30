@@ -382,7 +382,7 @@ namespace ImagenomicAnalytics {
                                            float msKernel = 20.0, \
                                            int levelsetNumberOfIteration = 100, \
                                            int declumpingType = 0) {
-                                           //bool doDeclump = false) {
+            //bool doDeclump = false) {
 
             std::cout << "normalizeImageColor.....\n" << std::flush;
             cv::Mat newImgCV = normalizeImageColor<char>(thisTileCV);
@@ -482,18 +482,18 @@ namespace ImagenomicAnalytics {
 
             // SEGMENT: Declumping
             //if (doDeclump) {
-            if(declumpingType > 0) {
+            if (declumpingType > 0) {
                 if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
 
                     // WATERSHED
-                    if (declumpingType == 2){
+                    if (declumpingType == 2) {
 
                         cv::Mat watershedMask;
-                        cv::Mat seg = itk::OpenCVImageBridge::ITKImageToCVMat< itkUCharImageType >( nucleusBinaryMask  );
+                        cv::Mat seg = itk::OpenCVImageBridge::ITKImageToCVMat<itkUCharImageType>(nucleusBinaryMask);
 
                         nscale::HistologicalEntities::plSeparateNuclei(newImgCV, seg, watershedMask);
 
-                        nucleusBinaryMask = itk::OpenCVImageBridge::CVMatToITKImage< itkUCharImageType >( watershedMask );
+                        nucleusBinaryMask = itk::OpenCVImageBridge::CVMatToITKImage<itkUCharImageType>(watershedMask);
 
                     }
 
@@ -824,8 +824,8 @@ namespace ImagenomicAnalytics {
                           double mpp = 0.25, \
                           float msKernel = 20.0, \
                           int levelsetNumberOfIteration = 100,
-                          int declumpingType = 0) {
-                          //bool doDeclump = false) {
+                              int declumpingType = 0) {
+            //bool doDeclump = false) {
 
             itkUShortImageType::Pointer outputLabelImage;
 
@@ -839,7 +839,7 @@ namespace ImagenomicAnalytics {
                                                                        mpp, \
                                                                        msKernel, \
                                                                        levelsetNumberOfIteration,
-                                                                       declumpingType);
+                                                                             declumpingType);
 
             // change pixel values for visualization reasons
 /*

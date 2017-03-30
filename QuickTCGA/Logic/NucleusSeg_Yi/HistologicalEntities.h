@@ -1,5 +1,8 @@
-/*
+/**
  * HistologicalEntities.h
+ *
+ *  Created on: Jul 1, 2011
+ *      Author: tcpan
  */
 #ifndef HistologicalEntities_H_
 #define HistologicalEntities_H_
@@ -9,12 +12,13 @@
 
 namespace nscale {
 
-class HistologicalEntities {
+    class HistologicalEntities {
 
-public:
-    static const int CONTINUE = 4;
-    static int plSeparateNuclei(const cv::Mat& img, const cv::Mat& seg_open, cv::Mat& seg_nonoverlap);
-};
+    public:
+        static const int CONTINUE = 4;
+
+        static int plSeparateNuclei(const cv::Mat &img, const cv::Mat &seg_open, cv::Mat &seg_nonoverlap);
+    };
 
 }
 #endif /* HistologicalEntities_H_ */

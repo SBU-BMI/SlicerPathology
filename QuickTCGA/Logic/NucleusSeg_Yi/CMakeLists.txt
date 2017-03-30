@@ -6,16 +6,16 @@ include(${ITK_USE_FILE})
 find_package(OpenCV 3.1 REQUIRED)
 
 #-----------------------------------------------------------------------------
-set(NucleiSegSrc 
-  BinaryMaskAnalysisFilter.cxx
-  Normalization.cpp
-  HistologicalEntities.cpp
-  PixelOperations.cpp
-  ConnComponents.cpp
-  MorphologicOperations.cpp
-  NeighborOperations.cpp
-  utilityTileAnalysis.cxx
-)
+set(NucleiSegSrc
+        BinaryMaskAnalysisFilter.cxx
+        Normalization.cpp
+        HistologicalEntities.cpp
+        PixelOperations.cpp
+        ConnComponents.cpp
+        MorphologicOperations.cpp
+        NeighborOperations.cpp
+        utilityTileAnalysis.cxx
+        )
 
 add_library(NucleiSegLib STATIC ${NucleiSegSrc})
 target_link_libraries(NucleiSegLib ${OpenCV_LIBS})
