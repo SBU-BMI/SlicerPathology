@@ -11,7 +11,7 @@
 #include "qSlicerApplication.h"
 
 const unsigned short SrcDimension = 2;
-typedef float DistPixelType;											// float type pixel for cost function
+typedef float DistPixelType; // float type pixel for cost function
 typedef short SrcPixelType;
 typedef unsigned char LabPixelType;
 
@@ -35,17 +35,15 @@ class VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT vtkQuickTCGA : public vtkObject
   vtkSetMacro(mpp, double);
   vtkSetMacro(kernelSize, double);
 
+  // vtkSetObjectMacro(OutputVol, vtkImageData);
 
-  //vtkSetObjectMacro(OutputVol, vtkImageData);
-
-  //  vtkSetMacro(InitializationFlag, bool);
+  // vtkSetMacro(InitializationFlag, bool);
 
   //processing functions
   void Run_QTCGA_Segmentation();
   void Run_QTCGA_Template();
   void Run_Refine_Curvature();
-  void Run_NucleiSegYi();
-  void Run_NucleiSegYiwo();
+  void Run_NucleiSegYi(int seg_type);
   void Initialization();
   //  void RunFGC();
   void PrintSelf(ostream &os, vtkIndent indent);

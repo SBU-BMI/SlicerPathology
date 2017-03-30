@@ -62,21 +62,39 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.clearButton)
         # self.clearButton.connect('clicked()', self.clearSelection)
 
+        # Button: No Declumping
         self.segnoButton = qt.QPushButton(self.frame)
-        self.segnoButton.text = "Run Segmentation No Declumping (fast)"
+        self.segnoButton.text = run_lbl + " " + segno_lbl
         self.frame.layout().addWidget(self.segnoButton)
         self.segnoButton.connect('clicked()', self.RunSegmenterWO)
 
+        # Button: Mean Shift Declumping
         self.segButton = qt.QPushButton(self.frame)
-        # self.segButton.text = "Run Segmentation With Declumping (slow)"
-        self.segButton.text = "Run Segmentation Mean Shift Declumping (slow)"
+        self.segButton.text = run_lbl + " " + seg_lbl
         self.frame.layout().addWidget(self.segButton)
         self.segButton.connect('clicked()', self.RunSegmenter)
-        
-        # TODO: Jun button not active yet:
-        # self.junButton = qt.QPushButton(self.frame)
-        # self.junButton.text = "Run Segmentation Watershed Declumping (slow)"
-        # self.frame.layout().addWidget(self.junButton)
+
+        # Button: Watershed Declumping
+        self.segWtrShd_btn = qt.QPushButton(self.frame)
+        self.segWtrShd_btn.text = run_lbl + " " + segWtr_lbl
+        self.frame.layout().addWidget(self.segWtrShd_btn)
+        self.segWtrShd_btn.connect('clicked()', self.RunSegmenter_WtrShd)
+
+        # COMBO BOX
+        # self.methodSelectorComboBox = qt.QComboBox()
+        # self.methodSelectorComboBox.addItem("No Declumping (fast)", LOGICAL_FAST)
+        # self.methodSelectorComboBox.addItem("Mean Shift Declumping (slow)", LOGICAL_MSHIFT)
+        # self.methodSelectorComboBox.addItem("Watershed Declumping (slow)", LOGICAL_WTRSHED)
+        # self.methodSelectorComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
+        #                                        '<li><b>No Declumping:</b> Run segmentation with no declumping. '
+        #                                        'Runs much faster than when declumping is applied.</li>'
+        #                                        '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
+        #                                        'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
+        #                                        '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
+        #                                       'algorithm for declumping.</li>')
+        # self.frame.layout().addWidget(self.methodSelectorComboBox)
+        # self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.RunSegmenterTest)
+
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
@@ -226,25 +244,56 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         slicer.util.showStatusMessage(self.currentMessage)
         super(QuickTCGAEffectOptions, self).destroy()
 
+    # Run segmentation without declumping
     def RunSegmenterWO(self):
-        self.segnoButton.setEnabled(0)
-        self.segButton.setEnabled(0)
-        self.segnoButton.text = "*** Running Segmentation No Declumping (fast) ***"
+        self.disable_buttons()
+        self.segnoButton.text = "*** " + running_lbl + " " + segno_lbl + " ***"
         self.segnoButton.update()
-        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(False)
-        self.segnoButton.setEnabled(1)
-        self.segButton.setEnabled(1)
-        self.segnoButton.text = "Run Segmentation No Declumping (fast)"
+        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(0)
+        self.enable_buttons()
+        self.segnoButton.text = run_lbl + " " + segno_lbl
 
+    # Run segmentation with mean shift
     def RunSegmenter(self):
+        self.disable_buttons()
+        self.segButton.text = "*** " + running_lbl + " " + seg_lbl + " ***"
+        self.segButton.update()
+        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(1)
+        self.enable_buttons()
+        self.segButton.text = run_lbl + " " + seg_lbl
+
+    # Run segmentation with watershed
+    def RunSegmenter_WtrShd(self):
+        self.disable_buttons()
+        self.segWtrShd_btn.text = "*** " + running_lbl + " " + segWtr_lbl + " ***"
+        self.segWtrShd_btn.update()
+        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(2)
+        self.enable_buttons()
+        self.segWtrShd_btn.text = run_lbl + " " + segWtr_lbl
+
+    def disable_buttons(self):
         self.segnoButton.setEnabled(0)
         self.segButton.setEnabled(0)
-        self.segButton.text = "*** Running Segmentation With Declumping (slow) ***"
-        self.segButton.update()
-        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(True)
+        self.segWtrShd_btn.setEnabled(0)
+
+    def enable_buttons(self):
         self.segnoButton.setEnabled(1)
         self.segButton.setEnabled(1)
-        self.segButton.text = "Run Segmentation With Declumping (slow)"
+        self.segWtrShd_btn.setEnabled(1)
+
+
+    # TEST COMBO BOX
+    # def RunSegmenterTest(self, i):
+    #     operationIndex = self.methodSelectorComboBox.currentIndex
+    #     operation = self.methodSelectorComboBox.itemData(operationIndex)
+    #     print "operation", operation
+    #     print "operationIndex", operationIndex
+    #     print "self.methodSelectorComboBox.count", self.methodSelectorComboBox.count
+    #     print "Current index", operationIndex, "selection changed ", self.methodSelectorComboBox.currentText
+    #     for count in range(self.methodSelectorComboBox.count):
+    #         print self.methodSelectorComboBox.itemText(count)
+    #     print "Current index", i, "selection changed ", self.methodSelectorComboBox.currentText
+
 
     def toggleOutline(self):
         if self.omode == 1:
@@ -271,8 +320,8 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             else:
                 params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,
                                                                                                                2).text()
-            jstr = json.dumps(params, sort_keys=True, indent=4, separators=(',', ': ')) # TODO: outdent?
-            self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr) # TODO: outdent?
+            jstr = json.dumps(params, sort_keys=True, indent=4, separators=(',', ': '))  # TODO: outdent?
+            self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)  # TODO: outdent?
         self.frameOtsuSlider.value = params[ei]["otsuRatio"]
         self.frameCurvatureWeightSlider.value = params[ei]["curvatureWeight"]
         self.frameSizeThldSlider.value = params[ei]["sizeThld"]
@@ -630,14 +679,14 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
             qTCGAMod.Initialization()
             # print("qTCGAMod:", qTCGAMod)
             self.qTCGAMod = qTCGAMod
-            self.QuickTCGACreated = True  # tracks if completed the initializtion (so can do stop correctly) of KSlice
+            self.QuickTCGACreated = True  # tracks if completed the initialization (so can do stop correctly) of KSlice
 
     def runQTCGA_clearSelection(self):
         print "wipe them out.  all of them."
 
         # run Quick TCGA segmenter for the current master volume and label volume
 
-    def runQTCGA_NucleiSegYi(self, declump):
+    def runQTCGA_NucleiSegYi(self, seg_type):
         self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
         slicer.util.showStatusMessage(self.currentMessage)
         seedArray = slicer.util.array(self.labelNode.GetName())
@@ -658,7 +707,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
         self.qTCGAMod.Setmpp(mpp)
         self.qTCGAMod.SetkernelSize(kernelSize)
-        
+
         AA = self.foregroundNode.GetImageData()
         LL = self.labelNode.GetImageData()
         ddd = AA.GetDimensions()
@@ -686,12 +735,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         self.qTCGAMod.SetSourceVol(BB)
         self.qTCGAMod.SetSeedVol(LL)
         print "executing segmentation..."
-        if (declump):
-            self.qTCGAMod.Run_NucleiSegYi()
-            # print "Run_NucleiSegYi"
-        else:
-            self.qTCGAMod.Run_NucleiSegYiwo()
-            # print "Run_NucleiSegYiwo"
+        self.qTCGAMod.Run_NucleiSegYi(seg_type)
         print "segmentation is done"
         self.qTCGASegArray[:] = seedArray[:]
         self.MergeImages(LL, self.labelNode.GetImageData(), a[0], a[1])
@@ -886,3 +930,10 @@ class QuickTCGAEffectTemplateWidget:
 
     def exit(self):
         pass
+
+
+segno_lbl = "Segmentation No Declumping (fast)"
+seg_lbl = "Segmentation Mean Shift Declumping (slow)"
+segWtr_lbl = "Segmentation Watershed Declumping (slow)"
+run_lbl = "Run"
+running_lbl = "Running"

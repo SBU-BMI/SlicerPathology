@@ -10,7 +10,8 @@ namespace ImagenomicAnalytics {
                           double mpp = 0.25, \
                           float msKernel = 20.0, \
                           int levelsetNumberOfIteration = 100,
-                              bool doDeclump = false);
+                          int seg_type = 0);
+                          //bool doDeclump = false);
     }
 }
 #endif
