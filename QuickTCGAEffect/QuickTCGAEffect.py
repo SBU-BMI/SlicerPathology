@@ -934,6 +934,6 @@ class QuickTCGAEffectTemplateWidget:
 
 segno_lbl = "Segmentation No Declumping (fast)"
 seg_lbl = "Segmentation Mean Shift Declumping (slow)"
-segWtr_lbl = "Segmentation Watershed Declumping (slow)"
+segWtr_lbl = "Segmentation Watershed Declumping"
 run_lbl = "Run"
 running_lbl = "Running"
