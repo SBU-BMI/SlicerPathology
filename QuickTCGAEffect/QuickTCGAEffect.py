@@ -62,7 +62,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.clearButton)
         # self.clearButton.connect('clicked()', self.clearSelection)
 
-        self.setupSegmentationOptions(1)
+        self.setupSegmentationOptions(2)
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
@@ -187,6 +187,8 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     def setupSegmentationOptions(self, opt):
         """
         We're either going to draw buttons or a combo box.
+        :param opt:
+        :return:
         """
         # BUTTONS
         if opt == 1:
@@ -221,7 +223,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
                                                    '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
                                                    'algorithm for declumping.</li>')
             self.frame.layout().addWidget(self.methodSelectorComboBox)
-            self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.RunSegmenterTest)
+            self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.run_segmenter_combobox_test)
 
     def ResetToDefaults(self):
         self.frameOtsuSlider.value = 1.0
@@ -261,6 +263,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.segnoButton.update()
         slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(0)
         self.enable_buttons()
+        print "enable returned:", self.enable_buttons()
         self.segnoButton.text = run_lbl + " " + segno_lbl
 
     # Run segmentation with mean shift
@@ -282,26 +285,38 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.segWtrShd_btn.text = run_lbl + " " + segWtr_lbl
 
     def disable_buttons(self):
+        """
+        Disable buttons while segmentation is being performed
+        :return:
+        """
         self.segnoButton.setEnabled(0)
         self.segButton.setEnabled(0)
         self.segWtrShd_btn.setEnabled(0)
 
     def enable_buttons(self):
+        """
+        Enable buttons (after segmentation)
+        :return:
+        """
         self.segnoButton.setEnabled(1)
         self.segButton.setEnabled(1)
         self.segWtrShd_btn.setEnabled(1)
 
-    # TEST COMBO BOX
-    def RunSegmenterTest(self, i):
-        operationIndex = self.methodSelectorComboBox.currentIndex
-        operation = self.methodSelectorComboBox.itemData(operationIndex)
-        print "operation", operation
-        print "operationIndex", operationIndex
-        print "self.methodSelectorComboBox.count", self.methodSelectorComboBox.count
-        print "Current index", operationIndex, "selection changed ", self.methodSelectorComboBox.currentText
-        for count in range(self.methodSelectorComboBox.count):
-            print self.methodSelectorComboBox.itemText(count)
-        print "Current index", i, "selection changed ", self.methodSelectorComboBox.currentText
+    def run_segmenter_combobox_test(self, i):
+        """
+        TEST COMBO BOX
+        :param i:
+        :return:
+        """
+        if i == 0:
+            print "Zero index clicked >:(\n"
+        elif i == 1:
+            print "Do none\n"
+        elif i == 2:
+            print "Do Mean Shift\n"
+        elif i == 3:
+            print "Do Watershed\n"
+        print slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(i)
 
     def toggleOutline(self):
         if self.omode == 1:
@@ -607,8 +622,9 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
             self.emergencyStopFunc()
             return
 
-        volumesLogic = slicer.modules.volumes.logic()
-        print "volumesLogic", volumesLogic
+        # Debuggage
+        # volumesLogic = slicer.modules.volumes.logic()
+        # print "volumesLogic: ", volumesLogic
 
         self.labelName = self.labelNode.GetName()  # record name of label so user, cant trick us
         self.imgBgrdName = self.backgroundNode.GetName()
