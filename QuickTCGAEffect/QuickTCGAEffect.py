@@ -185,6 +185,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     # SEGMENTATION SELECTION
     # 
     def setupSegmentationOptions(self, opt):
+        # BUTTONS
         if opt == 1:
             # Button: No Declumping
             self.segnoButton = qt.QPushButton(self.frame)
@@ -208,10 +209,9 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             self.methodSelectorComboBox = qt.QComboBox()
             self.methodSelectorComboBox.addItem("No Declumping (fast)", LOGICAL_FAST)
             self.methodSelectorComboBox.addItem("Mean Shift Declumping (slow)", LOGICAL_MSHIFT)
-            self.methodSelectorComboBox.addItem("Watershed Declumping (slow)", LOGICAL_WTRSHED)
+            self.methodSelectorComboBox.addItem("Watershed Declumping (fast)", LOGICAL_WTRSHED)
             self.methodSelectorComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
-                                                   '<li><b>No Declumping:</b> Run segmentation with no declumping. '
-                                                   'Runs much faster than when declumping is applied.</li>'
+                                                   '<li><b>No Declumping:</b> Run segmentation with no declumping.</li>'
                                                    '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
                                                    'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
                                                    '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
@@ -938,7 +938,7 @@ class QuickTCGAEffectTemplateWidget:
 
 segno_lbl = "Segmentation No Declumping (fast)"
 seg_lbl = "Segmentation Mean Shift Declumping (slow)"
-segWtr_lbl = "Segmentation Watershed Declumping"
+segWtr_lbl = "Segmentation Watershed Declumping (fast)"
 run_lbl = "Run"
 running_lbl = "Running"
 LOGICAL_FAST = 'FAST'
