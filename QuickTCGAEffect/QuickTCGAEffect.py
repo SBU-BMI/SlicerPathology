@@ -62,7 +62,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.clearButton)
         # self.clearButton.connect('clicked()', self.clearSelection)
 
-        self.setupSegmentationOptions(2)
+        print "setupSegmentationOptions", self.setupSegmentationOptions(2)
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
@@ -223,7 +223,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
                                                    '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
                                                    'algorithm for declumping.</li>')
             self.frame.layout().addWidget(self.methodSelectorComboBox)
-            self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.run_segmenter_combobox_test)
+            self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.run_segmenter_combobox)
 
     def ResetToDefaults(self):
         self.frameOtsuSlider.value = 1.0
@@ -263,7 +263,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.segnoButton.update()
         slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(0)
         self.enable_buttons()
-        print "enable returned:", self.enable_buttons()
         self.segnoButton.text = run_lbl + " " + segno_lbl
 
     # Run segmentation with mean shift
@@ -302,21 +301,16 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.segButton.setEnabled(1)
         self.segWtrShd_btn.setEnabled(1)
 
-    def run_segmenter_combobox_test(self, i):
+    def run_segmenter_combobox(self, i):
         """
         TEST COMBO BOX
         :param i:
         :return:
         """
-        if i == 0:
-            print "Zero index clicked >:(\n"
-        elif i == 1:
-            print "Do none\n"
-        elif i == 2:
-            print "Do Mean Shift\n"
-        elif i == 3:
-            print "Do Watershed\n"
-        print slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(i)
+        n = 0
+        if i > 0:
+            n = i - 1
+            slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(n)
 
     def toggleOutline(self):
         if self.omode == 1:
