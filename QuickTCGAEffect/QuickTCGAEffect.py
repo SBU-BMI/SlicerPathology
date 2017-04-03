@@ -62,39 +62,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.clearButton)
         # self.clearButton.connect('clicked()', self.clearSelection)
 
-        # Button: No Declumping
-        self.segnoButton = qt.QPushButton(self.frame)
-        self.segnoButton.text = run_lbl + " " + segno_lbl
-        self.frame.layout().addWidget(self.segnoButton)
-        self.segnoButton.connect('clicked()', self.RunSegmenterWO)
-
-        # Button: Mean Shift Declumping
-        self.segButton = qt.QPushButton(self.frame)
-        self.segButton.text = run_lbl + " " + seg_lbl
-        self.frame.layout().addWidget(self.segButton)
-        self.segButton.connect('clicked()', self.RunSegmenter)
-
-        # Button: Watershed Declumping
-        self.segWtrShd_btn = qt.QPushButton(self.frame)
-        self.segWtrShd_btn.text = run_lbl + " " + segWtr_lbl
-        self.frame.layout().addWidget(self.segWtrShd_btn)
-        self.segWtrShd_btn.connect('clicked()', self.RunSegmenter_WtrShd)
-
-        # COMBO BOX
-        # self.methodSelectorComboBox = qt.QComboBox()
-        # self.methodSelectorComboBox.addItem("No Declumping (fast)", LOGICAL_FAST)
-        # self.methodSelectorComboBox.addItem("Mean Shift Declumping (slow)", LOGICAL_MSHIFT)
-        # self.methodSelectorComboBox.addItem("Watershed Declumping (slow)", LOGICAL_WTRSHED)
-        # self.methodSelectorComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
-        #                                        '<li><b>No Declumping:</b> Run segmentation with no declumping. '
-        #                                        'Runs much faster than when declumping is applied.</li>'
-        #                                        '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
-        #                                        'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
-        #                                        '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
-        #                                       'algorithm for declumping.</li>')
-        # self.frame.layout().addWidget(self.methodSelectorComboBox)
-        # self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.RunSegmenterTest)
-
+        self.setupSegmentationOptions(1)
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
@@ -213,6 +181,44 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.omode = 0
         self.toggleOutline()
 
+    # 
+    # SEGMENTATION SELECTION
+    # 
+    def setupSegmentationOptionsFrame(self, opt):
+        if opt = 1:
+            # Button: No Declumping
+            self.segnoButton = qt.QPushButton(self.frame)
+            self.segnoButton.text = run_lbl + " " + segno_lbl
+            self.frame.layout().addWidget(self.segnoButton)
+            self.segnoButton.connect('clicked()', self.RunSegmenterWO)
+
+            # Button: Mean Shift Declumping
+            self.segButton = qt.QPushButton(self.frame)
+            self.segButton.text = run_lbl + " " + seg_lbl
+            self.frame.layout().addWidget(self.segButton)
+            self.segButton.connect('clicked()', self.RunSegmenter)
+
+            # Button: Watershed Declumping
+            self.segWtrShd_btn = qt.QPushButton(self.frame)
+            self.segWtrShd_btn.text = run_lbl + " " + segWtr_lbl
+            self.frame.layout().addWidget(self.segWtrShd_btn)
+            self.segWtrShd_btn.connect('clicked()', self.RunSegmenter_WtrShd)
+        else:
+            # COMBO BOX
+            self.methodSelectorComboBox = qt.QComboBox()
+            self.methodSelectorComboBox.addItem("No Declumping (fast)", LOGICAL_FAST)
+            self.methodSelectorComboBox.addItem("Mean Shift Declumping (slow)", LOGICAL_MSHIFT)
+            self.methodSelectorComboBox.addItem("Watershed Declumping (slow)", LOGICAL_WTRSHED)
+            self.methodSelectorComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
+                                                '<li><b>No Declumping:</b> Run segmentation with no declumping. '
+                                                'Runs much faster than when declumping is applied.</li>'
+                                                '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
+                                                'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
+                                                '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
+                                                'algorithm for declumping.</li>')
+            self.frame.layout().addWidget(self.methodSelectorComboBox)
+            self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.RunSegmenterTest)
+
     def ResetToDefaults(self):
         self.frameOtsuSlider.value = 1.0
         self.frameCurvatureWeightSlider.value = 8
@@ -283,16 +289,16 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
 
 
     # TEST COMBO BOX
-    # def RunSegmenterTest(self, i):
-    #     operationIndex = self.methodSelectorComboBox.currentIndex
-    #     operation = self.methodSelectorComboBox.itemData(operationIndex)
-    #     print "operation", operation
-    #     print "operationIndex", operationIndex
-    #     print "self.methodSelectorComboBox.count", self.methodSelectorComboBox.count
-    #     print "Current index", operationIndex, "selection changed ", self.methodSelectorComboBox.currentText
-    #     for count in range(self.methodSelectorComboBox.count):
-    #         print self.methodSelectorComboBox.itemText(count)
-    #     print "Current index", i, "selection changed ", self.methodSelectorComboBox.currentText
+    def RunSegmenterTest(self, i):
+        operationIndex = self.methodSelectorComboBox.currentIndex
+        operation = self.methodSelectorComboBox.itemData(operationIndex)
+        print "operation", operation
+        print "operationIndex", operationIndex
+        print "self.methodSelectorComboBox.count", self.methodSelectorComboBox.count
+        print "Current index", operationIndex, "selection changed ", self.methodSelectorComboBox.currentText
+        for count in range(self.methodSelectorComboBox.count):
+            print self.methodSelectorComboBox.itemText(count)
+        print "Current index", i, "selection changed ", self.methodSelectorComboBox.currentText
 
 
     def toggleOutline(self):
