@@ -184,8 +184,8 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     # 
     # SEGMENTATION SELECTION
     # 
-    def setupSegmentationOptionsFrame(self, opt):
-        if opt = 1:
+    def setupSegmentationOptions(self, opt):
+        if opt == 1:
             # Button: No Declumping
             self.segnoButton = qt.QPushButton(self.frame)
             self.segnoButton.text = run_lbl + " " + segno_lbl
@@ -210,12 +210,12 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             self.methodSelectorComboBox.addItem("Mean Shift Declumping (slow)", LOGICAL_MSHIFT)
             self.methodSelectorComboBox.addItem("Watershed Declumping (slow)", LOGICAL_WTRSHED)
             self.methodSelectorComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
-                                                '<li><b>No Declumping:</b> Run segmentation with no declumping. '
-                                                'Runs much faster than when declumping is applied.</li>'
-                                                '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
-                                                'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
-                                                '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
-                                                'algorithm for declumping.</li>')
+                                                   '<li><b>No Declumping:</b> Run segmentation with no declumping. '
+                                                   'Runs much faster than when declumping is applied.</li>'
+                                                   '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
+                                                   'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
+                                                   '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
+                                                   'algorithm for declumping.</li>')
             self.frame.layout().addWidget(self.methodSelectorComboBox)
             self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.RunSegmenterTest)
 
@@ -287,7 +287,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.segButton.setEnabled(1)
         self.segWtrShd_btn.setEnabled(1)
 
-
     # TEST COMBO BOX
     def RunSegmenterTest(self, i):
         operationIndex = self.methodSelectorComboBox.currentIndex
@@ -299,7 +298,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         for count in range(self.methodSelectorComboBox.count):
             print self.methodSelectorComboBox.itemText(count)
         print "Current index", i, "selection changed ", self.methodSelectorComboBox.currentText
-
 
     def toggleOutline(self):
         if self.omode == 1:
@@ -313,7 +311,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
 
     def updateSliders(self):
-        # print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
+        print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
         r = self.structuresView.currentIndex().row()
         if r > -1:
             ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 3).text()
@@ -321,7 +319,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename') + '-label'
         if ei not in params:
             params[ei] = cparams.copy()
-            if (r < 0):
+            if r < 0:
                 params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
             else:
                 params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,
@@ -943,3 +941,6 @@ seg_lbl = "Segmentation Mean Shift Declumping (slow)"
 segWtr_lbl = "Segmentation Watershed Declumping"
 run_lbl = "Run"
 running_lbl = "Running"
+LOGICAL_FAST = 'FAST'
+LOGICAL_MSHIFT = 'MSHIFT'
+LOGICAL_WTRSHED = 'WTRSHED'
