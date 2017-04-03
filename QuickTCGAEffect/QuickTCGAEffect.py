@@ -185,6 +185,9 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     # SEGMENTATION SELECTION
     # 
     def setupSegmentationOptions(self, opt):
+        """
+        We're either going to draw buttons or a combo box.
+        """
         # BUTTONS
         if opt == 1:
             # Button: No Declumping
@@ -207,6 +210,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         else:
             # COMBO BOX
             self.methodSelectorComboBox = qt.QComboBox()
+            self.methodSelectorComboBox.addItem("~~ Segmentation Selection ~~")
             self.methodSelectorComboBox.addItem("No Declumping (fast)", LOGICAL_FAST)
             self.methodSelectorComboBox.addItem("Mean Shift Declumping (slow)", LOGICAL_MSHIFT)
             self.methodSelectorComboBox.addItem("Watershed Declumping (fast)", LOGICAL_WTRSHED)
@@ -604,6 +608,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
             return
 
         volumesLogic = slicer.modules.volumes.logic()
+        print "volumesLogic", volumesLogic
 
         self.labelName = self.labelNode.GetName()  # record name of label so user, cant trick us
         self.imgBgrdName = self.backgroundNode.GetName()
