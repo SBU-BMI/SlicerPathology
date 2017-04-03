@@ -62,7 +62,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.clearButton)
         # self.clearButton.connect('clicked()', self.clearSelection)
 
-        print "setupSegmentationOptions", self.setupSegmentationOptions(2)
+        self.setupSegmentationOptions(2)
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
@@ -188,7 +188,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         """
         We're either going to draw buttons or a combo box.
         :param opt:
-        :return:
         """
         # BUTTONS
         if opt == 1:
@@ -211,19 +210,21 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             self.segWtrShd_btn.connect('clicked()', self.RunSegmenter_WtrShd)
         else:
             # COMBO BOX
-            self.methodSelectorComboBox = qt.QComboBox()
-            self.methodSelectorComboBox.addItem("~~ Segmentation Selection ~~")
-            self.methodSelectorComboBox.addItem("No Declumping (fast)", LOGICAL_FAST)
-            self.methodSelectorComboBox.addItem("Mean Shift Declumping (slow)", LOGICAL_MSHIFT)
-            self.methodSelectorComboBox.addItem("Watershed Declumping (fast)", LOGICAL_WTRSHED)
-            self.methodSelectorComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
-                                                   '<li><b>No Declumping:</b> Run segmentation with no declumping.</li>'
-                                                   '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
-                                                   'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
-                                                   '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
-                                                   'algorithm for declumping.</li>')
-            self.frame.layout().addWidget(self.methodSelectorComboBox)
-            self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.run_segmenter_combobox)
+            self.segComboBox = qt.QComboBox()
+            self.segComboBox.addItem("~~ Segmentation Selection ~~")
+            self.segComboBox.addItem(segno_lbl, LOGICAL_FAST)
+            self.segComboBox.addItem(seg_lbl, LOGICAL_MSHIFT)
+            self.segComboBox.addItem(segWtr_lbl, LOGICAL_WTRSHED)
+            self.segComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
+                                        '<li><b>No Declumping:</b> Run segmentation with no declumping.</li>'
+                                        '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
+                                        'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
+                                        '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
+                                        'algorithm for declumping.</li>')
+            self.segComboBox.setCurrentIndex(0)
+            self.segComboBox.model().item(0).setEnabled(False)
+            self.frame.layout().addWidget(self.segComboBox)
+            self.segComboBox.connect("currentIndexChanged(int)", self.run_segmenter_combobox)
 
     def ResetToDefaults(self):
         self.frameOtsuSlider.value = 1.0
@@ -286,7 +287,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     def disable_buttons(self):
         """
         Disable buttons while segmentation is being performed
-        :return:
         """
         self.segnoButton.setEnabled(0)
         self.segButton.setEnabled(0)
@@ -295,7 +295,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     def enable_buttons(self):
         """
         Enable buttons (after segmentation)
-        :return:
         """
         self.segnoButton.setEnabled(1)
         self.segButton.setEnabled(1)
@@ -303,9 +302,8 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
 
     def run_segmenter_combobox(self, i):
         """
-        TEST COMBO BOX
+        Run segmentation
         :param i:
-        :return:
         """
         n = 0
         if i > 0:
@@ -324,7 +322,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
 
     def updateSliders(self):
-        print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
+        # print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
         r = self.structuresView.currentIndex().row()
         if r > -1:
             ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 3).text()
