@@ -70,6 +70,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.outlineButton.connect('clicked()', self.toggleOutline)
 
         self.wipeButton = qt.QPushButton(self.frame)
+        # TODO: Put tooltip or rename this widget.
         self.wipeButton.text = "Clear current segmentation label"
         self.frame.layout().addWidget(self.wipeButton)
         self.wipeButton.connect('clicked()', self.wipeSegmentation())
@@ -181,9 +182,9 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.omode = 0
         self.toggleOutline()
 
-    # 
+    #
     # SEGMENTATION SELECTION
-    # 
+    #
     def setupSegmentationOptions(self, opt):
         """
         We're either going to draw buttons or a combo box.
@@ -248,7 +249,9 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.updateMRMLFromGUI()
 
     def wipeSegmentation(self):
+        # Slice Logic: vtkMRMLSliceLogic
         sl = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
+        # QuickTCGAEffectLogic
         logic = QuickTCGAEffectLogic(sl)
         logic.wipeSegmentation()
 
@@ -305,10 +308,11 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         Run segmentation
         :param i:
         """
-        n = 0
         if i > 0:
             n = i - 1
             slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(n)
+        # Reset box.
+        self.segComboBox.setCurrentIndex(0)
 
     def toggleOutline(self):
         if self.omode == 1:
@@ -322,7 +326,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
 
     def updateSliders(self):
-        # print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
+        print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
         r = self.structuresView.currentIndex().row()
         if r > -1:
             ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 3).text()
