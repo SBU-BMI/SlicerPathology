@@ -62,7 +62,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.clearButton)
         # self.clearButton.connect('clicked()', self.clearSelection)
 
-        self.setupSegmentationOptions(1)
+        self.setupSegmentationOptions(2)
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
@@ -70,6 +70,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.outlineButton.connect('clicked()', self.toggleOutline)
 
         self.wipeButton = qt.QPushButton(self.frame)
+        # TODO: Put tooltip or rename this widget.
         self.wipeButton.text = "Clear current segmentation label"
         self.frame.layout().addWidget(self.wipeButton)
         self.wipeButton.connect('clicked()', self.wipeSegmentation())
@@ -181,10 +182,14 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.omode = 0
         self.toggleOutline()
 
-    # 
+    #
     # SEGMENTATION SELECTION
-    # 
+    #
     def setupSegmentationOptions(self, opt):
+        """
+        We're either going to draw buttons or a combo box.
+        :param opt:
+        """
         # BUTTONS
         if opt == 1:
             # Button: No Declumping
@@ -206,18 +211,21 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             self.segWtrShd_btn.connect('clicked()', self.RunSegmenter_WtrShd)
         else:
             # COMBO BOX
-            self.methodSelectorComboBox = qt.QComboBox()
-            self.methodSelectorComboBox.addItem("No Declumping (fast)", LOGICAL_FAST)
-            self.methodSelectorComboBox.addItem("Mean Shift Declumping (slow)", LOGICAL_MSHIFT)
-            self.methodSelectorComboBox.addItem("Watershed Declumping (fast)", LOGICAL_WTRSHED)
-            self.methodSelectorComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
-                                                   '<li><b>No Declumping:</b> Run segmentation with no declumping.</li>'
-                                                   '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
-                                                   'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
-                                                   '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
-                                                   'algorithm for declumping.</li>')
-            self.frame.layout().addWidget(self.methodSelectorComboBox)
-            self.methodSelectorComboBox.connect("currentIndexChanged(int)", self.RunSegmenterTest)
+            self.segComboBox = qt.QComboBox()
+            self.segComboBox.addItem("~~ Segmentation Selection ~~")
+            self.segComboBox.addItem(segno_lbl, LOGICAL_FAST)
+            self.segComboBox.addItem(seg_lbl, LOGICAL_MSHIFT)
+            self.segComboBox.addItem(segWtr_lbl, LOGICAL_WTRSHED)
+            self.segComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
+                                        '<li><b>No Declumping:</b> Run segmentation with no declumping.</li>'
+                                        '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
+                                        'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
+                                        '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
+                                        'algorithm for declumping.</li>')
+            self.segComboBox.setCurrentIndex(0)
+            self.segComboBox.model().item(0).setEnabled(False)
+            self.frame.layout().addWidget(self.segComboBox)
+            self.segComboBox.connect("currentIndexChanged(int)", self.run_segmenter_combobox)
 
     def ResetToDefaults(self):
         self.frameOtsuSlider.value = 1.0
@@ -241,7 +249,9 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.updateMRMLFromGUI()
 
     def wipeSegmentation(self):
+        # Slice Logic: vtkMRMLSliceLogic
         sl = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
+        # QuickTCGAEffectLogic
         logic = QuickTCGAEffectLogic(sl)
         logic.wipeSegmentation()
 
@@ -278,26 +288,31 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.segWtrShd_btn.text = run_lbl + " " + segWtr_lbl
 
     def disable_buttons(self):
+        """
+        Disable buttons while segmentation is being performed
+        """
         self.segnoButton.setEnabled(0)
         self.segButton.setEnabled(0)
         self.segWtrShd_btn.setEnabled(0)
 
     def enable_buttons(self):
+        """
+        Enable buttons (after segmentation)
+        """
         self.segnoButton.setEnabled(1)
         self.segButton.setEnabled(1)
         self.segWtrShd_btn.setEnabled(1)
 
-    # TEST COMBO BOX
-    def RunSegmenterTest(self, i):
-        operationIndex = self.methodSelectorComboBox.currentIndex
-        operation = self.methodSelectorComboBox.itemData(operationIndex)
-        print "operation", operation
-        print "operationIndex", operationIndex
-        print "self.methodSelectorComboBox.count", self.methodSelectorComboBox.count
-        print "Current index", operationIndex, "selection changed ", self.methodSelectorComboBox.currentText
-        for count in range(self.methodSelectorComboBox.count):
-            print self.methodSelectorComboBox.itemText(count)
-        print "Current index", i, "selection changed ", self.methodSelectorComboBox.currentText
+    def run_segmenter_combobox(self, i):
+        """
+        Run segmentation
+        :param i:
+        """
+        if i > 0:
+            n = i - 1
+            slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(n)
+        # Reset box.
+        self.segComboBox.setCurrentIndex(0)
 
     def toggleOutline(self):
         if self.omode == 1:
@@ -603,7 +618,9 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
             self.emergencyStopFunc()
             return
 
-        volumesLogic = slicer.modules.volumes.logic()
+        # Debuggage
+        # volumesLogic = slicer.modules.volumes.logic()
+        # print "volumesLogic: ", volumesLogic
 
         self.labelName = self.labelNode.GetName()  # record name of label so user, cant trick us
         self.imgBgrdName = self.backgroundNode.GetName()
