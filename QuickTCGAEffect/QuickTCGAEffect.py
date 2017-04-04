@@ -27,7 +27,8 @@ __all__ = [
 #
 
 class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
-    """ QuickTCGAEffect-specific gui
+    """
+    QuickTCGAEffect-specific gui
     """
 
     def __init__(self, parent=0):
@@ -62,7 +63,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.clearButton)
         # self.clearButton.connect('clicked()', self.clearSelection)
 
-        self.setupSegmentationOptions(2)
+        self.setupSegmentationOptions(1)
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
@@ -88,7 +89,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
 
         # Nucleus declumping parameters
         nucleusDeclumpingCollapsibleButton = ctk.ctkCollapsibleButton()
-        nucleusDeclumpingCollapsibleButton.text = "Nucleus Declumping Parameters"
+        nucleusDeclumpingCollapsibleButton.text = "Mean Shift Declumping Parameters"
         nucleusDeclumpingCollapsibleButton.collapsed = False
         self.frame.layout().addWidget(nucleusDeclumpingCollapsibleButton)
 
@@ -182,11 +183,9 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.omode = 0
         self.toggleOutline()
 
-    #
-    # SEGMENTATION SELECTION
-    #
     def setupSegmentationOptions(self, opt):
         """
+        SEGMENTATION SELECTION
         We're either going to draw buttons or a combo box.
         :param opt:
         """
@@ -260,8 +259,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         slicer.util.showStatusMessage(self.currentMessage)
         super(QuickTCGAEffectOptions, self).destroy()
 
-    # Run segmentation without declumping
     def RunSegmenterWO(self):
+        """
+        Run segmentation without declumping
+        """
         self.disable_buttons()
         self.segnoButton.text = "*** " + running_lbl + " " + segno_lbl + " ***"
         self.segnoButton.update()
@@ -269,8 +270,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.enable_buttons()
         self.segnoButton.text = run_lbl + " " + segno_lbl
 
-    # Run segmentation with mean shift
     def RunSegmenter(self):
+        """
+        Run segmentation with mean shift
+        """
         self.disable_buttons()
         self.segButton.text = "*** " + running_lbl + " " + seg_lbl + " ***"
         self.segButton.update()
@@ -278,8 +281,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.enable_buttons()
         self.segButton.text = run_lbl + " " + seg_lbl
 
-    # Run segmentation with watershed
     def RunSegmenter_WtrShd(self):
+        """
+        Run segmentation with watershed
+        """
         self.disable_buttons()
         self.segWtrShd_btn.text = "*** " + running_lbl + " " + segWtr_lbl + " ***"
         self.segWtrShd_btn.update()
@@ -871,7 +876,8 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 #
 
 class QuickTCGAEffectExtension(LabelEffect.LabelEffect):
-    """Organizes the Options, Tool, and Logic classes into a single instance
+    """
+    Organizes the Options, Tool, and Logic classes into a single instance
     that can be managed by the EditBox
     """
 
