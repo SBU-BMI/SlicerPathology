@@ -867,7 +867,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 
 
 #
-# QuickTCGAEffect
+# The QuickTCGAEffect class definition
 #
 
 class QuickTCGAEffectExtension(LabelEffect.LabelEffect):
@@ -876,10 +876,10 @@ class QuickTCGAEffectExtension(LabelEffect.LabelEffect):
     """
 
     def __init__(self):
-        # name is used to define the name of the icon image resource (e.g. RectangleEffect.png)
+        # name is used to define the name of the icon image resource (e.g. QuickTCGAEffect.png)
         self.name = "QuickTCGAEffect"
         # tool tip is displayed on mouse hover
-        self.toolTip = "hahahahaha"
+        self.toolTip = "QuickTCGA: automatic segmentation"
 
         self.options = QuickTCGAEffectOptions
         self.tool = QuickTCGAEffectTool
@@ -887,9 +887,11 @@ class QuickTCGAEffectExtension(LabelEffect.LabelEffect):
 
 
 """ Test:
+
 sw = slicer.app.layoutManager().sliceWidget('Red')
 import EditorLib
-pet = EditorLib.EditorEffectTemplateTool(sw)
+pet = EditorLib.QuickTCGAEffectTool(sw)
+
 """
 
 
@@ -904,7 +906,7 @@ class QuickTCGAEffect:
     """
 
     def __init__(self, parent):
-        parent.title = "QuickTCGAEffectTemplate Effect"
+        parent.title = "Editor QuickTCGAEffect Effect"
         parent.categories = ["Developer Tools.Editor Extensions"]
         parent.contributors = ["Steve Pieper (Isomics)"]  # insert your name in the list
         parent.helpText = """
@@ -920,25 +922,25 @@ class QuickTCGAEffect:
     and was partially funded by NIH grant 3P41RR013218.
     """
 
-    # TODO:
-    # don't show this module - it only appears in the Editor module
-    # parent.hidden = True
+        # TODO:
+        # don't show this module - it only appears in the Editor module
+        # parent.hidden = True
 
-    # Add this extension to the editor's list for discovery when the module
-    # is created.  Since this module may be discovered before the Editor itself,
-    # create the list if it doesn't already exist.
-    try:
-        slicer.modules.editorExtensions
-    except AttributeError:
-        slicer.modules.editorExtensions = {}
-    slicer.modules.editorExtensions['QuickTCGAEffect'] = QuickTCGAEffectExtension
+        # Add this extension to the editor's list for discovery when the module
+        # is created.  Since this module may be discovered before the Editor itself,
+        # create the list if it doesn't already exist.
+        try:
+            slicer.modules.editorExtensions
+        except AttributeError:
+            slicer.modules.editorExtensions = {}
+        slicer.modules.editorExtensions['QuickTCGAEffect'] = QuickTCGAEffectExtension
 
 
 #
-# QuickTCGAEffectTemplateWidget
+# QuickTCGAEffectWidget
 #
 
-class QuickTCGAEffectTemplateWidget:
+class QuickTCGAEffectWidget:
     def __init__(self, parent=None):
         self.parent = parent
 
