@@ -92,7 +92,7 @@ void vtkQuickTCGA::Run_QTCGA_Segmentation()
   std::cout << "Finished TCGA segmentation\n";
 }
 
-void vtkQuickTCGA::Run_NucleiSegYi()
+void vtkQuickTCGA::Run_NucleiSegYi(int seg_type)
 {
   //Convert vtkImage to lplImage
   int dims[3];
@@ -106,31 +106,7 @@ void vtkQuickTCGA::Run_NucleiSegYi()
   m_qTCGASeg->SetSourceImage(m_imSrc);
   m_qTCGASeg->SetLabImage(m_imLab);
 
-  m_qTCGASeg->DoNucleiSegmentationYi(otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp, kernelSize);
-
-  m_qTCGASeg->GetSegmentation(m_imLab);
-
-  // Convert lplImage to vtkImage and update SeedVol
-  TCGA::CopyImageOpenCV2VTK<uchar, short>(m_imLab, SeedVol);
-
-  std::cout << "Finished TCGA segmentation\n";
-}
-
-void vtkQuickTCGA::Run_NucleiSegYiwo()
-{
-  //Convert vtkImage to lplImage
-  int dims[3];
-  SourceVol->GetDimensions(dims);
-  m_imSrc = cv::Mat(dims[1], dims[0], CV_8UC3);
-  m_imLab = cv::Mat(dims[1], dims[0], CV_8UC1);
-
-  TCGA::CopyImageVTK2OpenCV<uchar, uchar>(SourceVol, m_imSrc);
-  TCGA::CopyImageVTK2OpenCV<short, uchar>(SeedVol, m_imLab);
-
-  m_qTCGASeg->SetSourceImage(m_imSrc);
-  m_qTCGASeg->SetLabImage(m_imLab);
-
-  m_qTCGASeg->DoNucleiSegmentationYiwo(otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp, kernelSize);
+  m_qTCGASeg->DoNuclearSegmentation(otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp, kernelSize, seg_type);
 
   m_qTCGASeg->GetSegmentation(m_imLab);
 

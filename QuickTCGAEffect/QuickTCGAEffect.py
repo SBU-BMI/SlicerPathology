@@ -27,7 +27,8 @@ __all__ = [
 #
 
 class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
-    """ QuickTCGAEffect-specific gui
+    """
+    QuickTCGAEffect-specific gui
     """
 
     def __init__(self, parent=0):
@@ -62,21 +63,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.clearButton)
         # self.clearButton.connect('clicked()', self.clearSelection)
 
-        self.segnoButton = qt.QPushButton(self.frame)
-        self.segnoButton.text = "Run Segmentation No Declumping (fast)"
-        self.frame.layout().addWidget(self.segnoButton)
-        self.segnoButton.connect('clicked()', self.RunSegmenterWO)
-
-        self.segButton = qt.QPushButton(self.frame)
-        # self.segButton.text = "Run Segmentation With Declumping (slow)"
-        self.segButton.text = "Run Segmentation Mean Shift Declumping (slow)"
-        self.frame.layout().addWidget(self.segButton)
-        self.segButton.connect('clicked()', self.RunSegmenter)
-        
-        # TODO: Jun button not active yet:
-        # self.junButton = qt.QPushButton(self.frame)
-        # self.junButton.text = "Run Segmentation Watershed Declumping (slow)"
-        # self.frame.layout().addWidget(self.junButton)
+        self.setupSegmentationOptions(1)
 
         self.outlineButton = qt.QPushButton(self.frame)
         self.outlineButton.text = "Toggle Outline"
@@ -84,6 +71,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.outlineButton.connect('clicked()', self.toggleOutline)
 
         self.wipeButton = qt.QPushButton(self.frame)
+        # TODO: Put tooltip or rename this widget.
         self.wipeButton.text = "Clear current segmentation label"
         self.frame.layout().addWidget(self.wipeButton)
         self.wipeButton.connect('clicked()', self.wipeSegmentation())
@@ -101,7 +89,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
 
         # Nucleus declumping parameters
         nucleusDeclumpingCollapsibleButton = ctk.ctkCollapsibleButton()
-        nucleusDeclumpingCollapsibleButton.text = "Nucleus Declumping Parameters"
+        nucleusDeclumpingCollapsibleButton.text = "Mean Shift Declumping Parameters"
         nucleusDeclumpingCollapsibleButton.collapsed = False
         self.frame.layout().addWidget(nucleusDeclumpingCollapsibleButton)
 
@@ -195,6 +183,49 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.omode = 0
         self.toggleOutline()
 
+    def setupSegmentationOptions(self, opt):
+        """
+        SEGMENTATION SELECTION
+        We're either going to draw buttons or a combo box.
+        :param opt:
+        """
+        # BUTTONS
+        if opt == 1:
+            # Button: No Declumping
+            self.segnoButton = qt.QPushButton(self.frame)
+            self.segnoButton.text = run_lbl + " " + segno_lbl
+            self.frame.layout().addWidget(self.segnoButton)
+            self.segnoButton.connect('clicked()', self.RunSegmenterWO)
+
+            # Button: Mean Shift Declumping
+            self.segButton = qt.QPushButton(self.frame)
+            self.segButton.text = run_lbl + " " + seg_lbl
+            self.frame.layout().addWidget(self.segButton)
+            self.segButton.connect('clicked()', self.RunSegmenter)
+
+            # Button: Watershed Declumping
+            self.segWtrShd_btn = qt.QPushButton(self.frame)
+            self.segWtrShd_btn.text = run_lbl + " " + segWtr_lbl
+            self.frame.layout().addWidget(self.segWtrShd_btn)
+            self.segWtrShd_btn.connect('clicked()', self.RunSegmenter_WtrShd)
+        else:
+            # COMBO BOX
+            self.segComboBox = qt.QComboBox()
+            self.segComboBox.addItem("~~ Segmentation Selection ~~")
+            self.segComboBox.addItem(segno_lbl, LOGICAL_FAST)
+            self.segComboBox.addItem(seg_lbl, LOGICAL_MSHIFT)
+            self.segComboBox.addItem(segWtr_lbl, LOGICAL_WTRSHED)
+            self.segComboBox.setToolTip('<html>Run Segmentation. Available operations:<ul style="margin: 0">'
+                                        '<li><b>No Declumping:</b> Run segmentation with no declumping.</li>'
+                                        '<li><b>Mean Shift Declumping:</b> Run segmentation using mean shift '
+                                        'algorithm for declumping. Run time can be from 2 to 2.5 minutes.</li>'
+                                        '<li><b>Watershed Declumping:</b> Run segmentation using watershed '
+                                        'algorithm for declumping.</li>')
+            self.segComboBox.setCurrentIndex(0)
+            self.segComboBox.model().item(0).setEnabled(False)
+            self.frame.layout().addWidget(self.segComboBox)
+            self.segComboBox.connect("currentIndexChanged(int)", self.run_segmenter_combobox)
+
     def ResetToDefaults(self):
         self.frameOtsuSlider.value = 1.0
         self.frameCurvatureWeightSlider.value = 8
@@ -217,7 +248,9 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.updateMRMLFromGUI()
 
     def wipeSegmentation(self):
+        # Slice Logic: vtkMRMLSliceLogic
         sl = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
+        # QuickTCGAEffectLogic
         logic = QuickTCGAEffectLogic(sl)
         logic.wipeSegmentation()
 
@@ -227,24 +260,64 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         super(QuickTCGAEffectOptions, self).destroy()
 
     def RunSegmenterWO(self):
-        self.segnoButton.setEnabled(0)
-        self.segButton.setEnabled(0)
-        self.segnoButton.text = "*** Running Segmentation No Declumping (fast) ***"
+        """
+        Run segmentation without declumping
+        """
+        self.disable_buttons()
+        self.segnoButton.text = "*** " + running_lbl + " " + segno_lbl + " ***"
         self.segnoButton.update()
-        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(False)
-        self.segnoButton.setEnabled(1)
-        self.segButton.setEnabled(1)
-        self.segnoButton.text = "Run Segmentation No Declumping (fast)"
+        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(0)
+        self.enable_buttons()
+        self.segnoButton.text = run_lbl + " " + segno_lbl
 
     def RunSegmenter(self):
+        """
+        Run segmentation with mean shift
+        """
+        self.disable_buttons()
+        self.segButton.text = "*** " + running_lbl + " " + seg_lbl + " ***"
+        self.segButton.update()
+        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(1)
+        self.enable_buttons()
+        self.segButton.text = run_lbl + " " + seg_lbl
+
+    def RunSegmenter_WtrShd(self):
+        """
+        Run segmentation with watershed
+        """
+        self.disable_buttons()
+        self.segWtrShd_btn.text = "*** " + running_lbl + " " + segWtr_lbl + " ***"
+        self.segWtrShd_btn.update()
+        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(2)
+        self.enable_buttons()
+        self.segWtrShd_btn.text = run_lbl + " " + segWtr_lbl
+
+    def disable_buttons(self):
+        """
+        Disable buttons while segmentation is being performed
+        """
         self.segnoButton.setEnabled(0)
         self.segButton.setEnabled(0)
-        self.segButton.text = "*** Running Segmentation With Declumping (slow) ***"
-        self.segButton.update()
-        slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(True)
+        self.segWtrShd_btn.setEnabled(0)
+
+    def enable_buttons(self):
+        """
+        Enable buttons (after segmentation)
+        """
         self.segnoButton.setEnabled(1)
         self.segButton.setEnabled(1)
-        self.segButton.text = "Run Segmentation With Declumping (slow)"
+        self.segWtrShd_btn.setEnabled(1)
+
+    def run_segmenter_combobox(self, i):
+        """
+        Run segmentation
+        :param i:
+        """
+        if i > 0:
+            n = i - 1
+            slicer.modules.QuickTCGAEffectLogic.runQTCGA_NucleiSegYi(n)
+        # Reset box.
+        self.segComboBox.setCurrentIndex(0)
 
     def toggleOutline(self):
         if self.omode == 1:
@@ -258,7 +331,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
 
     def updateSliders(self):
-        # print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
+        print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
         r = self.structuresView.currentIndex().row()
         if r > -1:
             ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 3).text()
@@ -266,13 +339,13 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename') + '-label'
         if ei not in params:
             params[ei] = cparams.copy()
-            if (r < 0):
+            if r < 0:
                 params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
             else:
                 params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,
                                                                                                                2).text()
-            jstr = json.dumps(params, sort_keys=True, indent=4, separators=(',', ': ')) # TODO: outdent?
-            self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr) # TODO: outdent?
+            jstr = json.dumps(params, sort_keys=True, indent=4, separators=(',', ': '))  # TODO: outdent?
+            self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)  # TODO: outdent?
         self.frameOtsuSlider.value = params[ei]["otsuRatio"]
         self.frameCurvatureWeightSlider.value = params[ei]["curvatureWeight"]
         self.frameSizeThldSlider.value = params[ei]["sizeThld"]
@@ -550,7 +623,9 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
             self.emergencyStopFunc()
             return
 
-        volumesLogic = slicer.modules.volumes.logic()
+        # Debuggage
+        # volumesLogic = slicer.modules.volumes.logic()
+        # print "volumesLogic: ", volumesLogic
 
         self.labelName = self.labelNode.GetName()  # record name of label so user, cant trick us
         self.imgBgrdName = self.backgroundNode.GetName()
@@ -630,14 +705,14 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
             qTCGAMod.Initialization()
             # print("qTCGAMod:", qTCGAMod)
             self.qTCGAMod = qTCGAMod
-            self.QuickTCGACreated = True  # tracks if completed the initializtion (so can do stop correctly) of KSlice
+            self.QuickTCGACreated = True  # tracks if completed the initialization (so can do stop correctly) of KSlice
 
     def runQTCGA_clearSelection(self):
         print "wipe them out.  all of them."
 
         # run Quick TCGA segmenter for the current master volume and label volume
 
-    def runQTCGA_NucleiSegYi(self, declump):
+    def runQTCGA_NucleiSegYi(self, seg_type):
         self.currentMessage = "Quick TCGA: running nucleus segmentation ..."
         slicer.util.showStatusMessage(self.currentMessage)
         seedArray = slicer.util.array(self.labelNode.GetName())
@@ -658,7 +733,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         self.qTCGAMod.SetsizeUpperThld(sizeUpperThld)
         self.qTCGAMod.Setmpp(mpp)
         self.qTCGAMod.SetkernelSize(kernelSize)
-        
+
         AA = self.foregroundNode.GetImageData()
         LL = self.labelNode.GetImageData()
         ddd = AA.GetDimensions()
@@ -686,12 +761,7 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         self.qTCGAMod.SetSourceVol(BB)
         self.qTCGAMod.SetSeedVol(LL)
         print "executing segmentation..."
-        if (declump):
-            self.qTCGAMod.Run_NucleiSegYi()
-            # print "Run_NucleiSegYi"
-        else:
-            self.qTCGAMod.Run_NucleiSegYiwo()
-            # print "Run_NucleiSegYiwo"
+        self.qTCGAMod.Run_NucleiSegYi(seg_type)
         print "segmentation is done"
         self.qTCGASegArray[:] = seedArray[:]
         self.MergeImages(LL, self.labelNode.GetImageData(), a[0], a[1])
@@ -802,19 +872,20 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
 
 
 #
-# QuickTCGAEffect
+# The QuickTCGAEffect class definition
 #
 
 class QuickTCGAEffectExtension(LabelEffect.LabelEffect):
-    """Organizes the Options, Tool, and Logic classes into a single instance
+    """
+    Organizes the Options, Tool, and Logic classes into a single instance
     that can be managed by the EditBox
     """
 
     def __init__(self):
-        # name is used to define the name of the icon image resource (e.g. RectangleEffect.png)
+        # name is used to define the name of the icon image resource (e.g. QuickTCGAEffect.png)
         self.name = "QuickTCGAEffect"
         # tool tip is displayed on mouse hover
-        self.toolTip = "hahahahaha"
+        self.toolTip = "QuickTCGA: automatic segmentation"
 
         self.options = QuickTCGAEffectOptions
         self.tool = QuickTCGAEffectTool
@@ -822,9 +893,11 @@ class QuickTCGAEffectExtension(LabelEffect.LabelEffect):
 
 
 """ Test:
+
 sw = slicer.app.layoutManager().sliceWidget('Red')
 import EditorLib
-pet = EditorLib.EditorEffectTemplateTool(sw)
+pet = EditorLib.QuickTCGAEffectTool(sw)
+
 """
 
 
@@ -839,7 +912,7 @@ class QuickTCGAEffect:
     """
 
     def __init__(self, parent):
-        parent.title = "QuickTCGAEffectTemplate Effect"
+        parent.title = "Editor QuickTCGAEffect Effect"
         parent.categories = ["Developer Tools.Editor Extensions"]
         parent.contributors = ["Steve Pieper (Isomics)"]  # insert your name in the list
         parent.helpText = """
@@ -855,25 +928,25 @@ class QuickTCGAEffect:
     and was partially funded by NIH grant 3P41RR013218.
     """
 
-    # TODO:
-    # don't show this module - it only appears in the Editor module
-    # parent.hidden = True
+        # TODO:
+        # don't show this module - it only appears in the Editor module
+        # parent.hidden = True
 
-    # Add this extension to the editor's list for discovery when the module
-    # is created.  Since this module may be discovered before the Editor itself,
-    # create the list if it doesn't already exist.
-    try:
-        slicer.modules.editorExtensions
-    except AttributeError:
-        slicer.modules.editorExtensions = {}
-    slicer.modules.editorExtensions['QuickTCGAEffect'] = QuickTCGAEffectExtension
+        # Add this extension to the editor's list for discovery when the module
+        # is created.  Since this module may be discovered before the Editor itself,
+        # create the list if it doesn't already exist.
+        try:
+            slicer.modules.editorExtensions
+        except AttributeError:
+            slicer.modules.editorExtensions = {}
+        slicer.modules.editorExtensions['QuickTCGAEffect'] = QuickTCGAEffectExtension
 
 
 #
-# QuickTCGAEffectTemplateWidget
+# QuickTCGAEffectWidget
 #
 
-class QuickTCGAEffectTemplateWidget:
+class QuickTCGAEffectWidget:
     def __init__(self, parent=None):
         self.parent = parent
 
@@ -886,3 +959,13 @@ class QuickTCGAEffectTemplateWidget:
 
     def exit(self):
         pass
+
+
+segno_lbl = "Segmentation No Declumping (fast)"
+seg_lbl = "Segmentation Mean Shift Declumping (slow)"
+segWtr_lbl = "Segmentation Watershed Declumping (fast)"
+run_lbl = "Run"
+running_lbl = "Running"
+LOGICAL_FAST = 'FAST'
+LOGICAL_MSHIFT = 'MSHIFT'
+LOGICAL_WTRSHED = 'WTRSHED'

@@ -22,6 +22,7 @@
 #include "itkRelabelComponentImageFilter.h"
 
 #include "Normalization.h"
+#include "HistologicalEntities.h"
 #include "BinaryMaskAnalysisFilter.h"
 #include "SFLSLocalChanVeseSegmentor2D.h"
 
@@ -380,7 +381,9 @@ namespace ImagenomicAnalytics {
                                            double mpp = 0.25, \
                                            float msKernel = 20.0, \
                                            int levelsetNumberOfIteration = 100, \
-                                           bool doDeclump = false) {
+                                           int declumpingType = 0) {
+            //bool doDeclump = false) {
+
             std::cout << "normalizeImageColor.....\n" << std::flush;
             cv::Mat newImgCV = normalizeImageColor<char>(thisTileCV);
 
@@ -421,6 +424,7 @@ namespace ImagenomicAnalytics {
                 }
             }
 
+            // SEGMENT: ChanVese
             if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
                 std::cout << "before CV\n" << std::flush;
                 // int numiter = 100;
@@ -476,36 +480,57 @@ namespace ImagenomicAnalytics {
             }
 
 
-            if (doDeclump) {
+            // SEGMENT: Declumping
+            //if (doDeclump) {
+            if (declumpingType > 0) {
                 if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
-                    gth818n::BinaryMaskAnalysisFilter binaryMaskAnalyzer;
-                    binaryMaskAnalyzer.setMaskImage(nucleusBinaryMask);
-                    binaryMaskAnalyzer.setObjectSizeThreshold(sizeThld);
-                    binaryMaskAnalyzer.setObjectSizeUpperThreshold(sizeUpperThld);
-                    binaryMaskAnalyzer.setKernelSize(msKernel);
-                    binaryMaskAnalyzer.setMPP(mpp);
-                    binaryMaskAnalyzer.update();
 
-                    std::cout << "after declumping\n" << std::flush;
+                    // WATERSHED
+                    if (declumpingType == 2) {
 
-                    itkUIntImageType::Pointer outputLabelImage = binaryMaskAnalyzer.getConnectedComponentLabelImage();
-                    itkUCharImageType::Pointer edgeBetweenLabelsMask = ScalarImage::edgesOfDifferentLabelRegion<char>(
-                            ScalarImage::castItkImage<itkUIntImageType, itkUIntImageType>(
-                                    binaryMaskAnalyzer.getConnectedComponentLabelImage()));
-                    itkUCharImageType::PixelType *edgeBetweenLabelsMaskBufferPointer = edgeBetweenLabelsMask->GetBufferPointer();
+                        cv::Mat watershedMask;
+                        cv::Mat seg = itk::OpenCVImageBridge::ITKImageToCVMat<itkUCharImageType>(nucleusBinaryMask);
 
-                    const itkUIntImageType::PixelType *outputLabelImageBufferPointer = outputLabelImage->GetBufferPointer();
+                        nscale::HistologicalEntities::plSeparateNuclei(newImgCV, seg, watershedMask);
 
-                    itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
+                        nucleusBinaryMask = itk::OpenCVImageBridge::CVMatToITKImage<itkUCharImageType>(watershedMask);
 
-                    for (long it = 0; it < numPixels; ++it) {
-                        nucleusBinaryMaskBufferPointer[it] = outputLabelImageBufferPointer[it] >= 1 ? 1 : 0;
-                        nucleusBinaryMaskBufferPointer[it] *= (1 - edgeBetweenLabelsMaskBufferPointer[it]);
                     }
+
+                    // MEAN SHIFT
+                    if (declumpingType == 1) {
+                        gth818n::BinaryMaskAnalysisFilter binaryMaskAnalyzer;
+                        binaryMaskAnalyzer.setMaskImage(nucleusBinaryMask);
+                        binaryMaskAnalyzer.setObjectSizeThreshold(sizeThld);
+                        binaryMaskAnalyzer.setObjectSizeUpperThreshold(sizeUpperThld);
+                        binaryMaskAnalyzer.setMeanshiftSigma(msKernel);
+                        binaryMaskAnalyzer.setMPP(mpp);
+                        // Assumes declumpingType==0
+                        binaryMaskAnalyzer.update();
+
+                        std::cout << "after declumping\n" << std::flush;
+
+                        itkUIntImageType::Pointer outputLabelImage = binaryMaskAnalyzer.getConnectedComponentLabelImage();
+                        itkUCharImageType::Pointer edgeBetweenLabelsMask = ScalarImage::edgesOfDifferentLabelRegion<char>(
+                                ScalarImage::castItkImage<itkUIntImageType, itkUIntImageType>(
+                                        binaryMaskAnalyzer.getConnectedComponentLabelImage()));
+                        itkUCharImageType::PixelType *edgeBetweenLabelsMaskBufferPointer = edgeBetweenLabelsMask->GetBufferPointer();
+
+                        const itkUIntImageType::PixelType *outputLabelImageBufferPointer = outputLabelImage->GetBufferPointer();
+
+                        itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
+
+                        for (long it = 0; it < numPixels; ++it) {
+                            nucleusBinaryMaskBufferPointer[it] = outputLabelImageBufferPointer[it] >= 1 ? 1 : 0;
+                            nucleusBinaryMaskBufferPointer[it] *= (1 - edgeBetweenLabelsMaskBufferPointer[it]);
+                        }
+                    }
+
                 }
             }
 
 
+            // SEGMENT: ChanVese again, with numiter = 50.
             if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
                 int numiter = 50;
                 CSFLSLocalChanVeseSegmentor2D<itkFloatImageType::PixelType> cv;
@@ -525,7 +550,7 @@ namespace ImagenomicAnalytics {
                 }
             }
 
-            // "FIX hole in object" (Yi's commit 3/23/17)
+            // FIX hole in object
             fhFilterType::Pointer fhfilter1 = fhFilterType::New();
             fhfilter1->SetInput(nucleusBinaryMask);
             fhfilter1->SetForegroundValue(1);
@@ -628,7 +653,7 @@ namespace ImagenomicAnalytics {
                     binaryMaskAnalyzer.setMaskImage(nucleusBinaryMask);
                     binaryMaskAnalyzer.setObjectSizeThreshold(sizeThld);
                     binaryMaskAnalyzer.setObjectSizeUpperThreshold(sizeUpperThld);
-                    binaryMaskAnalyzer.setKernelSize(msKernel);
+                    binaryMaskAnalyzer.setMeanshiftSigma(msKernel);
                     binaryMaskAnalyzer.setMPP(mpp);
                     binaryMaskAnalyzer.update();
 
@@ -765,7 +790,7 @@ namespace ImagenomicAnalytics {
                 binaryMaskAnalyzer.setMaskImage(nucleusBinaryMask);
                 binaryMaskAnalyzer.setObjectSizeThreshold(sizeThld);
                 binaryMaskAnalyzer.setObjectSizeUpperThreshold(sizeUpperThld);
-                binaryMaskAnalyzer.setKernelSize(msKernel);
+                binaryMaskAnalyzer.setMeanshiftSigma(msKernel);
                 binaryMaskAnalyzer.setMPP(mpp);
                 binaryMaskAnalyzer.update();
 
@@ -799,7 +824,9 @@ namespace ImagenomicAnalytics {
                           double mpp = 0.25, \
                           float msKernel = 20.0, \
                           int levelsetNumberOfIteration = 100,
-                              bool doDeclump = false) {
+                              int declumpingType = 0) {
+            //bool doDeclump = false) {
+
             itkUShortImageType::Pointer outputLabelImage;
 
             // call regular segmentation function
@@ -812,7 +839,7 @@ namespace ImagenomicAnalytics {
                                                                        mpp, \
                                                                        msKernel, \
                                                                        levelsetNumberOfIteration,
-                                                                             doDeclump);
+                                                                             declumpingType);
 
             // change pixel values for visualization reasons
 /*

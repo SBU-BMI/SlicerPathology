@@ -149,51 +149,27 @@ void QuickTCGASegmenter::DoSegmentation() {
     std::cout << "Do segmentation at QuickTCGASegmenter\n";
 }
 
-void
-QuickTCGASegmenter::DoNucleiSegmentationYi(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld,
-                                           double mpp, float kernelSize) {
+/**
+ * Do nuclear segmentation
+ */
+void QuickTCGASegmenter::DoNuclearSegmentation(float otsuRatio, double curvatureWeight, float sizeThld,
+                                                float sizeUpperThld, double mpp, float kernelSize,                                                
+                                                int declumpingType = 0) {
 
     int levelsetNumberOfIteration = 100;
-    bool doDeclump = true;
     // Resize image for higher efficiency
     double samratio = 1;
     cv::resize(m_imSrc, m_imSrcSample, cv::Size(m_imSrc.cols * samratio, m_imSrc.rows * samratio), cv::INTER_LINEAR);
 
-    // std::cout << "doing old processTile\n";
-    // cv::Mat seg = processTile(m_imSrcSample, otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp, kernelSize);
-    
-    // std::cout << "doing new processTile\n";
+    std::cout << "doing new processTile\n";
     cv::Mat seg = ImagenomicAnalytics::TileAnalysis::processTileCV(m_imSrcSample, otsuRatio, curvatureWeight, sizeThld,
                                                                    sizeUpperThld, mpp, kernelSize,
-                                                                   levelsetNumberOfIteration, doDeclump);
+                                                                   levelsetNumberOfIteration, declumpingType);
     // std::cout << "seg" << seg << "\n";
 
     cv::resize(seg, m_imLab, cv::Size(m_imLab.cols, m_imLab.rows), cv::INTER_NEAREST);
 
-    //     seg.copyTo(m_imLab);
-}
-
-void QuickTCGASegmenter::DoNucleiSegmentationYiwo(float otsuRatio, double curvatureWeight, float sizeThld,
-                                                  float sizeUpperThld, double mpp, float kernelSize) {
-    int levelsetNumberOfIteration = 100;
-    bool doDeclump = false;
-
-    // Resize image for higher efficiency
-    double samratio = 1;
-    cv::resize(m_imSrc, m_imSrcSample, cv::Size(m_imSrc.cols * samratio, m_imSrc.rows * samratio), cv::INTER_LINEAR);
-
-    // std::cout << "doing old processTile\n";
-    // cv::Mat seg = processTileNoDeclump(m_imSrcSample, otsuRatio, curvatureWeight, sizeThld, sizeUpperThld, mpp, kernelSize);
-
-    // std::cout << "doing new processTile\n";
-    cv::Mat seg = ImagenomicAnalytics::TileAnalysis::processTileCV(m_imSrcSample, otsuRatio, curvatureWeight, sizeThld,
-                                                                   sizeUpperThld, mpp, kernelSize,
-                                                                   levelsetNumberOfIteration, doDeclump);
-    // std::cout << "seg" << seg << "\n";
-
-    cv::resize(seg, m_imLab, cv::Size(m_imLab.cols, m_imLab.rows), cv::INTER_NEAREST);
-
-    //     seg.copyTo(m_imLab);
+    // seg.copyTo(m_imLab);
 }
 
 
