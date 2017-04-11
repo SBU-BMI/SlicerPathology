@@ -216,7 +216,7 @@ namespace ImagenomicAnalytics {
         cv::Mat normalizeImageColor(cv::Mat image) {
             float meanT[3] = {-0.632356, -0.0516004, 0.0376543};
             float stdT[3] = {0.26235, 0.0514831,
-                             0.0114217}; ///< These are learnt from the tempalte GBM image selected by George
+                             0.0114217}; ///< These are learnt from the template GBM image selected by George
             cv::Mat newImgCV = nscale::Normalization::normalization(image, meanT, stdT);
 
             return newImgCV;
