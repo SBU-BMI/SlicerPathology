@@ -382,7 +382,6 @@ namespace ImagenomicAnalytics {
                                            float msKernel = 20.0, \
                                            int levelsetNumberOfIteration = 100, \
                                            int declumpingType = 0) {
-            //bool doDeclump = false) {
 
             std::cout << "normalizeImageColor.....\n" << std::flush;
             cv::Mat newImgCV = normalizeImageColor<char>(thisTileCV);
@@ -481,7 +480,6 @@ namespace ImagenomicAnalytics {
 
 
             // SEGMENT: Declumping
-            //if (doDeclump) {
             if (declumpingType > 0) {
                 if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
 
@@ -565,7 +563,7 @@ namespace ImagenomicAnalytics {
             //std::cout << "after ConnectedComponent\n" << std::flush;
 
             return fhfilter1->GetOutput();
-            //return nucleusBinaryMask;
+            // return nucleusBinaryMask;
         }
 
 
@@ -621,7 +619,7 @@ namespace ImagenomicAnalytics {
 
             if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
                 std::cout << "before CV\n" << std::flush;
-                //int numiter = 100;
+                // int numiter = 100;
 
                 // time_t start, end;
                 // time(&start);
@@ -824,8 +822,7 @@ namespace ImagenomicAnalytics {
                           double mpp = 0.25, \
                           float msKernel = 20.0, \
                           int levelsetNumberOfIteration = 100,
-                              int declumpingType = 0) {
-            //bool doDeclump = false) {
+                          int declumpingType = 0) {
 
             itkUShortImageType::Pointer outputLabelImage;
 
@@ -839,10 +836,12 @@ namespace ImagenomicAnalytics {
                                                                        mpp, \
                                                                        msKernel, \
                                                                        levelsetNumberOfIteration,
-                                                                             declumpingType);
+                                                                       declumpingType);
 
-            // change pixel values for visualization reasons
+            // Transform from 1 to 255 does not work in our Slicer use-case.
+            
 /*
+            // change pixel values for visualization reasons
             itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
             long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
             for (long it = 0; it < numPixels; ++it) {
