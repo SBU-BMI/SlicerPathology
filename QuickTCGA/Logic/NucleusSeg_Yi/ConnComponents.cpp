@@ -7,6 +7,8 @@
 #include "ConnComponents.h"
 #include <string.h>
 
+using namespace std::tr1;
+
 namespace nscale {
 
     ConnComponents::ConnComponents() {
