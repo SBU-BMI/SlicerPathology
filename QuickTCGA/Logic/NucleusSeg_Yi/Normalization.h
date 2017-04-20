@@ -9,7 +9,7 @@
 #define NORMALIZATION_H_
 
 #include "opencv2/opencv.hpp"
-#include <sys/time.h>
+//#include <sys/time.h>
 
 #include "PixelOperations.h"
 

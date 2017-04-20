@@ -8,7 +8,7 @@
 #ifndef _UTILS_LOGGER_H_
 #define _UTILS_LOGGER_H_
 
-#include <sys/time.h>
+//#include <sys/time.h>
 #include <tr1/unordered_map>
 #include <vector>
 #include <cmath>
@@ -94,12 +94,16 @@ public:
 
 	static inline long long timestampInUS()
 	{
-		struct timeval ts;
-		gettimeofday(&ts, NULL);
-		return (ts.tv_sec*1000000LL + (ts.tv_usec));
-		 //   timespec ts;
-		//    clock_gettime(CLOCK_REALTIME, &ts);
-		//    return (uint64_t)ts.tv_sec * 1000000LL + (uint64_t)ts.tv_nsec / 1000LL;
+		//struct timeval ts;
+		//gettimeofday(&ts, NULL);
+		//return (ts.tv_sec*1000000LL + (ts.tv_usec));
+
+        //  timespec ts;
+		//  clock_gettime(CLOCK_REALTIME, &ts);
+		//  return (uint64_t)ts.tv_sec * 1000000LL + (uint64_t)ts.tv_nsec / 1000LL;
+
+        //PTF
+		return (0);
 	};
 
 
