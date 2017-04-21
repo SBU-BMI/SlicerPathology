@@ -9,30 +9,33 @@
 #define NORMALIZATION_H_
 
 #include "opencv2/opencv.hpp"
-//#include <sys/time.h>
-
 #include "PixelOperations.h"
 
 
-namespace nscale{
+namespace nscale {
 
-class Normalization {
-private:
-	static void PixelClass(cv::Mat I, cv::Mat o_fg, cv::Mat o_bg, cv::Mat& o_fg_lab, cv::Mat& o_bg_lab);
-	static cv::Mat TransferI(cv::Mat fg_lab, cv::Mat fg_mask, float meanT[3], float stdT[3]);
-	static cv::Mat bgr2Lab(cv::Mat I);
-	static cv::Mat lab2BGR(cv::Mat LAB);
-	static int rndint(float n);
+    class Normalization {
+    private:
+        static void PixelClass(cv::Mat I, cv::Mat o_fg, cv::Mat o_bg, cv::Mat &o_fg_lab, cv::Mat &o_bg_lab);
 
-public:
-	// normalization operations that mimics our matlab code. It uses as an input the BGR image and
-	// mean/std of the lab channels computed from the target image using the function targetParameters bellow.
-	static cv::Mat normalization(const cv::Mat& originalI, float targetMean[3], float targetStd[3]);
-	static void targetParameters(const cv::Mat& originalI, float (&targetMean)[3], float (&targetStd)[3]);
+        static cv::Mat TransferI(cv::Mat fg_lab, cv::Mat fg_mask, float meanT[3], float stdT[3]);
 
-	static cv::Mat segFG(cv::Mat I, cv::Mat M);
+        static cv::Mat bgr2Lab(cv::Mat I);
 
-};
+        static cv::Mat lab2BGR(cv::Mat LAB);
+
+        static int rndint(float n);
+
+    public:
+        // normalization operations that mimics our matlab code. It uses as an input the BGR image and
+        // mean/std of the lab channels computed from the target image using the function targetParameters bellow.
+        static cv::Mat normalization(const cv::Mat &originalI, float targetMean[3], float targetStd[3]);
+
+        static void targetParameters(const cv::Mat &originalI, float (&targetMean)[3], float (&targetStd)[3]);
+
+        static cv::Mat segFG(cv::Mat I, cv::Mat M);
+
+    };
 
 
 }// end nscale
