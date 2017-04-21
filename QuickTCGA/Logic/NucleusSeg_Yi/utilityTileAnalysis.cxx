@@ -371,6 +371,13 @@ namespace ImagenomicAnalytics {
             return mask;
         }
 
+        /**
+         * Process Tile
+         * declumpingType:
+         * 0 = No declumping
+         * 1 = Mean Shift
+         * 2 = Watershed
+         */
         template<typename TNull>
         itkUCharImageType::Pointer processTile(cv::Mat thisTileCV, \
                                            itkUShortImageType::Pointer &outputLabelImageUShort, \
@@ -562,11 +569,14 @@ namespace ImagenomicAnalytics {
             //outputLabelImageUShort = connected->GetOutput();
             //std::cout << "after ConnectedComponent\n" << std::flush;
 
-            return fhfilter1->GetOutput();
             // return nucleusBinaryMask;
+            return fhfilter1->GetOutput();
         }
 
 
+        /**
+         * NOT USED.
+         */
         template<typename TNull>
         itkUCharImageType::Pointer processTileOptimalThreshold(cv::Mat thisTileCV, \
                                                            itkUShortImageType::Pointer &outputLabelImageUShort, \
@@ -576,7 +586,7 @@ namespace ImagenomicAnalytics {
                                                            double mpp = 0.25, \
                                                            float msKernel = 20.0, \
                                                            int levelsetNumberOfIteration = 100, \
-                                                           bool doDeclump = false) {
+                                                           int declumpingType = 0) {
             std::cout << "normalizeImageColor.....\n" << std::flush;
             cv::Mat newImgCV = normalizeImageColor<char>(thisTileCV);
 
@@ -645,7 +655,7 @@ namespace ImagenomicAnalytics {
                 }
             }
 
-            if (doDeclump) {
+            if (declumpingType == 1) {
                 if (!ScalarImage::isImageAllZero<itkBinaryMaskImageType>(nucleusBinaryMask)) {
                     gth818n::BinaryMaskAnalysisFilter binaryMaskAnalyzer;
                     binaryMaskAnalyzer.setMaskImage(nucleusBinaryMask);
@@ -814,6 +824,13 @@ namespace ImagenomicAnalytics {
         }
 
 
+        /**
+         * Process Tile CV
+         * declumpingType:
+         * 0 = None
+         * 1 = Mean Shift
+         * 2 = Watershed
+         */
         cv::Mat processTileCV(cv::Mat thisTileCV, \
                           float otsuRatio = 1.0, \
                           double curvatureWeight = 0.8, \
@@ -836,10 +853,10 @@ namespace ImagenomicAnalytics {
                                                                        mpp, \
                                                                        msKernel, \
                                                                        levelsetNumberOfIteration,
-                                                                       declumpingType);
+                                                                             declumpingType);
 
             // Transform from 1 to 255 does not work in our Slicer use-case.
-            
+
 /*
             // change pixel values for visualization reasons
             itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();

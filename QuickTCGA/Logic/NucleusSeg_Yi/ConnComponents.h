@@ -9,9 +9,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <tr1/unordered_map>
-
-using namespace std::tr1;
 
 namespace nscale {
 
