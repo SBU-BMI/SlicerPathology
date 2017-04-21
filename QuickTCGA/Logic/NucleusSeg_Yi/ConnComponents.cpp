@@ -7,7 +7,14 @@
 #include "ConnComponents.h"
 #include <string.h>
 
-using namespace std::tr1;
+#if defined(__has_include)
+#if __has_include("unordered_map.h") // Windows
+# include <unordered_map>
+#endif
+#if __has_include("tr1/unordered_map.h") // Linux
+# include <tr1/unordered_map>
+#endif
+#endif
 
 namespace nscale {
 
