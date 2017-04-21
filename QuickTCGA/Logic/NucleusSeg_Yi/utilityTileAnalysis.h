@@ -11,7 +11,6 @@ namespace ImagenomicAnalytics {
                           float msKernel = 20.0, \
                           int levelsetNumberOfIteration = 100,
                           int seg_type = 0);
-                          //bool doDeclump = false);
     }
 }
 #endif
