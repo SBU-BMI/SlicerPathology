@@ -70,11 +70,11 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.frame.layout().addWidget(self.outlineButton)
         self.outlineButton.connect('clicked()', self.toggleOutline)
 
-        self.wipeButton = qt.QPushButton(self.frame)
-        # TODO: Put tooltip or rename this widget.
-        self.wipeButton.text = "Clear current segmentation label"
-        self.frame.layout().addWidget(self.wipeButton)
-        self.wipeButton.connect('clicked()', self.wipeSegmentation())
+        # REMOVED. TODO: FIX IF NEEDED.
+        # self.wipeButton = qt.QPushButton(self.frame)
+        # self.wipeButton.text = "Clear current segmentation label"
+        # self.frame.layout().addWidget(self.wipeButton)
+        # self.wipeButton.connect('clicked()', self.wipeSegmentation())
 
         self.locRadFrame = qt.QFrame(self.frame)
         self.locRadFrame.setLayout(qt.QHBoxLayout())
@@ -247,12 +247,13 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.updateParam("kernelSize", self.frameKernelSizeSlider.value)
         self.updateMRMLFromGUI()
 
-    def wipeSegmentation(self):
+    # REMOVED.
+    # def wipeSegmentation(self):
         # Slice Logic: vtkMRMLSliceLogic
-        sl = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
+        # sl = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
         # QuickTCGAEffectLogic
-        logic = QuickTCGAEffectLogic(sl)
-        logic.wipeSegmentation()
+        # logic = QuickTCGAEffectLogic(sl)
+        # logic.wipeSegmentation()
 
     def destroy(self):
         self.currentMessage = ""
@@ -772,10 +773,11 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
         self.currentMessage = "Nuclei segmentation is done"
         slicer.util.showStatusMessage(self.currentMessage)
 
-    def wipeSegmentation(self):
-        self.BlankLabelImage(self.labelNode.GetImageData())
-        self.labelNode.GetImageData().Modified()
-        self.labelNode.Modified()
+    # REMOVED.
+    # def wipeSegmentation(self):
+    #     self.BlankLabelImage(self.labelNode.GetImageData())
+    #     self.labelNode.GetImageData().Modified()
+    #     self.labelNode.Modified()
 
     def BlankLabelImage(self, image):
         dim = image.GetDimensions()
