@@ -59,13 +59,13 @@ namespace TCGA {
     void CopyImageOpenCV2VTK(const cv::Mat &imOpenCV, vtkSmartPointer <vtkImageData> imVTK);
 
 
-    void VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT;
+    void VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT
     CopyImageVTK2OpenCV(const vtkSmartPointer <vtkImageData> imVTK, cv::Mat &imOpenCV);
 
-    void VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT;
+    void VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT
     CopyImageOpenCV2VTK(const cv::Mat &imOpenCV, vtkSmartPointer <vtkImageData> imVTK);
 
-    void VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT;
+    void VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT
     FindBoundingBoxFromMask(const cv::Mat &imMask, cv::Rect &rect);
 
 
