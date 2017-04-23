@@ -8,7 +8,17 @@
 #ifndef NORMALIZATION_H_
 #define NORMALIZATION_H_
 
+// Includes to use opencv2/GPU
 #include "opencv2/opencv.hpp"
+
+/*
+#ifdef WITH_CUDA
+#include "opencv2/gpu/gpu.hpp"
+#endif
+
+#include <sys/time.h>
+*/
+
 #include "PixelOperations.h"
 
 
@@ -26,6 +36,9 @@ namespace nscale {
 
         static int rndint(float n);
 
+        // s/b private?
+        //static cv::Mat segFG(cv::Mat I, cv::Mat M);
+
     public:
         // normalization operations that mimics our matlab code. It uses as an input the BGR image and
         // mean/std of the lab channels computed from the target image using the function targetParameters bellow.
@@ -33,6 +46,7 @@ namespace nscale {
 
         static void targetParameters(const cv::Mat &originalI, float (&targetMean)[3], float (&targetStd)[3]);
 
+        // check public?
         static cv::Mat segFG(cv::Mat I, cv::Mat M);
 
     };
