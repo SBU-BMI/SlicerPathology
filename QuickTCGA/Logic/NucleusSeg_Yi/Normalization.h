@@ -28,7 +28,7 @@ namespace nscale {
 
 class Normalization {
 private:
-    static cv::Mat segFG(cv::Mat I, cv::Mat M);  // fyi - 'public' in 'copied' version
+    // static cv::Mat segFG(cv::Mat I, cv::Mat M); // fyi - 'public' in 'copied' version
     static void PixelClass(cv::Mat I, cv::Mat o_fg, cv::Mat o_bg, cv::Mat& o_fg_lab, cv::Mat& o_bg_lab);
     static cv::Mat TransferI(cv::Mat fg_lab, cv::Mat fg_mask, float meanT[3], float stdT[3]);
     static cv::Mat bgr2Lab(cv::Mat I);
@@ -40,6 +40,8 @@ public:
     // mean/std of the lab channels computed from the target image using the function targetParameters bellow.
     static cv::Mat normalization(const cv::Mat& originalI, float targetMean[3], float targetStd[3]);
     static void targetParameters(const cv::Mat& originalI, float(&targetMean)[3], float(&targetStd)[3]);
+    // segFG() must be public; being called from utilityTileAnalysis.h
+    static cv::Mat segFG(cv::Mat I, cv::Mat M);
 };
 
 } // end nscale
