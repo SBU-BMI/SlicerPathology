@@ -1,4 +1,4 @@
-/*
+/**
  * Normalization.cpp
  *
  *  Created on: Jun 11, 2014
@@ -440,7 +440,7 @@ namespace nscale
     //[r,c,d] = size(OriginalI);
     int r = originalI.rows;
     int c = originalI.cols;
-    //int d = originalI.channels();
+    //int d = originalI.channels();  // 'd' assigned but not used.
     //assert(d == 3);
 
     //% M =[-0.154 0.035 0.549 -45.718; -0.057 -0.817 1.170 -49.887];
@@ -507,7 +507,7 @@ namespace nscale
       }
     int r = originalI.rows;
     int c = originalI.cols;
-    //int d = originalI.channels();
+    //int d = originalI.channels();  // 'd' assigned but not used.
     //assert(d == 3);
 
     /*% Target image processing
