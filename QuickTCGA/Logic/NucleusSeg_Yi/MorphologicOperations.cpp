@@ -1,5 +1,5 @@
 /**
- * MorphologicOperation.cpp
+ * MorphologicOperations.cpp
  *
  *  Created on: Jul 7, 2011
  *
@@ -8,7 +8,9 @@
 #include <queue>
 #include <iostream>
 #include <limits>
+//#include <omp.h>  // not using
 #include "highgui.h"
+//#include "Logger.h"  // not using
 #include "TypeUtils.h"
 #include "MorphologicOperations.h"
 #include "PixelOperations.h"
@@ -16,6 +18,7 @@
 #include "ConnComponents.h"
 
 using namespace cv;
+//using namespace cv::gpu;  // HIDE GPU
 using namespace std;
 
 namespace nscale {
@@ -435,4 +438,3 @@ namespace nscale {
 
     template Mat imhmin(const Mat &image, float h, int connectivity);
 }
-

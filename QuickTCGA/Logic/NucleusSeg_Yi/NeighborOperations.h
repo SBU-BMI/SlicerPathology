@@ -1,5 +1,5 @@
 /**
- * ScanlineOperations.h
+ * NeighborOperations.h
  *
  *  Created on: Aug 2, 2011
  *      Author: tcpan
@@ -8,6 +8,13 @@
 #define NEIGHBOROPERATIONS_H_
 
 #include "cv.h"
+
+/*
+// HIDE GPU:
+#ifdef WITH_CUDA
+#include "opencv2/gpu/gpu.hpp"
+#endif
+*/
 
 namespace nscale {
 
@@ -18,6 +25,21 @@ namespace nscale {
         template<typename T>
         static ::cv::Mat border(::cv::Mat &img, T background);
     };
+
+    /*
+    // HIDE GPU:
+#ifdef WITH_CUDA
+namespace gpu {
+    class NeighborOperations {
+
+    public:
+        // fixes watershed borders
+        template <typename T>
+        static ::cv::gpu::GpuMat border(const ::cv::gpu::GpuMat& img, T background, int connectivity, ::cv::gpu::Stream& stream);
+    };
+}
+#endif
+    */
 
 }
 

@@ -1,5 +1,5 @@
 /**
- * ScanlineOperations.cpp
+ * NeighborOperations.cpp
  *
  *  Created on: Aug 2, 2011
  *      Author: tcpan
@@ -44,7 +44,5 @@ namespace nscale {
     }
 
     template Mat NeighborOperations::border<int>(Mat &, int background);
-
     template Mat NeighborOperations::border<unsigned char>(Mat &, unsigned char background);
 }
-

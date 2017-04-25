@@ -6,17 +6,8 @@
  */
 #include "ConnComponents.h"
 #include <string.h>
-/*
-#if defined(__has_include)
-#if __has_include("unordered_map.h") // Windows
-# include <unordered_map>
-#endif
-#if __has_include("tr1/unordered_map.h") // Linux
-# include <tr1/unordered_map>
-using namespace std::tr1;
-#endif
-#endif
-*/
+
+
 namespace nscale {
 
     ConnComponents::ConnComponents() {
@@ -98,7 +89,6 @@ namespace nscale {
      */
     int ConnComponents::relabel(int w, int h, int *label, int bgval) {
         int length = w * h;
-        // unordered_map<int, int> labelmap;
         std::tr1::unordered_map<int, int> labelmap;
 
         int j = 1;
@@ -145,7 +135,6 @@ namespace nscale {
     int ConnComponents::areaThresholdLabeled(const int *label, const int w, const int h, int *n_label, const int bgval,
                                              const int lower, const int upper) {
         int length = w * h;
-        // typedef unordered_map<int, int> AreaMap;
         typedef std::tr1::unordered_map<int, int> AreaMap;
         AreaMap areas, thresholdedareas;
 
