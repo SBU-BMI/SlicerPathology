@@ -28,7 +28,7 @@ namespace nscale {
 
 class Normalization {
 private:
-    static cv::Mat segFG(cv::Mat I, cv::Mat M);  // fyi - 'public' in 'copied' version
+    static cv::Mat segFG(cv::Mat I, cv::Mat M); // fyi - 'public' in 'copied' version
     static void PixelClass(cv::Mat I, cv::Mat o_fg, cv::Mat o_bg, cv::Mat& o_fg_lab, cv::Mat& o_bg_lab);
     static cv::Mat TransferI(cv::Mat fg_lab, cv::Mat fg_mask, float meanT[3], float stdT[3]);
     static cv::Mat bgr2Lab(cv::Mat I);
