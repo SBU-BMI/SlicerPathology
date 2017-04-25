@@ -1,14 +1,36 @@
 /**
- * MorphologicOperation.h
+ * MorphologicOperations.h
  *
  *  Created on: Jul 7, 2011
  */
 #ifndef MORPHOLOGICOPERATION_H_
 #define MORPHOLOGICOPERATION_H_
 
+/*
+// not using:
+#ifdef _MSC_VER
+#define DllExport __declspec(dllexport)
+#else
+#define DllExport //nothing
+#endif
+*/
+
 #include "opencv/cv.hpp"
 
+/*
+// HIDE GPU
+#ifdef WITH_CUDA
+#include "opencv2/gpu/gpu.hpp"
+#endif
+*/
+
 using namespace cv;
+/*
+// HIDE GPU
+#ifdef WITH_CUDA
+using namespace cv::gpu;
+#endif
+*/
 
 namespace nscale {
 
@@ -34,7 +56,20 @@ namespace nscale {
 
     template<typename T>
     cv::Mat_<unsigned char> localMinima(const cv::Mat &image, int connectivity);
+
+    /*
+    // OMITTING UNUSED FUNCTIONS...
+    */
+
+    /*
+    // HIDE GPU
+    #ifdef WITH_CUDA
+    namespace gpu {
+      // GPU versions of the same functions.
+    }
+    #endif
+    */
+
 }
 
 #endif /* MORPHOLOGICOPERATION_H_ */
-

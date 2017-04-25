@@ -1,21 +1,25 @@
 /**
- * RedBloodCell.cpp
+ * HistologicalEntities.cpp
  *
  *  Created on: Jul 1, 2011
  *      Author: tcpan
  */
-#include <limits>
+#include <limits> // need limits
 #include "HistologicalEntities.h"
 #include <iostream>
 #include "MorphologicOperations.h"
+//#include "NeighborOperations.h"  // not using
 #include "PixelOperations.h"
 #include "highgui.h"
 #include "float.h"
+//#include "Logger.h"  // not using
+//#include "ConnComponents.h"  // not using
 
 namespace nscale {
 
     using namespace cv;
 
+    // NOTE: MODIFIED FUNCTION SIGNATURE: Using defaults on extra parameters.
     // Passing in: (newImgCV, seg, watershedMask)
     int HistologicalEntities::plSeparateNuclei(const Mat &img, const Mat &seg_open, Mat &seg_nonoverlap) {
         /**
@@ -105,4 +109,3 @@ namespace nscale {
         return ::nscale::HistologicalEntities::CONTINUE;
     }
 }
-
