@@ -211,10 +211,35 @@ cv::Mat Normalization::lab2BGR(cv::Mat LAB)
         float* LMS_ptr = LMS.ptr<float>(i);
         float* log_LMS_ptr = log_LMS.ptr<float>(i);
 
+        // Fix for Mac error: 'pow(n,k) ambiguous':
+        float base;
+        float exponent;
         for (int j = 0; j < LMS.cols; j++) {
-            LMS_ptr[j * 3] = pow(10.0, log_LMS_ptr[j * 3]);
-            LMS_ptr[j * 3 + 1] = pow(10.0, log_LMS_ptr[j * 3 + 1]);
-            LMS_ptr[j * 3 + 2] = pow(10.0, log_LMS_ptr[j * 3 + 2]);
+
+            base = 10.0;
+            exponent = 0.0;
+
+            exponent = log_LMS_ptr[j * 3];
+            LMS_ptr[j * 3] = pow(base, exponent);
+            // Debugging:
+            std::cout << "exponent: " << exponent << std::endl;
+            std::cout << "j * 3: " << (j * 3) << std::endl;
+            std::cout << "pow: " << LMS_ptr[j * 3] << std::endl;
+
+            exponent = log_LMS_ptr[j * 3 + 1];
+            LMS_ptr[j * 3 + 1] = pow(base, exponent);
+            // Debugging:
+            std::cout << "exponent: " << exponent << std::endl;
+            std::cout << "j * 3 + 1: " << (j * 3 + 1) << std::endl;
+            std::cout << "pow: " << LMS_ptr[j * 3 + 1] << std::endl;
+
+            exponent = log_LMS_ptr[j * 3 + 2];
+            LMS_ptr[j * 3 + 2] = pow(base, exponent);
+            // Debugging:
+            std::cout << "exponent: " << exponent << std::endl;
+            std::cout << "j * 3 + 2: " << (j * 3 + 2) << std::endl;
+            std::cout << "pow: " << LMS_ptr[j * 3 + 2] << std::endl;
+
             //			if(i==0  && j <2 ){
             //				std::cout << "pow: " << pow(10.0, log_LMS_ptr[j*3+2]) << std::endl;
             //				std::cout << "lab2BGR: log_LMS(0,0): "<< log_LMS_ptr[j*3] <<" (0,1):"<<  log_LMS_ptr[j*3+1] <<" (0,2):"<< log_LMS_ptr[j*3+2] << std::endl;
