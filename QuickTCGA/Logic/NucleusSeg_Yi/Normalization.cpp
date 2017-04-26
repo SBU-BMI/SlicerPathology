@@ -221,24 +221,12 @@ cv::Mat Normalization::lab2BGR(cv::Mat LAB)
 
             exponent = log_LMS_ptr[j * 3];
             LMS_ptr[j * 3] = pow(base, exponent);
-            // Debugging:
-            std::cout << "exponent: " << exponent << std::endl;
-            std::cout << "j * 3: " << (j * 3) << std::endl;
-            std::cout << "pow: " << LMS_ptr[j * 3] << std::endl;
 
             exponent = log_LMS_ptr[j * 3 + 1];
             LMS_ptr[j * 3 + 1] = pow(base, exponent);
-            // Debugging:
-            std::cout << "exponent: " << exponent << std::endl;
-            std::cout << "j * 3 + 1: " << (j * 3 + 1) << std::endl;
-            std::cout << "pow: " << LMS_ptr[j * 3 + 1] << std::endl;
 
             exponent = log_LMS_ptr[j * 3 + 2];
             LMS_ptr[j * 3 + 2] = pow(base, exponent);
-            // Debugging:
-            std::cout << "exponent: " << exponent << std::endl;
-            std::cout << "j * 3 + 2: " << (j * 3 + 2) << std::endl;
-            std::cout << "pow: " << LMS_ptr[j * 3 + 2] << std::endl;
 
             //			if(i==0  && j <2 ){
             //				std::cout << "pow: " << pow(10.0, log_LMS_ptr[j*3+2]) << std::endl;
