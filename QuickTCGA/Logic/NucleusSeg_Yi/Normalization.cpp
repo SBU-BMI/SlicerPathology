@@ -225,9 +225,13 @@ cv::Mat Normalization::lab2BGR(cv::Mat LAB)
 
             /*
             if (i == 0 && j < 2) {
-                std::cout << "pow: " << pow(10.0, log_LMS_ptr[j * 3 + 2]) << std::endl;
-                std::cout << "lab2BGR: log_LMS(0,0): " << log_LMS_ptr[j * 3] << " (0,1):" << log_LMS_ptr[j * 3 + 1] << " (0,2):" << log_LMS_ptr[j * 3 + 2] << std::endl;
-                std::cout << "lab2BGR: LMS(0,0): " << LMS_ptr[j * 3] << " (0,1):" << LMS_ptr[j * 3 + 1] << " (0,2):" << LMS_ptr[j * 3 + 2] << std::endl;
+	        std::cout << "\nl: " << l << std::endl;
+		std::cout << "m: " << m << std::endl;
+		std::cout << "s: " << s << "\n" << std::endl;
+		
+                //std::cout << "pow: " << pow(10.0, log_LMS_ptr[j * 3 + 2]) << std::endl;
+                std::cout << "lab2BGR lms: log_LMS(0,0): " << log_LMS_ptr[j * 3] << " (0,1):" << log_LMS_ptr[j * 3 + 1] << " (0,2):" << log_LMS_ptr[j * 3 + 2] << std::endl;
+                std::cout << "lab2BGR pow: LMS(0,0): " << LMS_ptr[j * 3] << " (0,1):" << LMS_ptr[j * 3 + 1] << " (0,2):" << LMS_ptr[j * 3 + 2] << std::endl;
             }
             */
         }
