@@ -203,36 +203,33 @@ cv::Mat Normalization::lab2BGR(cv::Mat LAB)
             //			}
         }
     }
+
     /*	% convert back from log space to linear space
         LMS = 10.^log_LMS; */
     cv::Mat LMS(LAB.size(), CV_32FC3);
+    float base = 10.0;
+
     for (int i = 0; i < LMS.rows; i++) {
         // get pointer to beginning of each line
         float* LMS_ptr = LMS.ptr<float>(i);
         float* log_LMS_ptr = log_LMS.ptr<float>(i);
 
-        // Fix for Mac error: 'pow(n,k) ambiguous':
-        float base;
-        float exponent;
         for (int j = 0; j < LMS.cols; j++) {
+            float l = log_LMS_ptr[j * 3];
+            float m = log_LMS_ptr[j * 3 + 1];
+            float s = log_LMS_ptr[j * 3 + 2];
 
-            base = 10.0;
-            exponent = 0.0;
+            LMS_ptr[j * 3] = pow(base, l);
+            LMS_ptr[j * 3 + 1] = pow(base, m);
+            LMS_ptr[j * 3 + 2] = pow(base, s);
 
-            exponent = log_LMS_ptr[j * 3];
-            LMS_ptr[j * 3] = pow(base, exponent);
-
-            exponent = log_LMS_ptr[j * 3 + 1];
-            LMS_ptr[j * 3 + 1] = pow(base, exponent);
-
-            exponent = log_LMS_ptr[j * 3 + 2];
-            LMS_ptr[j * 3 + 2] = pow(base, exponent);
-
-            //			if(i==0  && j <2 ){
-            //				std::cout << "pow: " << pow(10.0, log_LMS_ptr[j*3+2]) << std::endl;
-            //				std::cout << "lab2BGR: log_LMS(0,0): "<< log_LMS_ptr[j*3] <<" (0,1):"<<  log_LMS_ptr[j*3+1] <<" (0,2):"<< log_LMS_ptr[j*3+2] << std::endl;
-            //				std::cout << "lab2BGR: LMS(0,0): "<< LMS_ptr[j*3] <<" (0,1):"<<  LMS_ptr[j*3+1] <<" (0,2):"<< LMS_ptr[j*3+2] << std::endl;
-            //			}
+            /*
+            if (i == 0 && j < 2) {
+                std::cout << "pow: " << pow(10.0, log_LMS_ptr[j * 3 + 2]) << std::endl;
+                std::cout << "lab2BGR: log_LMS(0,0): " << log_LMS_ptr[j * 3] << " (0,1):" << log_LMS_ptr[j * 3 + 1] << " (0,2):" << log_LMS_ptr[j * 3 + 2] << std::endl;
+                std::cout << "lab2BGR: LMS(0,0): " << LMS_ptr[j * 3] << " (0,1):" << LMS_ptr[j * 3 + 1] << " (0,2):" << LMS_ptr[j * 3 + 2] << std::endl;
+            }
+            */
         }
     }
 
