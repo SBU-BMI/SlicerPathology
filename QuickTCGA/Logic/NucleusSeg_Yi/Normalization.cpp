@@ -228,7 +228,7 @@ cv::Mat Normalization::lab2BGR(cv::Mat LAB)
 	        std::cout << "\nl: " << l << std::endl;
 		std::cout << "m: " << m << std::endl;
 		std::cout << "s: " << s << "\n" << std::endl;
-		
+
                 //std::cout << "pow: " << pow(10.0, log_LMS_ptr[j * 3 + 2]) << std::endl;
                 std::cout << "lab2BGR lms: log_LMS(0,0): " << log_LMS_ptr[j * 3] << " (0,1):" << log_LMS_ptr[j * 3 + 1] << " (0,2):" << log_LMS_ptr[j * 3 + 2] << std::endl;
                 std::cout << "lab2BGR pow: LMS(0,0): " << LMS_ptr[j * 3] << " (0,1):" << LMS_ptr[j * 3 + 1] << " (0,2):" << LMS_ptr[j * 3 + 2] << std::endl;
@@ -257,7 +257,7 @@ cv::Mat Normalization::lab2BGR(cv::Mat LAB)
       RGB = [Matrix2 * LMS']';*/
     // OpenCV stores RGB as BGR, so we have the channels inverted as compared to Matlab
     cv::Mat BGRF(LMS.size(), LMS.type());
-    float Matrix2[9] = { 4.4687, -3.5887, 0.1196, -1.2197, 2.3831, -0.1626, 0.0585, -0.2611, 1.2057 };
+    float Matrix2[9] = { 4.4687f, -3.5887f, 0.1196f, -1.2197f, 2.3831f, -0.1626f, 0.0585f, -0.2611f, 1.2057f };
     m11 = Matrix2[0], m12 = Matrix2[1], m13 = Matrix2[2],
     m21 = Matrix2[3], m22 = Matrix2[4], m23 = Matrix2[5],
     m31 = Matrix2[6], m32 = Matrix2[7], m33 = Matrix2[8];
@@ -451,7 +451,7 @@ cv::Mat Normalization::normalization(const cv::Mat& originalI, float targetMean[
     //assert(d == 3);
 
     //% M =[-0.154 0.035 0.549 -45.718; -0.057 -0.817 1.170 -49.887];
-    float mData[8] = { -0.154, 0.035, 0.549, -45.718, -0.057, -0.817, 1.170, -49.887 };
+    float mData[8] = { -0.154f, 0.035f, 0.549f, -45.718f, -0.057f, -0.817f, 1.170f, -49.887f };
     cv::Mat M = cv::Mat(2, 4, CV_32FC1, &mData);
 
     //	o_fg = SegFG(OriginalI,M);
@@ -520,7 +520,7 @@ void Normalization::targetParameters(const cv::Mat& originalI, float(&targetMean
       if nargin == 1
       M =[-0.154 0.035 0.549 -45.718; -0.057 -0.817 1.170 -49.887];*/
 
-    float mData[8] = { -0.154, 0.035, 0.549, -45.718, -0.057, -0.817, 1.170, -49.887 };
+    float mData[8] = { -0.154f, 0.035f, 0.549f, -45.718f, -0.057f, -0.817f, 1.170f, -49.887f };
     cv::Mat M = cv::Mat(2, 4, CV_32FC1, &mData);
 
     /*
