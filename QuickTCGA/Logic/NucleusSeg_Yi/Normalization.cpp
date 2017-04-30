@@ -507,8 +507,8 @@ cv::Mat Normalization::normalization(const cv::Mat& originalI, float targetMean[
 void Normalization::targetParameters(const cv::Mat& originalI, float(&targetMean)[3], float(&targetStd)[3])
 {
     for (int i = 0; i < 3; i++) {
-        targetMean[i] = i;
-        targetStd[i] = i;
+        targetMean[i] = static_cast< float > i;
+        targetStd[i] = static_cast< float > i;
     }
     int r = originalI.rows;
     int c = originalI.cols;
