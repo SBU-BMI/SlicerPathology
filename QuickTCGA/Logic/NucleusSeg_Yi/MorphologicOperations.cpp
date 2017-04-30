@@ -238,11 +238,13 @@ namespace nscale {
         cc.label((unsigned char *) input.data, input.cols, input.rows, (int *) output.data, -1, connectivity);
 
         // Relabel if requested
+        /*
+        // VAR J IS SET BUT NOT USED.
         int j = 0;
         if (relab == true) {
             j = cc.relabel(output.cols, output.rows, (int *) output.data, -1);
             // printf("%d number of components\n", j);
-        }
+        }*/
 
         input.release();
 
