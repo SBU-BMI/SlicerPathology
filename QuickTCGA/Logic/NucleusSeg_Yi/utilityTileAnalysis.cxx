@@ -422,7 +422,7 @@ namespace ImagenomicAnalytics {
                 const itkUCharImageType::PixelType *fgMaskBufferPointer = foregroundMask->GetBufferPointer();
                 itkBinaryMaskImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
 
-                for (long it = 0; it < numPixels; ++it) {
+                for (unsigned long it = 0; it < numPixels; ++it) {
                     if (0 == fgMaskBufferPointer[it]) {
                         // for sure glass region
                         nucleusBinaryMaskBufferPointer[it] = 0;
@@ -454,7 +454,7 @@ namespace ImagenomicAnalytics {
                 itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
                 CSFLSLocalChanVeseSegmentor2D<itkFloatImageType::PixelType>::LSImageType::PixelType *phiBufferPointer = phi->GetBufferPointer();
 
-                for (long it = 0; it < numPixels; ++it) {
+                for (unsigned long it = 0; it < numPixels; ++it) {
                     nucleusBinaryMaskBufferPointer[it] = phiBufferPointer[it] <= 1.0 ? 1 : 0;
                 }
             }
@@ -481,7 +481,7 @@ namespace ImagenomicAnalytics {
             itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
             itkLabelImageType::PixelType *tmpImgBufferPointer = tmpImg->GetBufferPointer();
 
-            for (long it = 0; it < numPixels; ++it) {
+            for (unsigned long it = 0; it < numPixels; ++it) {
                 nucleusBinaryMaskBufferPointer[it] = tmpImgBufferPointer[it] > 0 ? 1 : 0;
             }
 
@@ -525,7 +525,7 @@ namespace ImagenomicAnalytics {
 
                         itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
 
-                        for (long it = 0; it < numPixels; ++it) {
+                        for (unsigned long it = 0; it < numPixels; ++it) {
                             nucleusBinaryMaskBufferPointer[it] = outputLabelImageBufferPointer[it] >= 1 ? 1 : 0;
                             nucleusBinaryMaskBufferPointer[it] *= (1 - edgeBetweenLabelsMaskBufferPointer[it]);
                         }
@@ -550,7 +550,7 @@ namespace ImagenomicAnalytics {
                 itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
                 CSFLSLocalChanVeseSegmentor2D<itkFloatImageType::PixelType>::LSImageType::PixelType *phiBufferPointer = phi->GetBufferPointer();
 
-                for (long it = 0; it < numPixels; ++it) {
+                for (unsigned long it = 0; it < numPixels; ++it) {
                     nucleusBinaryMaskBufferPointer[it] = phiBufferPointer[it] <= 1.0 ? 1 : 0;
                 }
             }
@@ -613,13 +613,13 @@ namespace ImagenomicAnalytics {
                                                                static_cast<itkUCharImageType::PixelType>(maskValue),
                                                                theThreshold);
 
-            long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
+            const unsigned long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
 
             if (foregroundMask) {
                 const itkUCharImageType::PixelType *fgMaskBufferPointer = foregroundMask->GetBufferPointer();
                 itkBinaryMaskImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
 
-                for (long it = 0; it < numPixels; ++it) {
+                for (unsigned long it = 0; it < numPixels; ++it) {
                     if (0 == fgMaskBufferPointer[it]) {
                         // for sure glass region
                         nucleusBinaryMaskBufferPointer[it] = 0;
@@ -650,7 +650,7 @@ namespace ImagenomicAnalytics {
                 itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
                 CSFLSLocalChanVeseSegmentor2D<itkFloatImageType::PixelType>::LSImageType::PixelType *phiBufferPointer = phi->GetBufferPointer();
 
-                for (long it = 0; it < numPixels; ++it) {
+                for (unsigned long it = 0; it < numPixels; ++it) {
                     nucleusBinaryMaskBufferPointer[it] = phiBufferPointer[it] <= 1.0 ? 1 : 0;
                 }
             }
@@ -677,7 +677,7 @@ namespace ImagenomicAnalytics {
 
                     itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
 
-                    for (long it = 0; it < numPixels; ++it) {
+                    for (unsigned long it = 0; it < numPixels; ++it) {
                         nucleusBinaryMaskBufferPointer[it] = outputLabelImageBufferPointer[it] >= 1 ? 1 : 0;
                         nucleusBinaryMaskBufferPointer[it] *= (1 - edgeBetweenLabelsMaskBufferPointer[it]);
                     }
@@ -699,7 +699,7 @@ namespace ImagenomicAnalytics {
                 itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
                 CSFLSLocalChanVeseSegmentor2D<itkFloatImageType::PixelType>::LSImageType::PixelType *phiBufferPointer = phi->GetBufferPointer();
 
-                for (long it = 0; it < numPixels; ++it) {
+                for (unsigned long it = 0; it < numPixels; ++it) {
                     nucleusBinaryMaskBufferPointer[it] = phiBufferPointer[it] <= 1.0 ? 1 : 0;
                 }
             }
@@ -747,7 +747,7 @@ namespace ImagenomicAnalytics {
             std::cout << "otsuThresholdImage.....\n" << std::flush;
             itkUCharImageType::Pointer nucleusBinaryMask = ScalarImage::otsuThresholdImage<char>(hemaFloat, maskValue,
                                                                                                  otsuRatio);
-            long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
+            const unsigned long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
 
             //std::cout<<"output otsuThresholdImage.....\n"<<std::flush;
             //ImagenomicAnalytics::IO::writeImage<itkUCharImageType>(nucleusBinaryMask, "nucleusBinaryMask.png", 0);
@@ -756,7 +756,7 @@ namespace ImagenomicAnalytics {
                 const itkUCharImageType::PixelType *fgMaskBufferPointer = foregroundMask->GetBufferPointer();
                 itkBinaryMaskImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
 
-                for (long it = 0; it < numPixels; ++it) {
+                for (unsigned long it = 0; it < numPixels; ++it) {
                     if (0 == fgMaskBufferPointer[it]) {
                         // for sure glass region
                         nucleusBinaryMaskBufferPointer[it] = 0;
@@ -787,7 +787,7 @@ namespace ImagenomicAnalytics {
                 itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
                 CSFLSLocalChanVeseSegmentor2D<itkFloatImageType::PixelType>::LSImageType::PixelType *phiBufferPointer = phi->GetBufferPointer();
 
-                for (long it = 0; it < numPixels; ++it) {
+                for (unsigned long it = 0; it < numPixels; ++it) {
                     nucleusBinaryMaskBufferPointer[it] = phiBufferPointer[it] <= 1.0 ? 1 : 0;
                 }
             }
