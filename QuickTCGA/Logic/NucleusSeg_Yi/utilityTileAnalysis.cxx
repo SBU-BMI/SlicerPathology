@@ -413,7 +413,7 @@ namespace ImagenomicAnalytics {
             itkUCharImageType::Pointer nucleusBinaryMask = ScalarImage::otsuThresholdImage<char>(hemaFloat, maskValue,
                                                                                                  otsuRatio);
 
-            long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
+            const unsigned long numPixels = nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels();
 
             //std::cout<<"output otsuThresholdImage.....\n"<<std::flush;
             //ImagenomicAnalytics::IO::writeImage<itkUCharImageType>(nucleusBinaryMask, "nucleusBinaryMask.png", 0);
@@ -481,7 +481,7 @@ namespace ImagenomicAnalytics {
             itkUCharImageType::PixelType *nucleusBinaryMaskBufferPointer = nucleusBinaryMask->GetBufferPointer();
             itkLabelImageType::PixelType *tmpImgBufferPointer = tmpImg->GetBufferPointer();
 
-            for (long it = 0; it < nucleusBinaryMask->GetLargestPossibleRegion().GetNumberOfPixels(); ++it) {
+            for (long it = 0; it < numPixels; ++it) {
                 nucleusBinaryMaskBufferPointer[it] = tmpImgBufferPointer[it] > 0 ? 1 : 0;
             }
 
@@ -853,7 +853,7 @@ namespace ImagenomicAnalytics {
                                                                        mpp, \
                                                                        msKernel, \
                                                                        levelsetNumberOfIteration,
-                                                                             declumpingType);
+                                                                       declumpingType);
 
             // Transform from 1 to 255 does not work in our Slicer use-case.
 
