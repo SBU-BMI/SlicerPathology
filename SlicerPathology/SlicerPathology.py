@@ -311,8 +311,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
         savedMessage = 'Segmentations for the following series were saved:\n\n'
 
-        ddb_dir = self.dataDirButton.directory
+        if os.path.isabs(self.dataDirButton.directory):
+            ddb_dir = self.dataDirButton.directory
+        else:
+            ddb_dir = os.getcwd()
+
         print "\nddb_dir:", ddb_dir
+
         zfname = os.path.join(ddb_dir, self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip')
 
         print "\nzipfile name"
