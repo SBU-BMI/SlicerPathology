@@ -420,7 +420,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         print "resourcesPath1", self.resourcesPath
         self.colorFile = os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv")
         print "colorFile 1", self.colorFile
-        
+
         self.customLUTLabel.setText('Using Default LUT')
         try:
             self.editorWidget.helper.structureListWidget.merge = None
