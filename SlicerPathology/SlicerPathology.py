@@ -294,11 +294,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         import uuid
         bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
         tran = json.loads(bundle)
-        print bundle
+        print "\nbundle:\n", bundle
         layers = []
         print ""
         for key in tran:
-            print key
+            print "tran.key:", key
             nn = tran[key]
             nn["file"] = key + '.tif'
             layers.append(tran[key])
@@ -312,10 +312,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         savedMessage = 'Segmentations for the following series were saved:\n\n'
 
         ddb_dir = self.dataDirButton.directory
-        print "\ndataDirButton.directory", ddb_dir
-
-        zfname = os.path.join(ddb_dir,
-                              self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip')
+        print "\nddb_dir:", ddb_dir
+        zfname = os.path.join(ddb_dir, self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip')
 
         print "\nzipfile name"
         print zfname
@@ -336,9 +334,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             labelName = label.GetName()
 
             labelFileName = os.path.join(ddb_dir, labelName + '.tif')
-            print "\nlabelFileName", labelFileName
             compFileName = os.path.join(ddb_dir, labelName + '-comp.tif')
-            print "\ncompFileName", compFileName
 
             sNode.SetFileName(labelFileName)
             success = sNode.WriteData(label)
@@ -363,7 +359,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         jstr = json.dumps(self.j, sort_keys=True, indent=4, separators=(',', ': '))
 
         mfname = os.path.join(ddb_dir, 'manifest.json')
-        print "\nmfname", mfname
 
         f = open(mfname, 'w')
         f.write(jstr)
@@ -417,10 +412,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         # Default to module color table
         self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
                                           'Resources')
-        print "resourcesPath1", self.resourcesPath
         self.colorFile = os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv")
-        print "colorFile 1", self.colorFile
-
         self.customLUTLabel.setText('Using Default LUT')
         try:
             self.editorWidget.helper.structureListWidget.merge = None
@@ -484,9 +476,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         red_cn.SetForegroundOpacity(1)
 
         resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace("SlicerPathology.py", ""), 'Resources')
-        print "resourcesPath2", resourcesPath
         colorFile = os.path.join(resourcesPath, "Colors", "SlicerPathology.csv")
-        print "colorFile 2", colorFile
         try:
             slicer.modules.EditorWidget.helper.structureListWidget.merge = None
         except AttributeError:
