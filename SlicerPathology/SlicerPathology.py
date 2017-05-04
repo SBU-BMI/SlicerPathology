@@ -42,8 +42,9 @@ class SlicerPathology(ScriptedLoadableModule):
 class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def __init__(self, parent=None):
         ScriptedLoadableModuleWidget.__init__(self, parent)
-        self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
-                                          'Resources')
+        self.resourcesPath = os.path.normpath(os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
+                                          'Resources'))
+        # print "self.resourcesPath", self.resourcesPath
         self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
         self.currentStep = 1
 
@@ -60,7 +61,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         self.studySelectionGroupBoxLayout = qt.QGridLayout()
         infoGroupBox.setLayout(hbox)
         self.studySelectionGroupBoxLayout.addWidget(infoGroupBox, 0, 3, 1, 1)
-        infoIcon = qt.QPixmap(os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png'))
+        icons_path = os.path.normpath(os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png'))
+        # print "icons_path", icons_path
+        infoIcon = qt.QPixmap(icons_path)
+        # print "infoIcon", infoIcon
+
         self.customLUTInfoIcon = qt.QLabel()
         self.customLUTInfoIcon.setPixmap(infoIcon)
         self.customLUTInfoIcon.setSizePolicy(PythonQt.QtGui.QSizePolicy())
@@ -318,7 +323,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         print "\nddb_dir:", ddb_dir
 
-        zfname = os.path.join(ddb_dir, self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip')
+        zfname = os.path.normpath(os.path.join(ddb_dir, self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip'))
 
         print "\nzipfile name"
         print zfname
@@ -338,8 +343,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         for label in labelNodes.values():
             labelName = label.GetName()
 
-            labelFileName = os.path.join(ddb_dir, labelName + '.tif')
-            compFileName = os.path.join(ddb_dir, labelName + '-comp.tif')
+            labelFileName = os.path.normpath(os.path.join(ddb_dir, labelName + '.tif'))
+            # print "labelFileName", labelFileName
+
+            compFileName = os.path.normpath(os.path.join(ddb_dir, labelName + '-comp.tif'))
+            # print "compFileName", compFileName
 
             sNode.SetFileName(labelFileName)
             success = sNode.WriteData(label)
@@ -363,7 +371,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
                 print "failed writing " + compFileName
         jstr = json.dumps(self.j, sort_keys=True, indent=4, separators=(',', ': '))
 
-        mfname = os.path.join(ddb_dir, 'manifest.json')
+        mfname = os.path.normpath(os.path.join(ddb_dir, 'manifest.json'))
+        # print "mfname", mfname
 
         f = open(mfname, 'w')
         f.write(jstr)
@@ -415,9 +424,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     def checkAndSetLUT(self):
         # Default to module color table
-        self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
-                                          'Resources')
-        self.colorFile = os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv")
+        self.resourcesPath = os.path.normpath(os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
+                                          'Resources'))
+        # print "self.resourcesPath", self.resourcesPath
+
+        self.colorFile = os.path.normpath(os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv"))
+        # print "self.colorFile", self.colorFile
+
         self.customLUTLabel.setText('Using Default LUT')
         try:
             self.editorWidget.helper.structureListWidget.merge = None
@@ -480,8 +493,12 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         red_cn.SetBackgroundVolumeID(bgrdVolID)
         red_cn.SetForegroundOpacity(1)
 
-        resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace("SlicerPathology.py", ""), 'Resources')
-        colorFile = os.path.join(resourcesPath, "Colors", "SlicerPathology.csv")
+        resourcesPath = os.path.normpath(os.path.join(slicer.modules.slicerpathology.path.replace("SlicerPathology.py", ""), 'Resources'))
+        # print "resourcesPath", resourcesPath
+
+        colorFile = os.path.normpath(os.path.join(resourcesPath, "Colors", "SlicerPathology.csv"))
+        # print "colorFile", colorFile
+
         try:
             slicer.modules.EditorWidget.helper.structureListWidget.merge = None
         except AttributeError:
@@ -770,12 +787,12 @@ class SlicerPathologyTest(ScriptedLoadableModuleTest):
 
 ####
 # 02/2006 Will Holcomb <wholcomb@gmail.com>
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-# 
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
