@@ -71,7 +71,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         print "icons_path", icons_path
 
         infoIcon = qt.QPixmap(icons_path)
-        print "infoIcon", infoIcon
+        # print "infoIcon", infoIcon
 
         self.customLUTInfoIcon = qt.QLabel()
         self.customLUTInfoIcon.setPixmap(infoIcon)
@@ -445,7 +445,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         # self.colorFile = os.path.normpath(os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv"))
         self.colorFile = os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv")
-        print "self.colorFile 1", self.colorFile
+        print "self.colorFile", self.colorFile
 
         self.customLUTLabel.setText('Using Default LUT')
         try:
