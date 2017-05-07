@@ -42,14 +42,12 @@ class SlicerPathology(ScriptedLoadableModule):
 class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def __init__(self, parent=None):
         ScriptedLoadableModuleWidget.__init__(self, parent)
-
-        # self.resourcesPath = os.path.normpath(os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""), 'Resources'))
-        self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""), 'Resources')
-        print "self.resourcesPath", self.resourcesPath
-
+        tmp_str = slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", "")
+        # self.resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
+        self.resourcesPath = os.path.join(tmp_str, 'Resources')
+        print "resourcesPath", self.resourcesPath
         self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
-        print "self.modulePath", self.modulePath
-
+        print "modulePath", self.resourcesPath
         self.currentStep = 1
 
     def setup(self):
@@ -65,11 +63,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         self.studySelectionGroupBoxLayout = qt.QGridLayout()
         infoGroupBox.setLayout(hbox)
         self.studySelectionGroupBoxLayout.addWidget(infoGroupBox, 0, 3, 1, 1)
-
         # icons_path = os.path.normpath(os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png'))
         icons_path = os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png')
         print "icons_path", icons_path
-
         infoIcon = qt.QPixmap(icons_path)
         # print "infoIcon", infoIcon
 
@@ -323,19 +319,17 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
         savedMessage = 'Segmentations for the following series were saved:\n\n'
 
-        if os.path.isabs(self.dataDirButton.directory):
-            ddb_dir = self.dataDirButton.directory
-        else:
-            ddb_dir = os.getcwd()
+        # if os.path.isabs(self.dataDirButton.directory):
+        #     ddb_dir = self.dataDirButton.directory
+        # else:
+        #     ddb_dir = os.getcwd()
 
-        ddb_dir = os.path.normpath(ddb_dir);
+        ddb_dir = self.dataDirButton.directory
         print "\nddb_dir:", ddb_dir
 
-        str_name = self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip'
-        print "str_name", str_name
-        zfname = os.path.normpath(os.path.join(ddb_dir, str_name))
-        # zfname = os.path.join(ddb_dir, str_name)
-        # zfname = os.path.normpath(os.path.join(ddb_dir, self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip'))
+        tmp_str = self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip'
+        # zfname = os.path.normpath(os.path.join(ddb_dir, tmp_str))
+        zfname = os.path.join(ddb_dir, tmp_str)
 
         print "\nzipfile name"
         print zfname
@@ -355,13 +349,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         for label in labelNodes.values():
             labelName = label.GetName()
 
-            # labelFileName = os.path.normpath(os.path.join(ddb_dir, labelName + '.tif'))
             labelFileName = os.path.join(ddb_dir, labelName + '.tif')
-            # print "labelFileName", labelFileName
+            # labelFileName = os.path.normpath(os.path.join(ddb_dir, labelName + '.tif'))
+            print "labelFileName", labelFileName
 
-            # compFileName = os.path.normpath(os.path.join(ddb_dir, labelName + '-comp.tif'))
             compFileName = os.path.join(ddb_dir, labelName + '-comp.tif')
-            # print "compFileName", compFileName
+            # compFileName = os.path.normpath(os.path.join(ddb_dir, labelName + '-comp.tif'))
+            print "compFileName", compFileName
 
             sNode.SetFileName(labelFileName)
             success = sNode.WriteData(label)
@@ -387,7 +381,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         # mfname = os.path.normpath(os.path.join(ddb_dir, 'manifest.json'))
         mfname = os.path.join(ddb_dir, 'manifest.json')
-        print "manifest", mfname
+        print "\nmanifest", mfname
 
         f = open(mfname, 'w')
         f.write(jstr)
@@ -439,13 +433,15 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     def checkAndSetLUT(self):
         # Default to module color table
-        # self.resourcesPath = os.path.normpath(os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""), 'Resources'))
-        self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""), 'Resources')
-        print "self.resourcesPath 1", self.resourcesPath
+        tmp_str = slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", "")
+        # self.resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
+        self.resourcesPath = os.path.join(tmp_str, 'Resources')
+        print "resourcesPath", self.resourcesPath
 
+        # self.colorFile = os.path.join(self.resourcesPath, "Colors/SlicerPathology.csv")  # don't use slash in join.
         # self.colorFile = os.path.normpath(os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv"))
         self.colorFile = os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv")
-        print "self.colorFile", self.colorFile
+        print "colorFile", self.colorFile
 
         self.customLUTLabel.setText('Using Default LUT')
         try:
@@ -509,8 +505,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         red_cn.SetBackgroundVolumeID(bgrdVolID)
         red_cn.SetForegroundOpacity(1)
 
-        # resourcesPath = os.path.normpath(os.path.join(slicer.modules.slicerpathology.path.replace("SlicerPathology.py", ""), 'Resources'))
-        resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace("SlicerPathology.py", ""), 'Resources')
+        # resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
+        tmp_str = slicer.modules.slicerpathology.path.replace("SlicerPathology.py", "")
+        resourcesPath = os.path.join(tmp_str, 'Resources')
         print "resourcesPath", resourcesPath
 
         # colorFile = os.path.normpath(os.path.join(resourcesPath, "Colors", "SlicerPathology.csv"))
@@ -578,7 +575,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         tmpfilename = imagedata[u'metaData'][1]
         imageFileName = string.rstrip(tmpfilename, '.dzi')
         self.tilename = imagedata[u'imageId']
-        print "self.tilename", self.tilename
+        print self.tilename
         self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
         current_weburl = 'http://quip1.uhmc.sunysb.edu/fcgi-bin/iipsrv.fcgi?IIIF=' + imageFileName + '/' + str(
             x) + ',' + str(y) + ',' + str(width) + ',' + str(height) + '/full/0/default.jpg'
