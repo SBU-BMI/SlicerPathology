@@ -42,12 +42,18 @@ class SlicerPathology(ScriptedLoadableModule):
 class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def __init__(self, parent=None):
         ScriptedLoadableModuleWidget.__init__(self, parent)
+
         tmp_str = slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", "")
-        # self.resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
-        self.resourcesPath = os.path.join(tmp_str, 'Resources')
+        self.resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
+        # self.resourcesPath = os.path.join(tmp_str, 'Resources')  # Slashes wrong way in Windows.
         print "resourcesPath", self.resourcesPath
-        self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
-        print "modulePath", self.resourcesPath
+
+        print "moduleName", self.moduleName
+        tmp_str = slicer.util.modulePath(self.moduleName)
+        print "modulePathI", tmp_str
+        self.modulePath = os.path.dirname(tmp_str)
+        print "modulePathII", self.modulePath
+
         self.currentStep = 1
 
     def setup(self):
@@ -63,8 +69,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         self.studySelectionGroupBoxLayout = qt.QGridLayout()
         infoGroupBox.setLayout(hbox)
         self.studySelectionGroupBoxLayout.addWidget(infoGroupBox, 0, 3, 1, 1)
-        # icons_path = os.path.normpath(os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png'))
-        icons_path = os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png')
+
+        icons_path = os.path.normpath(os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png'))
+        # icons_path = os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png')  # Slashes wrong in Windows.
         print "icons_path", icons_path
         infoIcon = qt.QPixmap(icons_path)
         # print "infoIcon", infoIcon
@@ -319,17 +326,20 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
         savedMessage = 'Segmentations for the following series were saved:\n\n'
 
-        # if os.path.isabs(self.dataDirButton.directory):
-        #     ddb_dir = self.dataDirButton.directory
-        # else:
-        #     ddb_dir = os.getcwd()
+        """
+        if os.path.isabs(self.dataDirButton.directory):
+           ddb_dir = self.dataDirButton.directory
+        else:
+           ddb_dir = os.getcwd()
+        """
 
-        ddb_dir = self.dataDirButton.directory
+        # ddb_dir = self.dataDirButton.directory  # Slashes wrong way in Windows.
+        ddb_dir = os.path.normpath(self.dataDirButton.directory)
         print "\nddb_dir:", ddb_dir
 
         tmp_str = self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip'
-        # zfname = os.path.normpath(os.path.join(ddb_dir, tmp_str))
-        zfname = os.path.join(ddb_dir, tmp_str)
+        zfname = os.path.normpath(os.path.join(ddb_dir, tmp_str))
+        # zfname = os.path.join(ddb_dir, tmp_str)  # Slashes wrong way in Windows.
 
         print "\nzipfile name"
         print zfname
@@ -350,11 +360,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             labelName = label.GetName()
 
             labelFileName = os.path.join(ddb_dir, labelName + '.tif')
-            # labelFileName = os.path.normpath(os.path.join(ddb_dir, labelName + '.tif'))
             print "labelFileName", labelFileName
 
             compFileName = os.path.join(ddb_dir, labelName + '-comp.tif')
-            # compFileName = os.path.normpath(os.path.join(ddb_dir, labelName + '-comp.tif'))
             print "compFileName", compFileName
 
             sNode.SetFileName(labelFileName)
@@ -379,7 +387,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
                 print "failed writing " + compFileName
         jstr = json.dumps(self.j, sort_keys=True, indent=4, separators=(',', ': '))
 
-        # mfname = os.path.normpath(os.path.join(ddb_dir, 'manifest.json'))
         mfname = os.path.join(ddb_dir, 'manifest.json')
         print "\nmanifest", mfname
 
@@ -434,13 +441,17 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def checkAndSetLUT(self):
         # Default to module color table
         tmp_str = slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", "")
-        # self.resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
-        self.resourcesPath = os.path.join(tmp_str, 'Resources')
+
+        self.resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
+        # self.resourcesPath = os.path.join(tmp_str, 'Resources')  # Slashes wrong way in Windows.
         print "resourcesPath", self.resourcesPath
 
-        # self.colorFile = os.path.join(self.resourcesPath, "Colors/SlicerPathology.csv")  # don't use slash in join.
-        # self.colorFile = os.path.normpath(os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv"))
-        self.colorFile = os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv")
+        # self.colorFile = os.path.join(self.resourcesPath, "Colors/SlicerPathology.csv")  # Don't use slash in join.
+        self.colorFile = os.path.normpath(os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv"))
+        """
+        self.colorFile = os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv")  # Slashes both ways MSWin
+        The join is what makes the slash between Colors and SlicerPathology.csv go the right way.
+        """
         print "colorFile", self.colorFile
 
         self.customLUTLabel.setText('Using Default LUT')
@@ -505,13 +516,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         red_cn.SetBackgroundVolumeID(bgrdVolID)
         red_cn.SetForegroundOpacity(1)
 
-        # resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
         tmp_str = slicer.modules.slicerpathology.path.replace("SlicerPathology.py", "")
-        resourcesPath = os.path.join(tmp_str, 'Resources')
+        resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
+        # resourcesPath = os.path.join(tmp_str, 'Resources')  # Slashes wrong way in Windows
         print "resourcesPath", resourcesPath
 
-        # colorFile = os.path.normpath(os.path.join(resourcesPath, "Colors", "SlicerPathology.csv"))
-        colorFile = os.path.join(resourcesPath, "Colors", "SlicerPathology.csv")
+        colorFile = os.path.normpath(os.path.join(resourcesPath, "Colors", "SlicerPathology.csv"))
+        # colorFile = os.path.join(resourcesPath, "Colors", "SlicerPathology.csv")  # Slashes wrong way
         print "colorFile", colorFile
 
         try:
