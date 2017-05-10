@@ -325,13 +325,16 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         fg = red_cn.GetForegroundVolumeID()
         ff = slicer.util.getNode(fg)
 
+        sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
+
         tif_name = "original.tif"
         tif_path = os.path.join(self.dataDirButton.directory, tif_name)
-        sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
-        sNode.SetFileName(tif_name)
+        sNode.SetFileName(tif_path)
+
         sNode.SetDataDirectory(self.dataDirButton.directory)
         sNode.SetWriteFileFormat('tif')
         sNode.SetURI(None)
+
         success = sNode.WriteData(ff)
         zf.write(tif_path)
         os.remove(tif_path)
@@ -372,8 +375,10 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         f = open(mfname, 'w')
         f.write(jstr)
         f.close()
+
         zf.write(mfname, os.path.basename(mfname))
         zf.close()
+
         os.remove(mfname)
 
         print "\nSaved zip file", zfname
