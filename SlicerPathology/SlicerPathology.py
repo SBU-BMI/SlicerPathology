@@ -329,15 +329,15 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         tif_name = "original.tif"
         tif_path = os.path.join(self.dataDirButton.directory, tif_name)
-        sNode.SetFileName(tif_path)
+        sNode.SetFileName(tif_name)
 
         sNode.SetDataDirectory(self.dataDirButton.directory)
         sNode.SetWriteFileFormat('tif')
         sNode.SetURI(None)
 
         success = sNode.WriteData(ff)
-        zf.write(tif_path)
-        os.remove(tif_path)
+        zf.write(tif_name)
+        os.remove(tif_name)
 
         for label in labelNodes.values():
             labelName = label.GetName()
