@@ -32,7 +32,7 @@ class SlicerPathology(ScriptedLoadableModule):
         self.parent.acknowledgementText = """
     This file was originally developed by Jean-Christophe Fillion-Robin, Kitware Inc.
     and Steve Pieper, Isomics, Inc. and was partially funded by NIH grant 3P41RR013218-12S1.
-"""  # replace with organization, grant and thanks.
+    """  # replace with organization, grant and thanks.
 
 
 #
@@ -42,18 +42,9 @@ class SlicerPathology(ScriptedLoadableModule):
 class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def __init__(self, parent=None):
         ScriptedLoadableModuleWidget.__init__(self, parent)
-
-        tmp_str = slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", "")
-        self.resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
-        # self.resourcesPath = os.path.join(tmp_str, 'Resources')  # Slashes wrong way in Windows.
-        print "resourcesPath", self.resourcesPath
-
-        print "moduleName", self.moduleName
-        tmp_str = slicer.util.modulePath(self.moduleName)
-        print "modulePathI", tmp_str
-        self.modulePath = os.path.dirname(tmp_str)
-        print "modulePathII", self.modulePath
-
+        self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
+                                          'Resources')
+        self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
         self.currentStep = 1
 
     def setup(self):
@@ -69,13 +60,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         self.studySelectionGroupBoxLayout = qt.QGridLayout()
         infoGroupBox.setLayout(hbox)
         self.studySelectionGroupBoxLayout.addWidget(infoGroupBox, 0, 3, 1, 1)
-
-        icons_path = os.path.normpath(os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png'))
-        # icons_path = os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png')  # Slashes wrong in Windows.
-        print "icons_path", icons_path
-        infoIcon = qt.QPixmap(icons_path)
-        # print "infoIcon", infoIcon
-
+        infoIcon = qt.QPixmap(os.path.join(self.resourcesPath, 'Icons', 'icon-infoBox.png'))
         self.customLUTInfoIcon = qt.QLabel()
         self.customLUTInfoIcon.setPixmap(infoIcon)
         self.customLUTInfoIcon.setSizePolicy(PythonQt.QtGui.QSizePolicy())
@@ -302,81 +287,76 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     def onSaveButtonClicked(self):
         print "\nSAVING"
-        print "\nQuickTCGAEffectOptions.params:", slicer.modules.QuickTCGAEffectOptions.params
+        print "\nparams", slicer.modules.QuickTCGAEffectOptions.params
+
         self.dirty = False
+
         import zipfile
         import os.path
         import uuid
+
         bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
         tran = json.loads(bundle)
-        print "\nbundle:\n", bundle
+        print "\nbundle", bundle
+
         layers = []
-        print ""
         for key in tran:
-            print "tran.key:", key
+            print "\nkey", key
             nn = tran[key]
             nn["file"] = key + '.tif'
             layers.append(tran[key])
+
         self.j['layers'] = layers
         self.j['username'] = self.setupUserName.text
         self.j['sourcetile'] = self.tilename
         self.j['generator'] = slicer.app.applicationVersion
         self.j['timestamp'] = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         self.j['execution_id'] = self.setupExecutionID.text + "-" + uuid.uuid4().get_urn()
+
         labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
         savedMessage = 'Segmentations for the following series were saved:\n\n'
 
-        """
-        if os.path.isabs(self.dataDirButton.directory):
-           ddb_dir = self.dataDirButton.directory
-        else:
-           ddb_dir = os.getcwd()
-        """
-
-        # ddb_dir = self.dataDirButton.directory  # Slashes wrong way in Windows.
-        ddb_dir = os.path.normpath(self.dataDirButton.directory)
-        print "\nddb_dir:", ddb_dir
-
-        tmp_str = self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip'
-        zfname = os.path.normpath(os.path.join(ddb_dir, tmp_str))
-        # zfname = os.path.join(ddb_dir, tmp_str)  # Slashes wrong way in Windows.
-
-        print "\nzipfile name"
-        print zfname
-
+        zfname = os.path.join(self.dataDirButton.directory,
+                              self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip')
         zf = zipfile.ZipFile(zfname, mode='w')
+
         red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
         red_cn = red_logic.GetSliceCompositeNode()
         fg = red_cn.GetForegroundVolumeID()
         ff = slicer.util.getNode(fg)
+
+        tif_name = "original.tif"
+        tif_path = os.path.join(self.dataDirButton.directory, tif_name)
         sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
-        sNode.SetFileName("original.tif")
+        sNode.SetFileName(tif_name)
+        sNode.SetDataDirectory(self.dataDirButton.directory)
         sNode.SetWriteFileFormat('tif')
         sNode.SetURI(None)
         success = sNode.WriteData(ff)
-        zf.write("original.tif")
-        os.remove("original.tif")
+        zf.write(tif_path)
+        os.remove(tif_path)
+
         for label in labelNodes.values():
             labelName = label.GetName()
-
-            labelFileName = os.path.join(ddb_dir, labelName + '.tif')
-            print "labelFileName", labelFileName
-
-            compFileName = os.path.join(ddb_dir, labelName + '-comp.tif')
-            print "compFileName", compFileName
+            labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
+            compFileName = os.path.join(self.dataDirButton.directory, labelName + '-comp.tif')
 
             sNode.SetFileName(labelFileName)
             success = sNode.WriteData(label)
+
             if success:
                 print "adding " + labelFileName + " to zipfile"
                 zf.write(labelFileName, os.path.basename(labelFileName))
                 os.remove(labelFileName)
             else:
                 print "failed writing " + labelFileName
+
             comp = self.WriteLonI(label.GetImageData(), ff.GetImageData())
+
             volumeNode = slicer.vtkMRMLVectorVolumeNode()
             volumeNode.SetName("COMP")
             volumeNode.SetAndObserveImageData(comp)
+
             sNode.SetFileName(compFileName)
             success = sNode.WriteData(volumeNode)
             if success:
@@ -385,17 +365,19 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
                 os.remove(compFileName)
             else:
                 print "failed writing " + compFileName
+
         jstr = json.dumps(self.j, sort_keys=True, indent=4, separators=(',', ': '))
 
-        mfname = os.path.join(ddb_dir, 'manifest.json')
-        print "\nmanifest", mfname
-
+        mfname = os.path.join(self.dataDirButton.directory, 'manifest.json')
         f = open(mfname, 'w')
         f.write(jstr)
         f.close()
         zf.write(mfname, os.path.basename(mfname))
         zf.close()
         os.remove(mfname)
+
+        print "\nSaved zip file", zfname
+
         # import sys
         # reload(sys)
         # sys.setdefaultencoding('utf8')
@@ -440,20 +422,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     def checkAndSetLUT(self):
         # Default to module color table
-        tmp_str = slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", "")
-
-        self.resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
-        # self.resourcesPath = os.path.join(tmp_str, 'Resources')  # Slashes wrong way in Windows.
-        print "resourcesPath", self.resourcesPath
-
-        # self.colorFile = os.path.join(self.resourcesPath, "Colors/SlicerPathology.csv")  # Don't use slash in join.
-        self.colorFile = os.path.normpath(os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv"))
-        """
-        self.colorFile = os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv")  # Slashes both ways MSWin
-        The join is what makes the slash between Colors and SlicerPathology.csv go the right way.
-        """
-        print "colorFile", self.colorFile
-
+        self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
+                                          'Resources')
+        self.colorFile = os.path.join(self.resourcesPath, "Colors", "SlicerPathology.csv")
         self.customLUTLabel.setText('Using Default LUT')
         try:
             self.editorWidget.helper.structureListWidget.merge = None
@@ -462,7 +433,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         # setup the color table, make sure SlicerPathology LUT is a singleton
         allColorTableNodes = slicer.util.getNodes('vtkMRMLColorTableNode*').values()
         for ctn in allColorTableNodes:
-            # print "color: "+ctn.GetName()
+            # print "color: " + ctn.GetName()
             if ctn.GetName() == 'SlicerPathologyColor':
                 slicer.mrmlScene.RemoveNode(ctn)
                 break
@@ -516,15 +487,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         red_cn.SetBackgroundVolumeID(bgrdVolID)
         red_cn.SetForegroundOpacity(1)
 
-        tmp_str = slicer.modules.slicerpathology.path.replace("SlicerPathology.py", "")
-        resourcesPath = os.path.normpath(os.path.join(tmp_str, 'Resources'))
-        # resourcesPath = os.path.join(tmp_str, 'Resources')  # Slashes wrong way in Windows
-        print "resourcesPath", resourcesPath
-
-        colorFile = os.path.normpath(os.path.join(resourcesPath, "Colors", "SlicerPathology.csv"))
-        # colorFile = os.path.join(resourcesPath, "Colors", "SlicerPathology.csv")  # Slashes wrong way
-        print "colorFile", colorFile
-
+        resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace("SlicerPathology.py", ""), 'Resources')
+        colorFile = os.path.join(resourcesPath, "Colors", "SlicerPathology.csv")
         try:
             slicer.modules.EditorWidget.helper.structureListWidget.merge = None
         except AttributeError:
@@ -570,27 +534,34 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     def openTargetImage(self):
         import string
+
         p = self.v.page()
         m = p.mainFrame()
+
         imageBound = m.evaluateJavaScript(
             'viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds().x, viewer.viewport.getBounds().y, viewer.viewport.getBounds().width, viewer.viewport.getBounds().height)')
         x = imageBound[u'x']
         y = imageBound[u'y']
         width = imageBound[u'width']
         height = imageBound[u'height']
+
         self.j['x'] = x
         self.j['y'] = y
         self.j['width'] = width
         self.j['height'] = height
+
         imagedata = m.evaluateJavaScript('imagedata')
         tmpfilename = imagedata[u'metaData'][1]
         imageFileName = string.rstrip(tmpfilename, '.dzi')
         self.tilename = imagedata[u'imageId']
-        print self.tilename
+        print "tilename", self.tilename
+
         self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
+
         current_weburl = 'http://quip1.uhmc.sunysb.edu/fcgi-bin/iipsrv.fcgi?IIIF=' + imageFileName + '/' + str(
             x) + ',' + str(y) + ',' + str(width) + ',' + str(height) + '/full/0/default.jpg'
-        print current_weburl
+        print "weburl", current_weburl
+
         self.v.setUrl(qt.QUrl(current_weburl))
         self.v.show()
 
@@ -641,6 +612,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def loademup(self):
         self.dirty = True
         import EditorLib
+
         editUtil = EditorLib.EditUtil.EditUtil()
         imsainode = editUtil.getBackgroundVolume()
         imsai = imsainode.GetImageData()
@@ -649,6 +621,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             print lala.GetNumberOfScalarComponents()
             imsainode.SetAndObserveImageData(lala)
             imsainode.Modified()
+
         red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
         red_cn = red_logic.GetSliceCompositeNode()
         fgrdVolID = red_cn.GetBackgroundVolumeID()
@@ -658,6 +631,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         bgrdName = fgrdNode.GetName() + '_gray'
         self.tilename = fgrdNode.GetName() + '_gray'
         self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
+
         # Create dummy grayscale image
         magnitude = vtk.vtkImageMagnitude()
         magnitude.SetInputData(fgrdNode.GetImageData())
@@ -707,7 +681,7 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
             return False
         return True
 
-    def takeScreenshot(self, name, description, type=-1):
+    def takeScreenshot(self, name, description, m_type=-1):
         # show the message even if not taking a screen shot
         self.delayDisplay(description)
 
@@ -717,26 +691,27 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
         lm = slicer.app.layoutManager()
         # switch on the type to get the requested window
         widget = 0
-        if type == slicer.qMRMLScreenShotDialog.FullLayout:
+        print "m_type", m_type
+        if m_type == slicer.qMRMLScreenShotDialog.FullLayout:
             # full layout
             widget = lm.viewport()
-        elif type == slicer.qMRMLScreenShotDialog.ThreeD:
+        elif m_type == slicer.qMRMLScreenShotDialog.ThreeD:
             # just the 3D window
             widget = lm.threeDWidget(0).threeDView()
-        elif type == slicer.qMRMLScreenShotDialog.Red:
+        elif m_type == slicer.qMRMLScreenShotDialog.Red:
             # red slice window
             widget = lm.sliceWidget("Red")
-        elif type == slicer.qMRMLScreenShotDialog.Yellow:
+        elif m_type == slicer.qMRMLScreenShotDialog.Yellow:
             # yellow slice window
             widget = lm.sliceWidget("Yellow")
-        elif type == slicer.qMRMLScreenShotDialog.Green:
+        elif m_type == slicer.qMRMLScreenShotDialog.Green:
             # green slice window
             widget = lm.sliceWidget("Green")
         else:
             # default to using the full window
             widget = slicer.util.mainWindow()
             # reset the type so that the node is set correctly
-            type = slicer.qMRMLScreenShotDialog.FullLayout
+            m_type = slicer.qMRMLScreenShotDialog.FullLayout
 
         # grab and convert to vtk image data
         qpixMap = qt.QPixmap().grabWidget(widget)
@@ -745,7 +720,7 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
         slicer.qMRMLUtils().qImageToVtkImageData(qimage, imageData)
 
         annotationLogic = slicer.modules.annotations.logic()
-        annotationLogic.CreateSnapShot(name, description, type, self.screenshotScaleFactor, imageData)
+        annotationLogic.CreateSnapShot(name, description, m_type, self.screenshotScaleFactor, imageData)
 
     def run(self, inputVolume, outputVolume, enableScreenshots=0, screenshotScaleFactor=1):
         """
@@ -831,7 +806,7 @@ class Callable:
 
 
 # Controls how sequences are uncoded. If true, elements may be given multiple values by
-#  assigning a sequence.
+# assigning a sequence.
 doseq = 1
 
 
