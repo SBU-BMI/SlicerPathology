@@ -22,6 +22,12 @@ import datetime
 class SlicerPathology(ScriptedLoadableModule):
     def __init__(self, parent):
         ScriptedLoadableModule.__init__(self, parent)
+
+        # set up temporary directory
+        self.logic = SlicerPathologyLogic()
+        self.tempDir = os.path.join(slicer.app.temporaryPath, 'slicerpath-tmp')
+        self.logic.createDirectory(self.tempDir, message='Temporary directory location: ' + self.tempDir)
+
         self.parent.title = "Slicer Pathology"
         self.parent.categories = ["Pathology"]
         self.parent.dependencies = []
@@ -42,6 +48,7 @@ class SlicerPathology(ScriptedLoadableModule):
 class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def __init__(self, parent=None):
         ScriptedLoadableModuleWidget.__init__(self, parent)
+        self.logic = SlicerPathologyLogic()
         self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
                                           'Resources')
         self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
@@ -194,19 +201,23 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         self.setTabsEnabled([1, 2, 3], False)
 
     def setupsetupUI(self):
+        # User Name
         self.setupUserName = qt.QLineEdit()
         self.setupGroupBoxLayout.addRow("Username:", self.setupUserName)
+        # Password
         self.setupPassword = qt.QLineEdit()
         self.setupPassword.setEchoMode(2)
         # self.setupGroupBoxLayout.addRow("Password:", self.setupPassword)
+        # Data Directory
         self.dataDirButton = ctk.ctkDirectoryButton()
         self.setupGroupBoxLayout.addRow(qt.QLabel("Data directory:"))
         self.setupGroupBoxLayout.addWidget(self.dataDirButton)
+        # Execution ID
         self.setupExecutionID = qt.QLineEdit()
         self.setupGroupBoxLayout.addRow("Execution ID:", self.setupExecutionID)
 
     def setupimageSelectionUI(self):
-        self.loadDataButton = qt.QPushButton("Load Image from disk")
+        self.loadDataButton = qt.QPushButton("Load image from disk")
         self.imageSelectionGroupBoxLayout.addWidget(self.loadDataButton)
         self.loadDataButton.connect('clicked()', self.loadTCGAData)
         self.WIP2 = qt.QPushButton("Select image from web")
@@ -377,6 +388,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         os.remove(mfname)
 
         print "\nSaved zip file", zfname
+
+        self.logic.cleanupDir(self.tempDir)
 
         # import sys
         # reload(sys)
@@ -667,6 +680,28 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
     Uses ScriptedLoadableModuleLogic base class, available at:
     https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
     """
+
+    def __init__(self, parent=None):
+        ScriptedLoadableModuleLogic.__init__(self, parent)
+
+    @staticmethod
+    def createDirectory(directory, message=None):
+        if message:
+            print message
+        try:
+            os.makedirs(directory)
+        except OSError:
+            print 'Failed to create the following directory: ' + directory
+
+    @staticmethod
+    def cleanupDir(d):
+        if not os.path.exists(d):
+            return
+        oldFiles = os.listdir(d)
+        for f in oldFiles:
+            path = os.path.join(d, f)
+            if not os.path.isdir(path):
+                os.unlink(d + '/' + f)
 
     def hasImageData(self, volumeNode):
         """This is a dummy logic method that
