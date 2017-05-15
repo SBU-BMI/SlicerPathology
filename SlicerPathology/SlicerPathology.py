@@ -17,16 +17,17 @@ import datetime
 
 #
 # SlicerPathology
+# The hook to Slicer
 #
 
 class SlicerPathology(ScriptedLoadableModule):
     def __init__(self, parent):
         ScriptedLoadableModule.__init__(self, parent)
 
-        # set up temporary directory
-        self.logic = SlicerPathologyLogic()
-        self.tempDir = os.path.join(slicer.app.temporaryPath, 'slicerpath-tmp')
-        self.logic.createDirectory(self.tempDir, message='Temporary directory location: ' + self.tempDir)
+        # set up temporary directory tjd
+        # self.logic = SlicerPathologyLogic()
+        # self.tempDir = os.path.join(slicer.app.temporaryPath, 'slicerpath-tmp')
+        # self.logic.createDirectory(self.tempDir, message='Temporary directory location: ' + self.tempDir)
 
         self.parent.title = "Slicer Pathology"
         self.parent.categories = ["Pathology"]
@@ -43,12 +44,13 @@ class SlicerPathology(ScriptedLoadableModule):
 
 #
 # SlicerPathologyWidget
+# Defines the GUI
 #
 
 class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def __init__(self, parent=None):
         ScriptedLoadableModuleWidget.__init__(self, parent)
-        self.logic = SlicerPathologyLogic()
+        # self.logic = SlicerPathologyLogic()
         self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
                                           'Resources')
         self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
@@ -297,14 +299,19 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
                 print filename
 
     def onSaveButtonClicked(self):
+        """
+        Save as zip file
+        """
         print "\nSAVING"
-        print "\nparams", slicer.modules.QuickTCGAEffectOptions.params
+        # print "\nparams", slicer.modules.QuickTCGAEffectOptions.params
 
         self.dirty = False
 
-        import zipfile
-        import os.path
+        import os.path        
+        import shutil
+        import slicer.util
         import uuid
+        import zipfile
 
         bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
         tran = json.loads(bundle)
@@ -327,9 +334,19 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         labelNodes = slicer.util.getNodes('vtkMRMLLabelMapVolumeNode*')
         savedMessage = 'Segmentations for the following series were saved:\n\n'
 
-        zfname = os.path.join(self.dataDirButton.directory,
-                              self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip')
-        zf = zipfile.ZipFile(zfname, mode='w')
+        #
+        # save the segmentation to a zip file
+        #
+
+        # create temp directory
+        tempDir = slicer.util.tempDirectory()
+
+        # write to directory
+        fileName = self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip'
+        # zipDir = os.path.join(self.dataDirButton.directory, fileName)
+        # zipObj = zipfile.ZipFile(zipDir, mode='w')
+        zipDir = os.path.join(tempDir, fileName)
+        zipObj = zipfile.ZipFile(zipDir, "w")
 
         red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
         red_cn = red_logic.GetSliceCompositeNode()
@@ -337,28 +354,35 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         ff = slicer.util.getNode(fg)
 
         tif_name = "original.tif"
-        tif_path = os.path.join(self.dataDirButton.directory, tif_name)
+
+        # tif_path = os.path.join(self.dataDirButton.directory, tif_name)
+        # sNode.SetDataDirectory(self.dataDirButton.directory)
+        # zipObj.write(tif_path)
+        # os.remove(tif_path)
+
         sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
         sNode.SetFileName(tif_name)
-        sNode.SetDataDirectory(self.dataDirButton.directory)
         sNode.SetWriteFileFormat('tif')
         sNode.SetURI(None)
         success = sNode.WriteData(ff)
-        zf.write(tif_path)
-        os.remove(tif_path)
+        # zipObj.write(tif_name)
+        # os.remove(tif_name)
+        zipObj.write(tempDir, tif_name)
 
         for label in labelNodes.values():
             labelName = label.GetName()
-            labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
-            compFileName = os.path.join(self.dataDirButton.directory, labelName + '-comp.tif')
+            # labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
+            # compFileName = os.path.join(self.dataDirButton.directory, labelName + '-comp.tif')
+            labelFileName = os.path.join(tempDir, labelName + '.tif')
+            compFileName = os.path.join(tempDir, labelName + '-comp.tif')
 
             sNode.SetFileName(labelFileName)
             success = sNode.WriteData(label)
 
             if success:
                 print "adding " + labelFileName + " to zipfile"
-                zf.write(labelFileName, os.path.basename(labelFileName))
-                os.remove(labelFileName)
+                zipObj.write(labelFileName, os.path.basename(labelFileName))
+                # os.remove(labelFileName)
             else:
                 print "failed writing " + labelFileName
 
@@ -372,24 +396,35 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             success = sNode.WriteData(volumeNode)
             if success:
                 print "adding " + compFileName + " to zipfile"
-                zf.write(compFileName, os.path.basename(compFileName))
+                zipObj.write(compFileName, os.path.basename(compFileName))
                 os.remove(compFileName)
             else:
                 print "failed writing " + compFileName
 
         jstr = json.dumps(self.j, sort_keys=True, indent=4, separators=(',', ': '))
 
-        mfname = os.path.join(self.dataDirButton.directory, 'manifest.json')
+        # mfname = os.path.join(self.dataDirButton.directory, 'manifest.json')
+        mfname = 'manifest.json'
         f = open(mfname, 'w')
         f.write(jstr)
         f.close()
-        zf.write(mfname, os.path.basename(mfname))
-        zf.close()
-        os.remove(mfname)
+        # zipObj.write(mfname, os.path.basename(mfname))  # huh?
+        zipObj.write(tempDir, mfname)
+        zipObj.close()
+        # os.remove(mfname)
 
-        print "\nSaved zip file", zfname
+        # copy to user directory
+        # TODO: needs to be data dir button
+        home = os.getenv('USERPROFILE') or os.getenv('HOME')  # testing
+        userDir = home
+        shutil.copy(os.path.join(tempDir, fileName), os.path.join(userDir, fileName))
 
-        self.logic.cleanupDir(self.tempDir)
+        # remove temp directory
+        # shutil.rmtree(tempDir)
+
+        print "\nSaved zip file", zipDir
+
+        # self.logic.cleanupDir(self.tempDir)
 
         # import sys
         # reload(sys)
@@ -397,7 +432,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         # opener = urllib2.build_opener(MultipartPostHandler)
         # params = { "ss" : "0",            # show source
         #           "doctype" : "Inline",
-        #           "uploaded_file" : open(zfname, "rb") }
+        #           "uploaded_file" : open(zipDir, "rb") }
         # print params
         # print opener.open('http://quip1.bmi.stonybrook.edu:4000/upload', params).read()
 
@@ -567,13 +602,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         tmpfilename = imagedata[u'metaData'][1]
         imageFileName = string.rstrip(tmpfilename, '.dzi')
         self.tilename = imagedata[u'imageId']
-        print "tilename", self.tilename
+        print "\ntilename", self.tilename
 
         self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
 
         current_weburl = 'http://quip1.uhmc.sunysb.edu/fcgi-bin/iipsrv.fcgi?IIIF=' + imageFileName + '/' + str(
             x) + ',' + str(y) + ',' + str(width) + ',' + str(height) + '/full/0/default.jpg'
-        print "weburl", current_weburl
+        print "\nweburl", current_weburl
 
         self.v.setUrl(qt.QUrl(current_weburl))
         self.v.show()
@@ -681,6 +716,7 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
     https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
     """
 
+    """
     def __init__(self, parent=None):
         ScriptedLoadableModuleLogic.__init__(self, parent)
 
@@ -702,6 +738,7 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
             path = os.path.join(d, f)
             if not os.path.isdir(path):
                 os.unlink(d + '/' + f)
+    """
 
     def hasImageData(self, volumeNode):
         """This is a dummy logic method that
@@ -726,7 +763,7 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
         lm = slicer.app.layoutManager()
         # switch on the type to get the requested window
         widget = 0
-        print "m_type", m_type
+        print "\ntype", m_type
         if m_type == slicer.qMRMLScreenShotDialog.FullLayout:
             # full layout
             widget = lm.viewport()
@@ -747,6 +784,8 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
             widget = slicer.util.mainWindow()
             # reset the type so that the node is set correctly
             m_type = slicer.qMRMLScreenShotDialog.FullLayout
+
+        print "\ntype", m_type
 
         # grab and convert to vtk image data
         qpixMap = qt.QPixmap().grabWidget(widget)
