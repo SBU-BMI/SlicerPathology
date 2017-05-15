@@ -1,18 +1,24 @@
-import urllib
-import urllib2
-import mimetools, mimetypes
-import os, stat
+import ctk
+import datetime
+import EditorLib
+from Editor import EditorWidget
+from EditorLib import EditUtil
+import json
+import logging
+import mimetools
+import mimetypes
+from SlicerPathologyUtil.mixins import ModuleWidgetMixin
+import os
+import PythonQt
+import qt
+import slicer
+from slicer.ScriptedLoadableModule import *
+import stat
 import sys
 import unittest
-import vtk, qt, ctk, slicer
-from slicer.ScriptedLoadableModule import *
-from SlicerPathologyUtil.mixins import ModuleWidgetMixin
-from Editor import EditorWidget
-import PythonQt
-import json
-import EditorLib
-from EditorLib import EditUtil
-import datetime
+import urllib
+import urllib2
+import vtk
 
 
 #
@@ -23,12 +29,6 @@ import datetime
 class SlicerPathology(ScriptedLoadableModule):
     def __init__(self, parent):
         ScriptedLoadableModule.__init__(self, parent)
-
-        # set up temporary directory tjd
-        # self.logic = SlicerPathologyLogic()
-        # self.tempDir = os.path.join(slicer.app.temporaryPath, 'slicerpath-tmp')
-        # self.logic.createDirectory(self.tempDir, message='Temporary directory location: ' + self.tempDir)
-
         self.parent.title = "Slicer Pathology"
         self.parent.categories = ["Pathology"]
         self.parent.dependencies = []
@@ -50,7 +50,6 @@ class SlicerPathology(ScriptedLoadableModule):
 class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def __init__(self, parent=None):
         ScriptedLoadableModuleWidget.__init__(self, parent)
-        # self.logic = SlicerPathologyLogic()
         self.resourcesPath = os.path.join(slicer.modules.slicerpathology.path.replace(self.moduleName + ".py", ""),
                                           'Resources')
         self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
@@ -206,14 +205,19 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         # User Name
         self.setupUserName = qt.QLineEdit()
         self.setupGroupBoxLayout.addRow("Username:", self.setupUserName)
+
         # Password
         self.setupPassword = qt.QLineEdit()
         self.setupPassword.setEchoMode(2)
         # self.setupGroupBoxLayout.addRow("Password:", self.setupPassword)
+
         # Data Directory
         self.dataDirButton = ctk.ctkDirectoryButton()
+        home = os.getenv('USERPROFILE') or os.getenv('HOME')
+        self.dataDirButton.directory = home
         self.setupGroupBoxLayout.addRow(qt.QLabel("Data directory:"))
         self.setupGroupBoxLayout.addWidget(self.dataDirButton)
+
         # Execution ID
         self.setupExecutionID = qt.QLineEdit()
         self.setupGroupBoxLayout.addRow("Execution ID:", self.setupExecutionID)
@@ -300,14 +304,16 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     def onSaveButtonClicked(self):
         """
-        Save as zip file
+        Save segmentation, mask, original tif, and metadata to zip file
+        :return: 
         """
+
         print "\nSAVING"
-        # print "\nparams", slicer.modules.QuickTCGAEffectOptions.params
+        # logging.debug("\nparams", slicer.modules.QuickTCGAEffectOptions.params)
 
         self.dirty = False
 
-        import os.path        
+        import os.path
         import shutil
         import slicer.util
         import uuid
@@ -315,11 +321,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
         tran = json.loads(bundle)
-        print "\nbundle", bundle
+        logging.debug("\nbundle", bundle)
 
         layers = []
         for key in tran:
-            print "\nkey", key
+            logging.debug("\nkey", key)
             nn = tran[key]
             nn["file"] = key + '.tif'
             layers.append(tran[key])
@@ -343,8 +349,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         # write to directory
         fileName = self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip'
-        # zipDir = os.path.join(self.dataDirButton.directory, fileName)
-        # zipObj = zipfile.ZipFile(zipDir, mode='w')
         zipDir = os.path.join(tempDir, fileName)
         zipObj = zipfile.ZipFile(zipDir, "w")
 
@@ -353,26 +357,16 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         fg = red_cn.GetForegroundVolumeID()
         ff = slicer.util.getNode(fg)
 
-        tif_name = "original.tif"
-
-        # tif_path = os.path.join(self.dataDirButton.directory, tif_name)
-        # sNode.SetDataDirectory(self.dataDirButton.directory)
-        # zipObj.write(tif_path)
-        # os.remove(tif_path)
-
+        originalImageDir = os.path.join(tempDir, "original.tif")
         sNode = slicer.vtkMRMLVolumeArchetypeStorageNode()
-        sNode.SetFileName(tif_name)
+        sNode.SetFileName(originalImageDir)
         sNode.SetWriteFileFormat('tif')
         sNode.SetURI(None)
         success = sNode.WriteData(ff)
-        # zipObj.write(tif_name)
-        # os.remove(tif_name)
-        zipObj.write(tempDir, tif_name)
+        zipObj.write(originalImageDir, os.path.basename(originalImageDir))
 
         for label in labelNodes.values():
             labelName = label.GetName()
-            # labelFileName = os.path.join(self.dataDirButton.directory, labelName + '.tif')
-            # compFileName = os.path.join(self.dataDirButton.directory, labelName + '-comp.tif')
             labelFileName = os.path.join(tempDir, labelName + '.tif')
             compFileName = os.path.join(tempDir, labelName + '-comp.tif')
 
@@ -380,11 +374,10 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             success = sNode.WriteData(label)
 
             if success:
-                print "adding " + labelFileName + " to zipfile"
+                logging.debug("adding " + labelFileName + " to zipfile")
                 zipObj.write(labelFileName, os.path.basename(labelFileName))
-                # os.remove(labelFileName)
             else:
-                print "failed writing " + labelFileName
+                logging.debug("failed writing " + labelFileName)
 
             comp = self.WriteLonI(label.GetImageData(), ff.GetImageData())
 
@@ -395,36 +388,42 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             sNode.SetFileName(compFileName)
             success = sNode.WriteData(volumeNode)
             if success:
-                print "adding " + compFileName + " to zipfile"
+                logging.debug("adding " + compFileName + " to zipfile")
                 zipObj.write(compFileName, os.path.basename(compFileName))
                 os.remove(compFileName)
             else:
-                print "failed writing " + compFileName
+                logging.debug("failed writing " + compFileName)
 
         jstr = json.dumps(self.j, sort_keys=True, indent=4, separators=(',', ': '))
 
-        # mfname = os.path.join(self.dataDirButton.directory, 'manifest.json')
-        mfname = 'manifest.json'
-        f = open(mfname, 'w')
+        manifestName = 'manifest.json'
+        manifestDir = os.path.join(tempDir, manifestName)
+        f = open(manifestDir, 'w')
         f.write(jstr)
         f.close()
-        # zipObj.write(mfname, os.path.basename(mfname))  # huh?
-        zipObj.write(tempDir, mfname)
+        zipObj.write(manifestDir, os.path.basename(manifestDir))
         zipObj.close()
-        # os.remove(mfname)
 
-        # copy to user directory
-        # TODO: needs to be data dir button
-        home = os.getenv('USERPROFILE') or os.getenv('HOME')  # testing
-        userDir = home
-        shutil.copy(os.path.join(tempDir, fileName), os.path.join(userDir, fileName))
+        # copy to user selected directory
+        userDir = self.dataDirButton.directory
 
-        # remove temp directory
-        # shutil.rmtree(tempDir)
-
-        print "\nSaved zip file", zipDir
-
-        # self.logic.cleanupDir(self.tempDir)
+        try:
+            shutil.copy(os.path.join(tempDir, fileName), os.path.join(userDir, fileName))
+            print "\nSaved zip file", os.path.join(userDir, fileName)
+        except IOError, e:
+            print "Unable to copy file. %s" % e
+            home = os.getenv('USERPROFILE') or os.getenv('HOME')
+            print "Trying to copy to", home, "instead"
+            try:
+                shutil.copy(os.path.join(tempDir, fileName), os.path.join(home, fileName))
+                print "\nSaved zip file", os.path.join(home, fileName)
+                print "Success."
+            except IOError, e:
+                print "File copy not successful. %s" % e
+        else:
+            print "Success."
+            # remove temp directory
+            shutil.rmtree(tempDir)
 
         # import sys
         # reload(sys)
@@ -433,8 +432,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         # params = { "ss" : "0",            # show source
         #           "doctype" : "Inline",
         #           "uploaded_file" : open(zipDir, "rb") }
-        # print params
-        # print opener.open('http://quip1.bmi.stonybrook.edu:4000/upload', params).read()
+        # logging.debug(params)
+        # logging.debug(opener.open('http://quip1.bmi.stonybrook.edu:4000/upload', params).read())
 
     def WriteLonI(self, src, dest):
         dim = src.GetDimensions()
@@ -466,7 +465,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         return i
 
     def onWebSaveButtonClicked(self):
-        print "Web Save to be implemented...."
+        logging.debug("Web Save to be implemented....")
 
     def checkAndSetLUT(self):
         # Default to module color table
@@ -481,7 +480,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         # setup the color table, make sure SlicerPathology LUT is a singleton
         allColorTableNodes = slicer.util.getNodes('vtkMRMLColorTableNode*').values()
         for ctn in allColorTableNodes:
-            # print "color: " + ctn.GetName()
+            # logging.debug("color: " + ctn.GetName())
             if ctn.GetName() == 'SlicerPathologyColor':
                 slicer.mrmlScene.RemoveNode(ctn)
                 break
@@ -602,13 +601,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         tmpfilename = imagedata[u'metaData'][1]
         imageFileName = string.rstrip(tmpfilename, '.dzi')
         self.tilename = imagedata[u'imageId']
-        print "\ntilename", self.tilename
+        logging.debug("\ntilename", self.tilename)
 
         self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
 
         current_weburl = 'http://quip1.uhmc.sunysb.edu/fcgi-bin/iipsrv.fcgi?IIIF=' + imageFileName + '/' + str(
             x) + ',' + str(y) + ',' + str(width) + ',' + str(height) + '/full/0/default.jpg'
-        print "\nweburl", current_weburl
+        logging.debug("\nweburl", current_weburl)
 
         self.v.setUrl(qt.QUrl(current_weburl))
         self.v.show()
@@ -641,7 +640,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         return i
 
     def loadTCGAData(self):
-        print self.dirty
+        logging.debug(self.dirty)
         if self.dirty:
             if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
                 EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
@@ -666,7 +665,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         imsai = imsainode.GetImageData()
         if imsai.GetNumberOfScalarComponents() > 3:
             lala = self.Four2ThreeChannel(imsai)
-            print lala.GetNumberOfScalarComponents()
+            logging.debug(lala.GetNumberOfScalarComponents())
             imsainode.SetAndObserveImageData(lala)
             imsainode.Modified()
 
@@ -701,6 +700,41 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
         self.editorWidget.helper.setMasterVolume(cv)
 
+    def inputDataDir(self, directory):
+        logging.debug('Directory selected: %s' % directory)
+        if not os.path.exists(directory):
+            directory = None
+            self.dataDirButton.text = "Choose data directory"
+            truncatedPath = None
+        else:
+            truncatedPath = self.truncatePath(directory)
+            self.dataDirButton.text = truncatedPath
+            self.dataDirButton.caption = directory
+            self.setSetting('InputLocation', directory)
+            self.checkAndSetLUT()
+            self.updateStudyTable()
+        self.informationWatchBox.setInformation("CurrentDataDir", truncatedPath, toolTip=directory)
+
+    def dialog(self):
+        import platform
+        flag = platform.system() == 'Windows'
+        flag = 1
+        if flag:
+            print "Please select a Data directory"
+            # prompt the user for Data directory
+            self.namePrompt = qt.QDialog()
+            self.namePromptLayout = qt.QVBoxLayout()
+            self.namePrompt.setLayout(self.namePromptLayout)
+            self.nameLabel = qt.QLabel('Please select a Data directory:', self.namePrompt)
+            import getpass
+            self.nameText = qt.QLineEdit(getpass.getuser(), self.namePrompt)
+            self.nameButton = qt.QPushButton('OK', self.namePrompt)
+            # self.nameButton.connect('clicked()', self.onNameEntered)
+            # self.namePromptLayout.addWidget(self.nameLabel)
+            # self.namePromptLayout.addWidget(self.nameText)
+            # self.namePromptLayout.addWidget(self.nameButton)
+            # self.namePrompt.exec_()
+
 
 #
 # SlicerPathologyLogic
@@ -714,30 +748,6 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
     requiring an instance of the Widget.
     Uses ScriptedLoadableModuleLogic base class, available at:
     https://github.com/Slicer/Slicer/blob/master/Base/Python/slicer/ScriptedLoadableModule.py
-    """
-
-    """
-    def __init__(self, parent=None):
-        ScriptedLoadableModuleLogic.__init__(self, parent)
-
-    @staticmethod
-    def createDirectory(directory, message=None):
-        if message:
-            print message
-        try:
-            os.makedirs(directory)
-        except OSError:
-            print 'Failed to create the following directory: ' + directory
-
-    @staticmethod
-    def cleanupDir(d):
-        if not os.path.exists(d):
-            return
-        oldFiles = os.listdir(d)
-        for f in oldFiles:
-            path = os.path.join(d, f)
-            if not os.path.isdir(path):
-                os.unlink(d + '/' + f)
     """
 
     def hasImageData(self, volumeNode):
@@ -763,7 +773,7 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
         lm = slicer.app.layoutManager()
         # switch on the type to get the requested window
         widget = 0
-        print "\ntype", m_type
+        logging.debug("\ntype", m_type)
         if m_type == slicer.qMRMLScreenShotDialog.FullLayout:
             # full layout
             widget = lm.viewport()
@@ -785,7 +795,7 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
             # reset the type so that the node is set correctly
             m_type = slicer.qMRMLScreenShotDialog.FullLayout
 
-        print "\ntype", m_type
+        logging.debug("\ntype", m_type)
 
         # grab and convert to vtk image data
         qpixMap = qt.QPixmap().grabWidget(widget)
