@@ -346,6 +346,10 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         # create temp directory
         tempDir = slicer.util.tempDirectory()
+        ourDir = "slicerpathtmp"
+        tempDir = os.path.join(tempDir, ourDir)
+        if not os.path.exists(tempDir):
+            os.makedirs(tempDir)
 
         # write to directory
         fileName = self.tilename + "_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + '.zip'
