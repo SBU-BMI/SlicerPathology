@@ -700,41 +700,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
         self.editorWidget.helper.setMasterVolume(cv)
 
-    def inputDataDir(self, directory):
-        logging.debug('Directory selected: %s' % directory)
-        if not os.path.exists(directory):
-            directory = None
-            self.dataDirButton.text = "Choose data directory"
-            truncatedPath = None
-        else:
-            truncatedPath = self.truncatePath(directory)
-            self.dataDirButton.text = truncatedPath
-            self.dataDirButton.caption = directory
-            self.setSetting('InputLocation', directory)
-            self.checkAndSetLUT()
-            self.updateStudyTable()
-        self.informationWatchBox.setInformation("CurrentDataDir", truncatedPath, toolTip=directory)
-
-    def dialog(self):
-        import platform
-        flag = platform.system() == 'Windows'
-        flag = 1
-        if flag:
-            print "Please select a Data directory"
-            # prompt the user for Data directory
-            self.namePrompt = qt.QDialog()
-            self.namePromptLayout = qt.QVBoxLayout()
-            self.namePrompt.setLayout(self.namePromptLayout)
-            self.nameLabel = qt.QLabel('Please select a Data directory:', self.namePrompt)
-            import getpass
-            self.nameText = qt.QLineEdit(getpass.getuser(), self.namePrompt)
-            self.nameButton = qt.QPushButton('OK', self.namePrompt)
-            # self.nameButton.connect('clicked()', self.onNameEntered)
-            # self.namePromptLayout.addWidget(self.nameLabel)
-            # self.namePromptLayout.addWidget(self.nameText)
-            # self.namePromptLayout.addWidget(self.nameButton)
-            # self.namePrompt.exec_()
-
 
 #
 # SlicerPathologyLogic
