@@ -226,12 +226,15 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         self.loadDataButton = qt.QPushButton("Load image from disk")
         self.imageSelectionGroupBoxLayout.addWidget(self.loadDataButton)
         self.loadDataButton.connect('clicked()', self.loadTCGAData)
+
         self.WIP2 = qt.QPushButton("Select image from web")
         self.WIP2.connect('clicked()', self.onWIP2ButtonClicked)
         self.imageSelectionGroupBoxLayout.addWidget(self.WIP2)
+
         self.WIP3 = qt.QPushButton("Load image from web")
         self.WIP3.connect('clicked()', self.onWIP3ButtonClicked)
         self.imageSelectionGroupBoxLayout.addWidget(self.WIP3)
+
         self.RestoreButton = qt.QPushButton("Restore Session")
         self.RestoreButton.connect('clicked()', self.RestoreSession)
         self.imageSelectionGroupBoxLayout.addWidget(self.RestoreButton)
@@ -291,16 +294,18 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     def RestoreSession(self):
         import zipfile
-        import os.path
         f = qt.QFileDialog.getOpenFileName()
-        zf = zipfile.ZipFile(f)
-        for filename in zf.namelist():
-            try:
-                data = zf.read(filename)
-            except KeyError:
-                print 'ERROR: Did not find %s in zip file' % filename
-            else:
-                print filename
+        if f == '':
+            logging.debug('user cancelled session-restore')
+        else:
+            zf = zipfile.ZipFile(f)
+            for filename in zf.namelist():
+                try:
+                    data = zf.read(filename)
+                except KeyError:
+                    print 'ERROR: Did not find %s in zip file' % filename
+                else:
+                    print "filename", filename
 
     def onSaveButtonClicked(self):
         """
