@@ -669,7 +669,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         imsainode = editUtil.getBackgroundVolume()
 
         try:
-            print "here X"
             imsai = imsainode.GetImageData()
             if imsai.GetNumberOfScalarComponents() > 3:
                 img_data = self.Four2ThreeChannel(imsai)
