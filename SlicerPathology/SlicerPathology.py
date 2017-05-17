@@ -649,18 +649,17 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         logging.info("slate_state %s" % self.dirty)
         if self.dirty:
             if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
-                EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
-                slicer.mrmlScene.Clear(0)
-                self.dirty = False
-                if slicer.util.openAddVolumeDialog():
-                    self.loademup()
+                self.clear_and_open()
         else:
-            EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
-            slicer.mrmlScene.Clear(0)
-            self.dirty = False
-            sel = slicer.util.openAddVolumeDialog()
-            if sel:
-                self.loademup()
+            self.clear_and_open()
+
+    def clear_and_open(self):
+        EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
+        slicer.mrmlScene.Clear(0)
+        self.dirty = False
+        sel = slicer.util.openAddVolumeDialog()
+        if sel:
+            self.loademup()
 
     def loademup(self):
         self.dirty = True  # TODO: we loaded it - doesn't guarantee dirty-state.
