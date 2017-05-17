@@ -243,9 +243,16 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     #    r.fitSliceToBackground()
 
     def onWIP2ButtonClicked(self):
+        logging.info("slate_state %s" % self.dirty)
         self.openTargetImage0()
+        # if self.dirty:
+        #    if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
+        #        self.openTargetImage0()
+        # else:
+        #      self.openTargetImage0()
 
     def onWIP3ButtonClicked(self):
+        self.dirty = True
         self.openTargetImage()
         r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
         r.fitSliceToBackground()
@@ -635,7 +642,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         except:
             slicer.util.infoDisplay("A web image hasn't been selected yet. Let's try again...")
             self.openTargetImage0()
-
 
     def Four2ThreeChannel(self, image):
         dim = image.GetDimensions()
