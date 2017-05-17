@@ -587,51 +587,55 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     def openTargetImage(self):
         import string
+        try:
+            p = self.v.page()
+            m = p.mainFrame()
+            imageBound = m.evaluateJavaScript(
+                'viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds().x, viewer.viewport.getBounds().y, viewer.viewport.getBounds().width, viewer.viewport.getBounds().height)')
+            x = imageBound[u'x']
+            y = imageBound[u'y']
+            width = imageBound[u'width']
+            height = imageBound[u'height']
 
-        p = self.v.page()
-        m = p.mainFrame()
+            self.j['x'] = x
+            self.j['y'] = y
+            self.j['width'] = width
+            self.j['height'] = height
 
-        imageBound = m.evaluateJavaScript(
-            'viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds().x, viewer.viewport.getBounds().y, viewer.viewport.getBounds().width, viewer.viewport.getBounds().height)')
-        x = imageBound[u'x']
-        y = imageBound[u'y']
-        width = imageBound[u'width']
-        height = imageBound[u'height']
+            imagedata = m.evaluateJavaScript('imagedata')
+            tmpfilename = imagedata[u'metaData'][1]
+            imageFileName = string.rstrip(tmpfilename, '.dzi')
+            self.tilename = imagedata[u'imageId']
+            logging.info("\ntilename %s" % self.tilename)
 
-        self.j['x'] = x
-        self.j['y'] = y
-        self.j['width'] = width
-        self.j['height'] = height
+            self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
 
-        imagedata = m.evaluateJavaScript('imagedata')
-        tmpfilename = imagedata[u'metaData'][1]
-        imageFileName = string.rstrip(tmpfilename, '.dzi')
-        self.tilename = imagedata[u'imageId']
-        logging.info("\ntilename %s" % self.tilename)
+            current_weburl = 'http://quip1.uhmc.sunysb.edu/fcgi-bin/iipsrv.fcgi?IIIF=' + imageFileName + '/' + str(
+                x) + ',' + str(y) + ',' + str(width) + ',' + str(height) + '/full/0/default.jpg'
+            logging.info("\nweburl %s" % current_weburl)
 
-        self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
+            self.v.setUrl(qt.QUrl(current_weburl))
+            self.v.show()
 
-        current_weburl = 'http://quip1.uhmc.sunysb.edu/fcgi-bin/iipsrv.fcgi?IIIF=' + imageFileName + '/' + str(
-            x) + ',' + str(y) + ',' + str(width) + ',' + str(height) + '/full/0/default.jpg'
-        logging.info("\nweburl %s" % current_weburl)
+            reply = urllib2.urlopen(current_weburl)
+            byte_array = reply.read()
+            image = qt.QImage(qt.QImage.Format_RGB888)
+            image.loadFromData(byte_array)
+            imageData = self.QImage2vtkImage(image)
+            volumeNode = slicer.vtkMRMLVectorVolumeNode()
+            volumeNode.SetName("WEB")
+            volumeNode.SetAndObserveImageData(imageData)
+            displayNode = slicer.vtkMRMLVectorVolumeDisplayNode()
+            slicer.mrmlScene.AddNode(volumeNode)
+            slicer.mrmlScene.AddNode(displayNode)
+            volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
+            displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
+            self.mutate()
 
-        self.v.setUrl(qt.QUrl(current_weburl))
-        self.v.show()
+        except:
+            slicer.util.infoDisplay("A web image hasn't been selected yet. Let's try again...")
+            self.openTargetImage0()
 
-        reply = urllib2.urlopen(current_weburl)
-        byte_array = reply.read()
-        image = qt.QImage(qt.QImage.Format_RGB888)
-        image.loadFromData(byte_array)
-        imageData = self.QImage2vtkImage(image)
-        volumeNode = slicer.vtkMRMLVectorVolumeNode()
-        volumeNode.SetName("WEB")
-        volumeNode.SetAndObserveImageData(imageData)
-        displayNode = slicer.vtkMRMLVectorVolumeDisplayNode()
-        slicer.mrmlScene.AddNode(volumeNode)
-        slicer.mrmlScene.AddNode(displayNode)
-        volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
-        displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
-        self.mutate()
 
     def Four2ThreeChannel(self, image):
         dim = image.GetDimensions()
