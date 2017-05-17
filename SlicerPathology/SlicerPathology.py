@@ -657,7 +657,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
         slicer.mrmlScene.Clear(0)
         self.dirty = False
-        sel = slicer.util.openAddVolumeDialog()
+        sel = slicer.util.openAddVolumeDialog()  # automatically puts image in red viewer
         if sel:
             self.loademup()
 
@@ -667,12 +667,18 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         editUtil = EditorLib.EditUtil.EditUtil()
         imsainode = editUtil.getBackgroundVolume()
-        imsai = imsainode.GetImageData()
-        if imsai.GetNumberOfScalarComponents() > 3:
-            img_data = self.Four2ThreeChannel(imsai)
-            logging.info("number of scalar comp %d" % img_data.GetNumberOfScalarComponents())
-            imsainode.SetAndObserveImageData(img_data)
-            imsainode.Modified()
+
+        try:
+            print "here X"
+            imsai = imsainode.GetImageData()
+            if imsai.GetNumberOfScalarComponents() > 3:
+                img_data = self.Four2ThreeChannel(imsai)
+                logging.info("number of scalar comp %d" % img_data.GetNumberOfScalarComponents())
+                imsainode.SetAndObserveImageData(img_data)
+                imsainode.Modified()
+        except AttributeError:
+            slicer.util.infoDisplay("Please select a JPG or PNG. Let's try again...")
+            self.loadTCGAData()
 
         red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
         red_cn = red_logic.GetSliceCompositeNode()
