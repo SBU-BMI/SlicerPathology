@@ -406,7 +406,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         zipObj.write(manifestDir, os.path.basename(manifestDir))
         zipObj.close()
 
-        # copy to user selected directory
+        # Copy to user selected directory
         userDir = self.dataDirButton.directory
 
         try:
