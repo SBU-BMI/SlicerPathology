@@ -54,9 +54,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
                                           'Resources')
         self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
         self.currentStep = 1
+        self.dirty = False
 
     def setup(self):
-        self.dirty = False
         # self.editUtil = EditorLib.EditUtil.EditUtil()
         self.parameterNode = EditorLib.EditUtil.EditUtil().getParameterNode()
         self.parameterNode.SetParameter("QuickTCGAEffect,erich", "reset")
@@ -243,16 +243,15 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     #    r.fitSliceToBackground()
 
     def onWIP2ButtonClicked(self):
-        logging.info("slate_state %s" % self.dirty)
-        self.openTargetImage0()
-        # if self.dirty:
-        #    if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
-        #        self.openTargetImage0()
-        # else:
-        #      self.openTargetImage0()
+        if self.dirty:
+            if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
+                slicer.mrmlScene.Clear(0)
+                self.dirty = False
+                self.openTargetImage0()
+        else:
+            self.openTargetImage0()
 
     def onWIP3ButtonClicked(self):
-        self.dirty = True
         self.openTargetImage()
         r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
         r.fitSliceToBackground()
@@ -319,7 +318,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         :return: 
         """
 
-        print "\nSAVING"
+        logging.info("\nSAVING")
+        logging.info("is_img_loaded %s" % self.dirty)
         # print "\nparams", slicer.modules.QuickTCGAEffectOptions.params
 
         self.dirty = False
@@ -638,6 +638,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
             displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
             self.mutate()
+            self.dirty = True
 
         except:
             slicer.util.infoDisplay("A web image hasn't been selected yet. Let's try again...")
@@ -656,7 +657,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         return imgData
 
     def loadTCGAData(self):
-        logging.info("slate_state %s" % self.dirty)
+        logging.info("\nloadTCGAData")
+        logging.info("is_img_loaded %s" % self.dirty)
         if self.dirty:
             if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
                 self.clear_and_open()
@@ -664,6 +666,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             self.clear_and_open()
 
     def clear_and_open(self):
+        logging.info("\nclear_and_open")
+        logging.info("is_img_loaded %s" % self.dirty)
         EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
         slicer.mrmlScene.Clear(0)
         self.dirty = False
@@ -672,7 +676,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             self.loademup()
 
     def loademup(self):
-        self.dirty = True  # TODO: we loaded it - doesn't guarantee dirty-state.
+        logging.info("\nloademup")
+        logging.info("is_img_loaded %s" % self.dirty)
+        self.dirty = True
         import EditorLib
 
         editUtil = EditorLib.EditUtil.EditUtil()
