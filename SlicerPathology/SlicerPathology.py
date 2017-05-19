@@ -243,8 +243,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     #    r.fitSliceToBackground()
 
     def onWIP2ButtonClicked(self):
-        logging.info("\nonWIP2ButtonClicked")
-        logging.info("is_img_loaded %s" % self.dirty)
         if self.dirty:
             if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
                 slicer.mrmlScene.Clear(0)
@@ -254,9 +252,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             self.openTargetImage0()
 
     def onWIP3ButtonClicked(self):
-        logging.info("\nonWIP3ButtonClicked")
-        logging.info("is_img_loaded %s" % self.dirty)
-        self.dirty = True
         self.openTargetImage()
         r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
         r.fitSliceToBackground()
@@ -643,6 +638,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
             displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
             self.mutate()
+            self.dirty = True
 
         except:
             slicer.util.infoDisplay("A web image hasn't been selected yet. Let's try again...")
