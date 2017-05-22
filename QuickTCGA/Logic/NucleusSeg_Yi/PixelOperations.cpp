@@ -7,6 +7,7 @@
 
 #include "PixelOperations.h"
 #include <limits>
+//#include "Logger.h"
 #include "TypeUtils.h"
 
 namespace nscale {
