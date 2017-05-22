@@ -496,6 +496,8 @@ namespace ImagenomicAnalytics {
                         cv::Mat watershedMask;
                         cv::Mat seg = itk::OpenCVImageBridge::ITKImageToCVMat<itkUCharImageType>(nucleusBinaryMask);
 
+                        // Modified method signature:
+                        // const cv::Mat &img, const cv::Mat &seg_open, cv::Mat &seg_nonoverlap
                         nscale::HistologicalEntities::plSeparateNuclei(newImgCV, seg, watershedMask);
 
                         nucleusBinaryMask = itk::OpenCVImageBridge::CVMatToITKImage<itkUCharImageType>(watershedMask);

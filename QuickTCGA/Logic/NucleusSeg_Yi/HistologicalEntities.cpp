@@ -19,7 +19,9 @@ namespace nscale {
 
     using namespace cv;
 
-    // NOTE: MODIFIED FUNCTION SIGNATURE: Using defaults on extra parameters.
+    // NOTE: MODIFIED FUNCTION SIGNATURE: Using defaults on extra parameters
+    // to avoid having to compile extra classes and related classes and such
+    // into SlicerPathology.
     // Passing in: (newImgCV, seg, watershedMask)
     int HistologicalEntities::plSeparateNuclei(const Mat &img, const Mat &seg_open, Mat &seg_nonoverlap) {
         /**
