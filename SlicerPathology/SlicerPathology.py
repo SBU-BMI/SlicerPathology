@@ -408,20 +408,24 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         # Copy to user selected directory
         userDir = self.dataDirButton.directory
+        actual = userDir
+        text = "Success!\nZip file saved."
 
         try:
             shutil.copy(os.path.join(tempDir, fileName), os.path.join(userDir, fileName))
-            print "\nSaved zip file", os.path.join(userDir, fileName)
+            actual = os.path.join(userDir, fileName)
+            print "Saved zip file\n" + actual
         except IOError, e:
             print "Unable to copy file. %s" % e
             home = os.getenv('USERPROFILE') or os.getenv('HOME')
             print "Trying to copy to", home, "instead"
             try:
                 shutil.copy(os.path.join(tempDir, fileName), os.path.join(home, fileName))
-                print "\nSaved zip file", os.path.join(home, fileName)
-                print "Success."
+                actual = os.path.join(home, fileName)
+                print "Saved zip file\n" + actual
             except IOError, e:
                 print "File copy not successful. %s" % e
+                text = "Could not save file"
         else:
             print "Success."
             # remove temp directory
@@ -436,6 +440,12 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             #           "uploaded_file" : open(zipDir, "rb") }
             # print params
             # print opener.open('http://quip1.bmi.stonybrook.edu:4000/upload', params).read()
+
+        msg = qt.QMessageBox()
+        msg.setIcon(qt.QMessageBox.Information)
+        msg.setText(str(text))
+        msg.setStandardButtons(qt.QMessageBox.Ok)
+        retval = msg.exec_()
 
     def add_img_to_zip(self, sNode, file_path, data, zipObj):
         sNode.SetFileName(file_path)
