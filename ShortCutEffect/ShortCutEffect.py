@@ -545,7 +545,7 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
 #	#	slicer.util.showStatusMessage(self.currentMessage)
 
   def runQTCGA_Template(self):
-	return
+	# return
 	if self.bEditTCGA == True:
 	
 		self.currentMessage = "Quick TCGA: running template matching ..."
@@ -604,7 +604,7 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
 		slicer.util.showStatusMessage(self.currentMessage)
 		
   def runQTCGA_Refine_Curvature(self):
-	return
+	# return
 
 	self.currentMessage = "Quick TCGA: running refinement ..."
 	slicer.util.showStatusMessage(self.currentMessage)
