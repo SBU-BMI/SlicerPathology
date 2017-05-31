@@ -1,5 +1,6 @@
 #include "QuickTCGASegmenter.h"
 
+// init static variables
 const double QuickTCGASegmenter::m_SAMPLERATE = 0.5;
 const int QuickTCGASegmenter::m_COUNTOURAREA_MIN = 10;
 const int QuickTCGASegmenter::m_COLOR_SLIDER_MAX = 40;
@@ -152,8 +153,9 @@ void QuickTCGASegmenter::DoSegmentation() {
 /**
  * Do nuclear segmentation
  */
+// void QuickTCGASegmenter::DoNucleiSegmentationYi(...)
 void QuickTCGASegmenter::DoNuclearSegmentation(float otsuRatio, double curvatureWeight, float sizeThld,
-                                                float sizeUpperThld, double mpp, float kernelSize,                                                
+                                                float sizeUpperThld, double mpp, float kernelSize,
                                                 int declumpingType = 0) {
 
     int levelsetNumberOfIteration = 100;
