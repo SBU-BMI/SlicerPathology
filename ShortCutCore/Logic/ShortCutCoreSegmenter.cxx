@@ -36,7 +36,7 @@ void ShortCutCoreSegmenter::OnTrackColorThreshold(int indColorTh) {
     cv::erode(dst, dst, element);
 
     // Fill holes
-    std::vector <std::vector<cv::Point>> contours;
+    std::vector <std::vector<cv::Point> > contours;
     std::vector <cv::Vec4i> hierarchy;
 
     cv::findContours(dst, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE, cv::Point(0, 0));
@@ -151,7 +151,7 @@ void ShortCutCoreSegmenter::DoSegmentation() {
 }
 
 void
-QuickTCGASegmenter::DoNuclearSegmentation(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld,
+ShortCutCoreSegmenter::DoNuclearSegmentation(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld,
                                           double mpp) {
     std::cout << "DoNuclearSegmentation at ShortCutCoreSegmenter\n";
 }

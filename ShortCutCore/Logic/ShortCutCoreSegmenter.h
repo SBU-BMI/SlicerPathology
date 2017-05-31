@@ -63,7 +63,7 @@ private:
     static const int m_COUNTOURAREA_MIN;
     static const int m_COLOR_SLIDER_MAX;
     static const int m_STRELE_SIZE;
-    std::vector <std::vector<cv::Point>> m_contours;
+    std::vector <std::vector<cv::Point> > m_contours;
     std::vector <cv::Vec4i> m_hierarchy;
 };
 
