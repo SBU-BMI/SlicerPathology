@@ -18,18 +18,31 @@
 class ShortCutCoreSegmenter {
 public:
     ShortCutCoreSegmenter();
+
     ~ShortCutCoreSegmenter();
 
-    void SetSourceImage(const cv::Mat& imSrc);
-    void SetLabImage(const cv::Mat& imLab);
-    void SetROIImage(const cv::Mat& imROI);
-    void SetPreSegmentation(const cv::Mat& imSeg);
+    void SetSourceImage(const cv::Mat &imSrc);
+
+    void SetLabImage(const cv::Mat &imLab);
+
+    void SetROIImage(const cv::Mat &imROI);
+
+    void SetPreSegmentation(const cv::Mat &imSeg);
+
     void DoSegmentation();
+
     void DoTemplateMatching();
-    void DoNucleiSegmentationYi(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp);
-    void GetSegmentation(cv::Mat& imSeg);
+
+    // void DoNucleiSegmentationYi(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp);
+    void
+    DoNuclearSegmentation(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp);
+
+    void GetSegmentation(cv::Mat &imSeg);
+
     void RefineCurvature();
+
     void RefineShortCut();
+
     void OnTrackColorThreshold(int indColorTh);
 
 private:
@@ -50,8 +63,8 @@ private:
     static const int m_COUNTOURAREA_MIN;
     static const int m_COLOR_SLIDER_MAX;
     static const int m_STRELE_SIZE;
-    std::vector<std::vector<cv::Point> > m_contours;
-    std::vector<cv::Vec4i> m_hierarchy;
+    std::vector <std::vector<cv::Point> > m_contours;
+    std::vector <cv::Vec4i> m_hierarchy;
 };
 
 #endif

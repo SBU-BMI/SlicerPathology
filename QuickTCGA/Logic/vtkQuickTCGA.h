@@ -17,13 +17,12 @@ typedef unsigned char LabPixelType;
 
 class VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT vtkQuickTCGA : public vtkObject
 {
- public:
+public:
   static vtkQuickTCGA* New();
-  //  vtkTypeRevisionMacro(vtkFastGrowCutSeg,vtkObject);
-  vtkTypeMacro(vtkQuickTCGA,vtkObject);
+  // vtkTypeRevisionMacro(vtkFastGrowCutSeg,vtkObject);
+  vtkTypeMacro(vtkQuickTCGA, vtkObject);
 
-
-  //set parameters of Quick TCGA segmenter
+  // set parameters of Quick TCGA segmenter
   vtkSetObjectMacro(SourceVol, vtkImageData);
   vtkSetObjectMacro(SeedVol, vtkImageData);
   vtkSetObjectMacro(SegVol, vtkImageData);
@@ -39,21 +38,21 @@ class VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT vtkQuickTCGA : public vtkObject
 
   // vtkSetMacro(InitializationFlag, bool);
 
-  //processing functions
+  // processing functions
   void Run_QTCGA_Segmentation();
   void Run_QTCGA_Template();
   void Run_Refine_Curvature();
   void Run_NucleiSegYi(int seg_type);
   void Initialization();
-  //  void RunFGC();
-  void PrintSelf(ostream &os, vtkIndent indent);
+  // void RunFGC();
+  void PrintSelf(ostream& os, vtkIndent indent);
 
- protected:
+protected:
   vtkQuickTCGA();
   virtual ~vtkQuickTCGA();
 
- private:
-  //vtk image data (from slicer)
+private:
+  // vtk image data (from slicer)
   vtkImageData* SourceVol;
   vtkImageData* SeedVol;
   vtkImageData* SegVol;
@@ -71,13 +70,11 @@ class VTK_SLICER_QUICKTCGA_MODULE_LOGIC_EXPORT vtkQuickTCGA : public vtkObject
   cv::Mat m_imPreSeg;
   cv::Mat m_imSCROI;
 
-  //logic code
+  // logic code
   QuickTCGASegmenter* m_qTCGASeg;
 
-  //state variables
+  // state variables
   bool InitializationFlag;
-
 };
-
 
 #endif

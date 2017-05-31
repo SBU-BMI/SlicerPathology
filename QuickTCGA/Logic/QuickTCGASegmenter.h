@@ -33,9 +33,11 @@ public:
 
     void DoTemplateMatching();
 
+    // void DoNucleiSegmentationYi(...)
+    // DoNucleiSegmentationYiwo(...)
     void
     DoNuclearSegmentation(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld, double mpp,
-                           float kernelSize, int declumpingType);
+                          float kernelSize, int declumpingType);
 
     void GetSegmentation(cv::Mat &imSeg);
 
