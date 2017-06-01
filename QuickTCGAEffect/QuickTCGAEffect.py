@@ -332,32 +332,6 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
 
     def updateSliders(self):
-        print "updateSliders : ", slicer.modules.QuickTCGAEffectOptions.params
-        r = self.structuresView.currentIndex().row()
-        if r > -1:
-            ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 3).text()
-        else:
-            ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename') + '-label'
-        if ei not in params:
-            params[ei] = cparams.copy()
-            if r < 0:
-                params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
-            else:
-                params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,
-                                                                                                               2).text()
-            jstr = json.dumps(params, sort_keys=True, indent=4, separators=(',', ': '))  # TODO: outdent?
-            self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)  # TODO: outdent?
-        self.frameOtsuSlider.value = params[ei]["otsuRatio"]
-        self.frameCurvatureWeightSlider.value = params[ei]["curvatureWeight"]
-        self.frameSizeThldSlider.value = params[ei]["sizeThld"]
-        self.frameSizeUpperThldSlider.value = params[ei]["sizeUpperThld"]
-        self.frameMPPSlider.value = params[ei]["mpp"]
-        self.frameKernelSizeSlider.value = params[ei]["KernelSize"]
-
-    def onStructureClickedOrAdded(self):
-        self.updateSliders()
-
-    def updateParam(self, p, v):
         r = self.structuresView.currentIndex().row()
         if r > -1:
             ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 3).text()
@@ -366,11 +340,46 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         if ei not in self.params:
             self.params[ei] = self.cparams.copy()
             if r < 0:
-                self.params[ei][
-                    'label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
+                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
             else:
-                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,
-                                                                                                                    2).text()
+                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 2).text()
+
+        jstr = json.dumps(self.params, sort_keys=True, indent=4, separators=(',', ': '))
+        self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
+        self.frameOtsuSlider.value = self.params[ei]["otsuRatio"]
+        self.frameCurvatureWeightSlider.value = self.params[ei]["curvatureWeight"]
+        self.frameSizeThldSlider.value = self.params[ei]["sizeThld"]
+        self.frameSizeUpperThldSlider.value = self.params[ei]["sizeUpperThld"]
+        self.frameMPPSlider.value = self.params[ei]["mpp"]
+        self.frameKernelSizeSlider.value = self.params[ei]["KernelSize"]
+
+    def onStructureClickedOrAdded(self):
+        self.updateSliders()
+
+    def updateParam(self, p, v):
+        """
+        Get name of tile, build JSON object, and update global params
+        :param p: 
+        :param v: 
+        :return: 
+        """
+
+        # Get name of tile
+        r = self.structuresView.currentIndex().row()  # current index of collapsible button
+        if r > -1:
+            ei = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 3).text()
+        else:
+            ei = EditUtil.EditUtil().getParameterNode().GetParameter('SlicerPathology,tilename') + '-label'
+
+        # Build JSON object
+        if ei not in self.params:
+            self.params[ei] = self.cparams.copy()
+            if r < 0:
+                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
+            else:
+                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 2).text()
+
+        # Update params
         self.params[ei][p] = v
         self.cparams[p] = v
         jstr = json.dumps(self.params, sort_keys=True, indent=4, separators=(',', ': '))
