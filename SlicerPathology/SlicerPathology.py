@@ -667,8 +667,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         return imgData
 
     def loadTCGAData(self):
-        logging.info("\nloadTCGAData")
-        logging.info("is_img_loaded %s" % self.dirty)
+        # logging.info("\nloadTCGAData")
+        # logging.info("is_img_loaded %s" % self.dirty)
         if self.dirty:
             if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
                 self.clear_and_open()
@@ -676,8 +676,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             self.clear_and_open()
 
     def clear_and_open(self):
-        logging.info("\nclear_and_open")
-        logging.info("is_img_loaded %s" % self.dirty)
+        # logging.info("\nclear_and_open")
+        # logging.info("is_img_loaded %s" % self.dirty)
         EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
         slicer.mrmlScene.Clear(0)
         self.dirty = False
@@ -686,8 +686,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             self.loademup()
 
     def loademup(self):
-        logging.info("\nloademup")
-        logging.info("is_img_loaded %s" % self.dirty)
+        # logging.info("\nloademup")
+        # logging.info("is_img_loaded %s" % self.dirty)
         self.dirty = True
         import EditorLib
 
@@ -739,6 +739,8 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
 #
 # SlicerPathologyLogic
+# Helper class
+# Implementation of algorithms and helper functions
 #
 
 class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
@@ -821,7 +823,11 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
 
         return True
 
-
+#
+# SlicerPathologyTest
+# Subclass of python unittest
+# Responds to methods whose names start with the string "test"
+#
 class SlicerPathologyTest(ScriptedLoadableModuleTest):
     def setUp(self):
         """ Do whatever is needed to reset the state - typically a scene clear will be enough.
@@ -836,7 +842,7 @@ class SlicerPathologyTest(ScriptedLoadableModuleTest):
 
     def test_SlicerPathology1(self):
         """ Ideally you should have several levels of tests.  At the lowest level
-        tests sould exercise the functionality of the logic with different inputs
+        tests should exercise the functionality of the logic with different inputs
         (both valid and invalid).  At higher levels your tests should emulate the
         way the user would interact with your code and confirm that it still works
         the way you intended.
