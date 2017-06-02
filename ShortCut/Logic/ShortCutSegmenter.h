@@ -1,5 +1,5 @@
-#ifndef SHORTCUTCORESEGMENTER_H
-#define SHORTCUTCORESEGMENTER_H
+#ifndef SHORTCUTSEGMENTER_H
+#define SHORTCUTSEGMENTER_H
 
 #include <math.h>
 #include <set>
@@ -15,11 +15,11 @@
 #include "TCGAUtilities.h"
 #include "ShortCut.h"
 
-class ShortCutCoreSegmenter {
+class ShortCutSegmenter {
 public:
-    ShortCutCoreSegmenter();
+    ShortCutSegmenter();
 
-    ~ShortCutCoreSegmenter();
+    ~ShortCutSegmenter();
 
     void SetSourceImage(const cv::Mat &imSrc);
 

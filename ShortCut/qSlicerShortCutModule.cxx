@@ -18,63 +18,63 @@
 // Qt includes
 #include <QtPlugin>
 
-// ShortCutCore Logic includes
-#include <vtkSlicerShortCutCoreLogic.h>
+// ShortCut Logic includes
+#include <vtkSlicerShortCutLogic.h>
 
-// ShortCutCore includes
-#include "qSlicerShortCutCoreModule.h"
-#include "qSlicerShortCutCoreModuleWidget.h"
+// ShortCut includes
+#include "qSlicerShortCutModule.h"
+#include "qSlicerShortCutModuleWidget.h"
 
 //-----------------------------------------------------------------------------
-Q_EXPORT_PLUGIN2(qSlicerShortCutCoreModule, qSlicerShortCutCoreModule);
+Q_EXPORT_PLUGIN2(qSlicerShortCutModule, qSlicerShortCutModule);
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class qSlicerShortCutCoreModulePrivate
+class qSlicerShortCutModulePrivate
 {
 public:
-  qSlicerShortCutCoreModulePrivate();
+  qSlicerShortCutModulePrivate();
 };
 
 //-----------------------------------------------------------------------------
-// qSlicerShortCutCoreModulePrivate methods
+// qSlicerShortCutModulePrivate methods
 
 //-----------------------------------------------------------------------------
-qSlicerShortCutCoreModulePrivate
-::qSlicerShortCutCoreModulePrivate()
+qSlicerShortCutModulePrivate
+::qSlicerShortCutModulePrivate()
 {
 }
 
 //-----------------------------------------------------------------------------
-// qSlicerShortCutCoreModule methods
+// qSlicerShortCutModule methods
 
 //-----------------------------------------------------------------------------
-qSlicerShortCutCoreModule
-::qSlicerShortCutCoreModule(QObject* _parent)
+qSlicerShortCutModule
+::qSlicerShortCutModule(QObject* _parent)
   : Superclass(_parent)
-  , d_ptr(new qSlicerShortCutCoreModulePrivate)
+  , d_ptr(new qSlicerShortCutModulePrivate)
 {
 }
 
 //-----------------------------------------------------------------------------
-qSlicerShortCutCoreModule::~qSlicerShortCutCoreModule()
+qSlicerShortCutModule::~qSlicerShortCutModule()
 {
 }
 
 //-----------------------------------------------------------------------------
-QString qSlicerShortCutCoreModule::helpText()const
+QString qSlicerShortCutModule::helpText()const
 {
   return "This is a loadable module bundled in an extension";
 }
 
 //-----------------------------------------------------------------------------
-QString qSlicerShortCutCoreModule::acknowledgementText()const
+QString qSlicerShortCutModule::acknowledgementText()const
 {
   return "This work was was partially funded by NIH grant 3P41RR013218-12S1";
 }
 
 //-----------------------------------------------------------------------------
-QStringList qSlicerShortCutCoreModule::contributors()const
+QStringList qSlicerShortCutModule::contributors()const
 {
   QStringList moduleContributors;
   moduleContributors << QString("Jean-Christophe Fillion-Robin (Kitware)");
@@ -82,38 +82,38 @@ QStringList qSlicerShortCutCoreModule::contributors()const
 }
 
 //-----------------------------------------------------------------------------
-QIcon qSlicerShortCutCoreModule::icon()const
+QIcon qSlicerShortCutModule::icon()const
 {
-  return QIcon(":/Icons/ShortCutCore.png");
+  return QIcon(":/Icons/ShortCut.png");
 }
 
 //-----------------------------------------------------------------------------
-QStringList qSlicerShortCutCoreModule::categories() const
+QStringList qSlicerShortCutModule::categories() const
 {
   return QStringList() << "Examples";
 }
 
 //-----------------------------------------------------------------------------
-QStringList qSlicerShortCutCoreModule::dependencies() const
+QStringList qSlicerShortCutModule::dependencies() const
 {
   return QStringList();
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerShortCutCoreModule::setup()
+void qSlicerShortCutModule::setup()
 {
   this->Superclass::setup();
 }
 
 //-----------------------------------------------------------------------------
-qSlicerAbstractModuleRepresentation * qSlicerShortCutCoreModule
+qSlicerAbstractModuleRepresentation * qSlicerShortCutModule
 ::createWidgetRepresentation()
 {
-  return new qSlicerShortCutCoreModuleWidget;
+  return new qSlicerShortCutModuleWidget;
 }
 
 //-----------------------------------------------------------------------------
-vtkMRMLAbstractLogic* qSlicerShortCutCoreModule::createLogic()
+vtkMRMLAbstractLogic* qSlicerShortCutModule::createLogic()
 {
-  return vtkSlicerShortCutCoreLogic::New();
+  return vtkSlicerShortCutLogic::New();
 }

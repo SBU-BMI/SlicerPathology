@@ -66,7 +66,7 @@ class ShortCutOptions(EditorLib.LabelEffectOptions):
         # self.nucleus_segmentation_parameters()
 
         HelpButton(self.frame, (
-            "TO USE: \n Start the ShortCutCore segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
+            "TO USE: \n Start the ShortCut segmenter and initialize the segmentation with any other editor tool like PaintEffect. Press the following keys to interact:" +
             "\n KEYS for Global Segmentation: " +
             "\n S: start Global segmentation \n E: toggle between seed image and segmentation result" +
             " \n R: reset seed/label image for Global Segmentation " +
@@ -369,9 +369,9 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
     def __init__(self, sliceLogic):
         print("Preparing Quick TCGA Interaction")
         self.attributes = 'MouseTool'
-        self.displayName = 'ShortCutCore Effect'
+        self.displayName = 'ShortCut Effect'
 
-        # disconnect all shortcuts that may exist, to allow ShortCutCore's to work, reconnect once bot is turned off
+        # disconnect all shortcuts that may exist, to allow ShortCut's to work, reconnect once bot is turned off
         if hasattr(slicer.modules, 'EditorWidget'):
             slicer.modules.EditorWidget.removeShortcutKeys()
         self.sliceLogic = sliceLogic
@@ -384,15 +384,15 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
         self.mouse_obs_growcut, self.swLUT_growcut = bind_view_observers(self.updateShortCutROI)
 
         # initialize Fast GrowCut
-        self.init_ShortCutCore()
+        self.init_ShortCut()
 
-        self.ShortCutCoreCreated = False
+        self.ShortCutCreated = False
 
-    def init_ShortCutCore(self):
+    def init_ShortCut(self):
 
         self.emergencyStopFunc = None
         self.dialogBox = qt.QMessageBox()  # will display messages to draw users attention if he does anything wrong
-        self.dialogBox.setWindowTitle("ShortCutCore Error")
+        self.dialogBox.setWindowTitle("ShortCut Error")
         self.dialogBox.setWindowModality(qt.Qt.NonModal)  # will allow user to continue interacting with Slicer
 
         # TODO: check this claim- might be causing leaks
@@ -427,7 +427,7 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
                 self.emergencyStopFunc()
             return
 
-        # ShortCutCore shortcuts
+        # ShortCut shortcuts
         resetQTCGAKey = qt.QKeySequence(qt.Qt.Key_R)  # reset initialization flag
         runQTCGAClusterKey = qt.QKeySequence(qt.Qt.Key_S)  # run fast growcut
         # runNucleiSegKey = qt.QKeySequence(qt.Qt.Key_Y)
@@ -437,7 +437,7 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
         runQTCGAShortCutKey = qt.QKeySequence(qt.Qt.Key_C)
         runQTCGAShortEditCutKey = qt.QKeySequence(qt.Qt.Key_F)
 
-        print " keys to run ShortCutCore segmentation, ShortCut, edit ShortCut, edit seed, reset parameters are S, C, F, E, R"
+        print " keys to run ShortCut segmentation, ShortCut, edit ShortCut, edit seed, reset parameters are S, C, F, E, R"
 
         self.qtkeyconnections = []
         self.qtkeydefsQTCGA = [[resetQTCGAKey, self.resetQTCGAFlag],
@@ -479,7 +479,7 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
         self.roiVTK = roiVTK
         # roiVTK.UpdateInformation()
 
-        import vtkSlicerShortCutCoreModuleLogicPython
+        import vtkSlicerShortCutModuleLogicPython
 
         node = EditUtil.EditUtil().getParameterNode()  # get the parameters from MRML
         otsuRatio = 1.0
@@ -507,7 +507,7 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
             mpp = float(node.GetParameter("ShortCut,mpp")) / 100
         print(mpp)
 
-        qTCGAMod = vtkSlicerShortCutCoreModuleLogicPython.vtkShortCutCore()
+        qTCGAMod = vtkSlicerShortCutModuleLogicPython.vtkShortCut()
         qTCGAMod.SetSourceVol(self.foregroundNode.GetImageData())
         qTCGAMod.SetotsuRatio(otsuRatio)
         qTCGAMod.SetcurvatureWeight(curvatureWeight)
@@ -518,7 +518,7 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
         # qTCGAMod.SetSeedVol(self.labelNode.GetImageData())
         qTCGAMod.Initialization()
         self.qTCGAMod = qTCGAMod
-        self.ShortCutCoreCreated = True  # tracks if completed the initialization (so can do stop correctly) of KSlice
+        self.ShortCutCreated = True  # tracks if completed the initialization (so can do stop correctly) of KSlice
 
     def runQTCGA_Segmentation(self):
         """
@@ -766,7 +766,7 @@ class ShortCutLogic(LabelEffect.LabelEffectLogic):
             # why is this necessary for full disconnect (if removed, get the error that more and more keypresses are required if module is repetedly erased and created
             keydef.delete()  # this causes errors
 
-        # destroy ShortCutCore objects
+        # destroy ShortCut objects
         self.qTCGASeedArray = None
         self.qTCGASegArray = None
         self.qTCGAMod = None

@@ -18,35 +18,35 @@
 
 ==============================================================================*/
 
-#ifndef __qSlicerShortCutCoreFooBarWidget_h
-#define __qSlicerShortCutCoreFooBarWidget_h
+#ifndef __qSlicerShortCutFooBarWidget_h
+#define __qSlicerShortCutFooBarWidget_h
 
 // Qt includes
 #include <QWidget>
 
 // FooBar Widgets includes
-#include "qSlicerShortCutCoreModuleWidgetsExport.h"
+#include "qSlicerShortCutModuleWidgetsExport.h"
 
-class qSlicerShortCutCoreFooBarWidgetPrivate;
+class qSlicerShortCutFooBarWidgetPrivate;
 
-/// \ingroup Slicer_QtModules_ShortCutCore
-class Q_SLICER_MODULE_SHORTCUTCORE_WIDGETS_EXPORT qSlicerShortCutCoreFooBarWidget
+/// \ingroup Slicer_QtModules_ShortCut
+class Q_SLICER_MODULE_SHORTCUT_WIDGETS_EXPORT qSlicerShortCutFooBarWidget
   : public QWidget
 {
   Q_OBJECT
 public:
   typedef QWidget Superclass;
-  qSlicerShortCutCoreFooBarWidget(QWidget *parent=0);
-  virtual ~qSlicerShortCutCoreFooBarWidget();
+  qSlicerShortCutFooBarWidget(QWidget *parent=0);
+  virtual ~qSlicerShortCutFooBarWidget();
 
 protected slots:
 
 protected:
-  QScopedPointer<qSlicerShortCutCoreFooBarWidgetPrivate> d_ptr;
+  QScopedPointer<qSlicerShortCutFooBarWidgetPrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(qSlicerShortCutCoreFooBarWidget);
-  Q_DISABLE_COPY(qSlicerShortCutCoreFooBarWidget);
+  Q_DECLARE_PRIVATE(qSlicerShortCutFooBarWidget);
+  Q_DISABLE_COPY(qSlicerShortCutFooBarWidget);
 };
 
 #endif

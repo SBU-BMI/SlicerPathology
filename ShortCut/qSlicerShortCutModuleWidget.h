@@ -15,19 +15,19 @@
 
 ==============================================================================*/
 
-#ifndef __qSlicerShortCutCoreModuleWidget_h
-#define __qSlicerShortCutCoreModuleWidget_h
+#ifndef __qSlicerShortCutModuleWidget_h
+#define __qSlicerShortCutModuleWidget_h
 
 // SlicerQt includes
 #include "qSlicerAbstractModuleWidget.h"
 
-#include "qSlicerShortCutCoreModuleExport.h"
+#include "qSlicerShortCutModuleExport.h"
 
-class qSlicerShortCutCoreModuleWidgetPrivate;
+class qSlicerShortCutModuleWidgetPrivate;
 class vtkMRMLNode;
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class Q_SLICER_QTMODULES_SHORTCUTCORE_EXPORT qSlicerShortCutCoreModuleWidget :
+class Q_SLICER_QTMODULES_SHORTCUT_EXPORT qSlicerShortCutModuleWidget :
   public qSlicerAbstractModuleWidget
 {
   Q_OBJECT
@@ -35,20 +35,20 @@ class Q_SLICER_QTMODULES_SHORTCUTCORE_EXPORT qSlicerShortCutCoreModuleWidget :
 public:
 
   typedef qSlicerAbstractModuleWidget Superclass;
-  qSlicerShortCutCoreModuleWidget(QWidget *parent=0);
-  virtual ~qSlicerShortCutCoreModuleWidget();
+  qSlicerShortCutModuleWidget(QWidget *parent=0);
+  virtual ~qSlicerShortCutModuleWidget();
 
 public slots:
 
 
 protected:
-  QScopedPointer<qSlicerShortCutCoreModuleWidgetPrivate> d_ptr;
+  QScopedPointer<qSlicerShortCutModuleWidgetPrivate> d_ptr;
 
   virtual void setup();
 
 private:
-  Q_DECLARE_PRIVATE(qSlicerShortCutCoreModuleWidget);
-  Q_DISABLE_COPY(qSlicerShortCutCoreModuleWidget);
+  Q_DECLARE_PRIVATE(qSlicerShortCutModuleWidget);
+  Q_DISABLE_COPY(qSlicerShortCutModuleWidget);
 };
 
 #endif

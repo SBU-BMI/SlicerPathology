@@ -15,8 +15,8 @@
 
 ==============================================================================*/
 
-// ShortCutCore Logic includes
-#include "vtkSlicerShortCutCoreLogic.h"
+// ShortCut Logic includes
+#include "vtkSlicerShortCutLogic.h"
 
 // MRML includes
 #include <vtkMRMLScene.h>
@@ -30,26 +30,26 @@
 #include <cassert>
 
 //----------------------------------------------------------------------------
-vtkStandardNewMacro(vtkSlicerShortCutCoreLogic);
+vtkStandardNewMacro(vtkSlicerShortCutLogic);
 
 //----------------------------------------------------------------------------
-vtkSlicerShortCutCoreLogic::vtkSlicerShortCutCoreLogic()
+vtkSlicerShortCutLogic::vtkSlicerShortCutLogic()
 {
 }
 
 //----------------------------------------------------------------------------
-vtkSlicerShortCutCoreLogic::~vtkSlicerShortCutCoreLogic()
+vtkSlicerShortCutLogic::~vtkSlicerShortCutLogic()
 {
 }
 
 //----------------------------------------------------------------------------
-void vtkSlicerShortCutCoreLogic::PrintSelf(ostream& os, vtkIndent indent)
+void vtkSlicerShortCutLogic::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerShortCutCoreLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
+void vtkSlicerShortCutLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 {
   vtkNew<vtkIntArray> events;
   events->InsertNextValue(vtkMRMLScene::NodeAddedEvent);
@@ -59,25 +59,25 @@ void vtkSlicerShortCutCoreLogic::SetMRMLSceneInternal(vtkMRMLScene * newScene)
 }
 
 //-----------------------------------------------------------------------------
-void vtkSlicerShortCutCoreLogic::RegisterNodes()
+void vtkSlicerShortCutLogic::RegisterNodes()
 {
   assert(this->GetMRMLScene() != 0);
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerShortCutCoreLogic::UpdateFromMRMLScene()
+void vtkSlicerShortCutLogic::UpdateFromMRMLScene()
 {
   assert(this->GetMRMLScene() != 0);
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerShortCutCoreLogic
+void vtkSlicerShortCutLogic
 ::OnMRMLSceneNodeAdded(vtkMRMLNode* vtkNotUsed(node))
 {
 }
 
 //---------------------------------------------------------------------------
-void vtkSlicerShortCutCoreLogic
+void vtkSlicerShortCutLogic
 ::OnMRMLSceneNodeRemoved(vtkMRMLNode* vtkNotUsed(node))
 {
 }

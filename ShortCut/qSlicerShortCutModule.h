@@ -15,19 +15,19 @@
 
 ==============================================================================*/
 
-#ifndef __qSlicerShortCutCoreModule_h
-#define __qSlicerShortCutCoreModule_h
+#ifndef __qSlicerShortCutModule_h
+#define __qSlicerShortCutModule_h
 
 // SlicerQt includes
 #include "qSlicerLoadableModule.h"
 
-#include "qSlicerShortCutCoreModuleExport.h"
+#include "qSlicerShortCutModuleExport.h"
 
-class qSlicerShortCutCoreModulePrivate;
+class qSlicerShortCutModulePrivate;
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class Q_SLICER_QTMODULES_SHORTCUTCORE_EXPORT
-qSlicerShortCutCoreModule
+class Q_SLICER_QTMODULES_SHORTCUT_EXPORT
+qSlicerShortCutModule
   : public qSlicerLoadableModule
 {
   Q_OBJECT
@@ -36,8 +36,8 @@ qSlicerShortCutCoreModule
 public:
 
   typedef qSlicerLoadableModule Superclass;
-  explicit qSlicerShortCutCoreModule(QObject *parent=0);
-  virtual ~qSlicerShortCutCoreModule();
+  explicit qSlicerShortCutModule(QObject *parent=0);
+  virtual ~qSlicerShortCutModule();
 
   qSlicerGetTitleMacro(QTMODULE_TITLE);
 
@@ -62,11 +62,11 @@ protected:
   virtual vtkMRMLAbstractLogic* createLogic();
 
 protected:
-  QScopedPointer<qSlicerShortCutCoreModulePrivate> d_ptr;
+  QScopedPointer<qSlicerShortCutModulePrivate> d_ptr;
 
 private:
-  Q_DECLARE_PRIVATE(qSlicerShortCutCoreModule);
-  Q_DISABLE_COPY(qSlicerShortCutCoreModule);
+  Q_DECLARE_PRIVATE(qSlicerShortCutModule);
+  Q_DISABLE_COPY(qSlicerShortCutModule);
 
 };
 

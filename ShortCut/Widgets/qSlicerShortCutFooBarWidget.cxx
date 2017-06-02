@@ -19,54 +19,54 @@
 ==============================================================================*/
 
 // FooBar Widgets includes
-#include "qSlicerShortCutCoreFooBarWidget.h"
-#include "ui_qSlicerShortCutCoreFooBarWidget.h"
+#include "qSlicerShortCutFooBarWidget.h"
+#include "ui_qSlicerShortCutFooBarWidget.h"
 
 //-----------------------------------------------------------------------------
-/// \ingroup Slicer_QtModules_ShortCutCore
-class qSlicerShortCutCoreFooBarWidgetPrivate
-  : public Ui_qSlicerShortCutCoreFooBarWidget
+/// \ingroup Slicer_QtModules_ShortCut
+class qSlicerShortCutFooBarWidgetPrivate
+  : public Ui_qSlicerShortCutFooBarWidget
 {
-  Q_DECLARE_PUBLIC(qSlicerShortCutCoreFooBarWidget);
+  Q_DECLARE_PUBLIC(qSlicerShortCutFooBarWidget);
 protected:
-  qSlicerShortCutCoreFooBarWidget* const q_ptr;
+  qSlicerShortCutFooBarWidget* const q_ptr;
 
 public:
-  qSlicerShortCutCoreFooBarWidgetPrivate(
-    qSlicerShortCutCoreFooBarWidget& object);
-  virtual void setupUi(qSlicerShortCutCoreFooBarWidget*);
+  qSlicerShortCutFooBarWidgetPrivate(
+    qSlicerShortCutFooBarWidget& object);
+  virtual void setupUi(qSlicerShortCutFooBarWidget*);
 };
 
 // --------------------------------------------------------------------------
-qSlicerShortCutCoreFooBarWidgetPrivate
-::qSlicerShortCutCoreFooBarWidgetPrivate(
-  qSlicerShortCutCoreFooBarWidget& object)
+qSlicerShortCutFooBarWidgetPrivate
+::qSlicerShortCutFooBarWidgetPrivate(
+  qSlicerShortCutFooBarWidget& object)
   : q_ptr(&object)
 {
 }
 
 // --------------------------------------------------------------------------
-void qSlicerShortCutCoreFooBarWidgetPrivate
-::setupUi(qSlicerShortCutCoreFooBarWidget* widget)
+void qSlicerShortCutFooBarWidgetPrivate
+::setupUi(qSlicerShortCutFooBarWidget* widget)
 {
-  this->Ui_qSlicerShortCutCoreFooBarWidget::setupUi(widget);
+  this->Ui_qSlicerShortCutFooBarWidget::setupUi(widget);
 }
 
 //-----------------------------------------------------------------------------
-// qSlicerShortCutCoreFooBarWidget methods
+// qSlicerShortCutFooBarWidget methods
 
 //-----------------------------------------------------------------------------
-qSlicerShortCutCoreFooBarWidget
-::qSlicerShortCutCoreFooBarWidget(QWidget* parentWidget)
+qSlicerShortCutFooBarWidget
+::qSlicerShortCutFooBarWidget(QWidget* parentWidget)
   : Superclass( parentWidget )
-  , d_ptr( new qSlicerShortCutCoreFooBarWidgetPrivate(*this) )
+  , d_ptr( new qSlicerShortCutFooBarWidgetPrivate(*this) )
 {
-  Q_D(qSlicerShortCutCoreFooBarWidget);
+  Q_D(qSlicerShortCutFooBarWidget);
   d->setupUi(this);
 }
 
 //-----------------------------------------------------------------------------
-qSlicerShortCutCoreFooBarWidget
-::~qSlicerShortCutCoreFooBarWidget()
+qSlicerShortCutFooBarWidget
+::~qSlicerShortCutFooBarWidget()
 {
 }

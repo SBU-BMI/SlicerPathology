@@ -1,9 +1,9 @@
-#ifndef VTKSHORTCUTCORE_H
-#define VTKSHORTCUTCORE_H
+#ifndef VTKSHORTCUT_H
+#define VTKSHORTCUT_H
 
-#include "vtkSlicerShortCutCoreModuleLogicExport.h"
+#include "vtkSlicerShortCutModuleLogicExport.h"
 #include "vtkImageData.h"
-#include "ShortCutCoreSegmenter.h"
+#include "ShortCutSegmenter.h"
 
 #include <QProgressBar>
 #include <QMainWindow>
@@ -15,12 +15,12 @@ typedef float DistPixelType; // float type pixel for cost function
 typedef short SrcPixelType;
 typedef unsigned char LabPixelType;
 
-class VTK_SLICER_SHORTCUTCORE_MODULE_LOGIC_EXPORT vtkShortCutCore : public vtkObject
+class VTK_SLICER_SHORTCUT_MODULE_LOGIC_EXPORT vtkShortCut : public vtkObject
 {
 public:
-  static vtkShortCutCore* New();
+  static vtkShortCut* New();
   // vtkTypeRevisionMacro(vtkFastGrowCutSeg,vtkObject);
-  vtkTypeMacro(vtkShortCutCore, vtkObject);
+  vtkTypeMacro(vtkShortCut, vtkObject);
 
   // set parameters of Quick TCGA segmenter
   vtkSetObjectMacro(SourceVol, vtkImageData);
@@ -47,8 +47,8 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
-  vtkShortCutCore();
-  virtual ~vtkShortCutCore();
+  vtkShortCut();
+  virtual ~vtkShortCut();
 
 private:
   // vtk image data (from slicer)
@@ -69,7 +69,7 @@ private:
   cv::Mat m_imSCROI;
 
   // logic code
-  ShortCutCoreSegmenter* m_qTCGASeg;
+  ShortCutSegmenter* m_qTCGASeg;
 
   // state variables
   bool InitializationFlag;
