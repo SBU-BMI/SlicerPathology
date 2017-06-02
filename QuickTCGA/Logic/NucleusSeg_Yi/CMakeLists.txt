@@ -15,6 +15,7 @@ set(NucleiSegSrc
         ConnComponents.cpp
         MorphologicOperations.cpp
         NeighborOperations.cpp
+        utilityTileAnalysis.cxx
         )
 
 add_library(NucleiSegLib STATIC ${NucleiSegSrc})
