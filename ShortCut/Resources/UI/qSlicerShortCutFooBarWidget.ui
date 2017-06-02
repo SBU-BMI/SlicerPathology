@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>qSlicerShortCutCoreFooBarWidget</class>
- <widget class="QWidget" name="qSlicerShortCutCoreFooBarWidget">
+ <class>qSlicerShortCutFooBarWidget</class>
+ <widget class="QWidget" name="qSlicerShortCutFooBarWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
