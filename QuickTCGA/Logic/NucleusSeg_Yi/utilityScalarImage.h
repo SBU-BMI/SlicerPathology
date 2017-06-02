@@ -8,6 +8,7 @@
 #include "itkBinaryErodeImageFilter.h"
 #include "itkGradientMagnitudeImageFilter.h"
 #include "itkContourExtractor2DImageFilter.h"
+#include "itkConnectedComponentImageFilter.h"
 
 // local
 #include "itkTypedefs.h"

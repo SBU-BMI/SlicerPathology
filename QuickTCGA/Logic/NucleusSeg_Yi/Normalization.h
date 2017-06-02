@@ -18,7 +18,6 @@
 #endif
 */
 
-/*
 #ifdef _MSC_VER
 #include "time_win.h"
 #else
@@ -26,7 +25,6 @@
 #include <sys/time.h>
 
 #endif
-*/
 
 //#include "../segment/PixelOperations.h"
 // It's in same directory:
