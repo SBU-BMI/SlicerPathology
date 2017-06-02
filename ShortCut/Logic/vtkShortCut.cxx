@@ -1,5 +1,5 @@
 #include <iostream>
-#include "vtkShortCutCore.h"
+#include "vtkShortCut.h"
 
 #include "vtkObjectFactory.h"
 #include "vtkSmartPointer.h"
@@ -7,14 +7,14 @@
 #include "itkImage.h"
 #include "itkTimeProbe.h"
 
-#include "ShortCutCoreSegmenter.h"
+#include "ShortCutSegmenter.h"
 #include "TCGAUtilities.h"
 
 //vtkCxxRevisionMacro(vtkFastGrowCutSeg, "$Revision$"); //necessary?
-vtkStandardNewMacro(vtkShortCutCore); //for the new() macro
+vtkStandardNewMacro(vtkShortCut); //for the new() macro
 
 //----------------------------------------------------------------------------
-vtkShortCutCore::vtkShortCutCore() {
+vtkShortCut::vtkShortCut() {
 
     SourceVol = NULL;
     SeedVol = NULL;
@@ -30,7 +30,7 @@ vtkShortCutCore::vtkShortCutCore() {
 }
 
 
-vtkShortCutCore::~vtkShortCutCore() {
+vtkShortCut::~vtkShortCut() {
 
     //these functions decrement reference count on the vtkImageData's (incremented by the SetMacros)
     if (this->SourceVol) {
@@ -51,18 +51,18 @@ vtkShortCutCore::~vtkShortCutCore() {
     }
 }
 
-void vtkShortCutCore::Initialization() {
+void vtkShortCut::Initialization() {
 
-    std::cout << "vtkShortCutCore initialized\n";
+    std::cout << "vtkShortCut initialized\n";
     InitializationFlag = false;
     if (m_qTCGASeg == NULL) {
-        m_qTCGASeg = new ShortCutCoreSegmenter();
+        m_qTCGASeg = new ShortCutSegmenter();
     }
 }
 
 
-void vtkShortCutCore::Run_QTCGA_Segmentation() {
-    std::cout << "vtkShortCutCore::Run_QTCGA_Segmentation\n";
+void vtkShortCut::Run_QTCGA_Segmentation() {
+    std::cout << "vtkShortCut::Run_QTCGA_Segmentation\n";
 
     //Convert vtkImage to lplImage
     int dims[3];
@@ -92,7 +92,7 @@ void vtkShortCutCore::Run_QTCGA_Segmentation() {
 /**
  * Run_QTCGA_ShortCut
  */
-void vtkShortCutCore::Run_QTCGA_ShortCut() {
+void vtkShortCut::Run_QTCGA_ShortCut() {
 
     //Convert vtkImage to lplImage
     int dims[3];
@@ -119,7 +119,7 @@ void vtkShortCutCore::Run_QTCGA_ShortCut() {
     std::cout << "Finished TCGA ShortCut\n";
 }
 
-void vtkShortCutCore::Run_Refine_Curvature() {
+void vtkShortCut::Run_Refine_Curvature() {
     //Convert vtkImage to lplImage
     int dims[3];
     SourceVol->GetDimensions(dims);
@@ -142,10 +142,10 @@ void vtkShortCutCore::Run_Refine_Curvature() {
     std::cout << "Finished TCGA refinement\n";
 }
 
-void vtkShortCutCore::Run_QTCGA_Template() {
+void vtkShortCut::Run_QTCGA_Template() {
     std::cout << "Finished TCGA template matching\n";
 }
 
-void vtkShortCutCore::PrintSelf(ostream &os, vtkIndent indent) {
+void vtkShortCut::PrintSelf(ostream &os, vtkIndent indent) {
     std::cout << "This function has been found" << std::endl;
 }

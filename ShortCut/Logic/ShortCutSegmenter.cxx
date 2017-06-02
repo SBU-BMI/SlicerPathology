@@ -1,25 +1,25 @@
-#include "ShortCutCoreSegmenter.h"
+#include "ShortCutSegmenter.h"
 
 // init static variables
-const double ShortCutCoreSegmenter::m_SAMPLERATE = 0.5;
-const int ShortCutCoreSegmenter::m_COUNTOURAREA_MIN = 10;
-const int ShortCutCoreSegmenter::m_COLOR_SLIDER_MAX = 40;
-const int ShortCutCoreSegmenter::m_STRELE_SIZE = 1;
+const double ShortCutSegmenter::m_SAMPLERATE = 0.5;
+const int ShortCutSegmenter::m_COUNTOURAREA_MIN = 10;
+const int ShortCutSegmenter::m_COLOR_SLIDER_MAX = 40;
+const int ShortCutSegmenter::m_STRELE_SIZE = 1;
 
 static void On_TrackColorThreshold(int indColorTh, void *userData) {
 
-    ShortCutCoreSegmenter *pTCGA = static_cast<ShortCutCoreSegmenter *>(userData);
+    ShortCutSegmenter *pTCGA = static_cast<ShortCutSegmenter *>(userData);
     pTCGA->OnTrackColorThreshold(indColorTh);
 }
 
-ShortCutCoreSegmenter::ShortCutCoreSegmenter() {
+ShortCutSegmenter::ShortCutSegmenter() {
     m_WindowNameFull = "Segmentation_Full";
     m_WindowNameROI = "Segmentation_ROI";
 }
 
-ShortCutCoreSegmenter::~ShortCutCoreSegmenter() { ; }
+ShortCutSegmenter::~ShortCutSegmenter() { ; }
 
-void ShortCutCoreSegmenter::OnTrackColorThreshold(int indColorTh) {
+void ShortCutSegmenter::OnTrackColorThreshold(int indColorTh) {
 
     cv::Mat dst;
 
@@ -71,27 +71,27 @@ void ShortCutCoreSegmenter::OnTrackColorThreshold(int indColorTh) {
 }
 
 
-void ShortCutCoreSegmenter::SetSourceImage(const cv::Mat &imSrc) {
+void ShortCutSegmenter::SetSourceImage(const cv::Mat &imSrc) {
     m_imSrc = imSrc;
 }
 
-void ShortCutCoreSegmenter::SetLabImage(const cv::Mat &imLab) {
+void ShortCutSegmenter::SetLabImage(const cv::Mat &imLab) {
     m_imLab = imLab;
 }
 
-void ShortCutCoreSegmenter::SetROIImage(const cv::Mat &imROI) {
+void ShortCutSegmenter::SetROIImage(const cv::Mat &imROI) {
     m_imROI = imROI;
 }
 
-void ShortCutCoreSegmenter::SetPreSegmentation(const cv::Mat &imPreSeg) {
+void ShortCutSegmenter::SetPreSegmentation(const cv::Mat &imPreSeg) {
     m_imSegPre = imPreSeg.clone();
 }
 
-void ShortCutCoreSegmenter::GetSegmentation(cv::Mat &imSeg) {
+void ShortCutSegmenter::GetSegmentation(cv::Mat &imSeg) {
     imSeg = m_imLab;
 }
 
-void ShortCutCoreSegmenter::ComputeFeatureImage() {
+void ShortCutSegmenter::ComputeFeatureImage() {
 
     std::vector <cv::Mat> imBGR;
 
@@ -112,7 +112,7 @@ void ShortCutCoreSegmenter::ComputeFeatureImage() {
     m_imFeature.convertTo(m_imFeature, CV_8UC1);
 }
 
-void ShortCutCoreSegmenter::DoSegmentation() {
+void ShortCutSegmenter::DoSegmentation() {
 
     // Resize image for higher efficiency
     cv::resize(m_imSrc, m_imSrcSample, cv::Size(m_imSrc.cols * m_SAMPLERATE, m_imSrc.rows * m_SAMPLERATE),
@@ -147,16 +147,16 @@ void ShortCutCoreSegmenter::DoSegmentation() {
 
     cv::destroyWindow(m_WindowNameFull);
 
-    std::cout << "DoSegmentation at ShortCutCoreSegmenter\n";
+    std::cout << "DoSegmentation at ShortCutSegmenter\n";
 }
 
 void
-ShortCutCoreSegmenter::DoNuclearSegmentation(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld,
+ShortCutSegmenter::DoNuclearSegmentation(float otsuRatio, double curvatureWeight, float sizeThld, float sizeUpperThld,
                                           double mpp) {
-    std::cout << "DoNuclearSegmentation at ShortCutCoreSegmenter\n";
+    std::cout << "DoNuclearSegmentation at ShortCutSegmenter\n";
 }
 
-void ShortCutCoreSegmenter::RefineCurvature() {
+void ShortCutSegmenter::RefineCurvature() {
 
     // Resize image for higher efficiency
     cv::resize(m_imSrc, m_imSrcSample, cv::Size(m_imSrc.cols * m_SAMPLERATE, m_imSrc.rows * m_SAMPLERATE),
@@ -173,10 +173,10 @@ void ShortCutCoreSegmenter::RefineCurvature() {
     cv::imshow(m_WindowNameROI, m_imSrcSample);
     cv::waitKey();
     cv::destroyWindow(m_WindowNameROI);
-    std::cout << "Do refinement at ShortCutCoreSegmenter\n";
+    std::cout << "Do refinement at ShortCutSegmenter\n";
 }
 
-void ShortCutCoreSegmenter::RefineShortCut() {
+void ShortCutSegmenter::RefineShortCut() {
 
     cv::Mat imSrcROI, imLabROI;
     cv::Rect roi;
@@ -199,9 +199,9 @@ void ShortCutCoreSegmenter::RefineShortCut() {
 //    imLabROI = imSC;
     imSC.copyTo(imLabROI);
 
-    std::cout << "Do ShortCut at ShortCutCoreSegmenter\n";
+    std::cout << "Do ShortCut at ShortCutSegmenter\n";
 }
 
-void ShortCutCoreSegmenter::DoTemplateMatching() {
-    std::cout << "Do template matching at ShortCutCoreSegmenter\n";
+void ShortCutSegmenter::DoTemplateMatching() {
+    std::cout << "Do template matching at ShortCutSegmenter\n";
 }

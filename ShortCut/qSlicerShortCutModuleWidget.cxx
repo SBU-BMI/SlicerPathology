@@ -19,44 +19,44 @@
 #include <QDebug>
 
 // SlicerQt includes
-#include "qSlicerShortCutCoreModuleWidget.h"
-#include "ui_qSlicerShortCutCoreModuleWidget.h"
+#include "qSlicerShortCutModuleWidget.h"
+#include "ui_qSlicerShortCutModuleWidget.h"
 
 //-----------------------------------------------------------------------------
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class qSlicerShortCutCoreModuleWidgetPrivate: public Ui_qSlicerShortCutCoreModuleWidget
+class qSlicerShortCutModuleWidgetPrivate: public Ui_qSlicerShortCutModuleWidget
 {
 public:
-  qSlicerShortCutCoreModuleWidgetPrivate();
+  qSlicerShortCutModuleWidgetPrivate();
 };
 
 //-----------------------------------------------------------------------------
-// qSlicerShortCutCoreModuleWidgetPrivate methods
+// qSlicerShortCutModuleWidgetPrivate methods
 
 //-----------------------------------------------------------------------------
-qSlicerShortCutCoreModuleWidgetPrivate::qSlicerShortCutCoreModuleWidgetPrivate()
+qSlicerShortCutModuleWidgetPrivate::qSlicerShortCutModuleWidgetPrivate()
 {
 }
 
 //-----------------------------------------------------------------------------
-// qSlicerShortCutCoreModuleWidget methods
+// qSlicerShortCutModuleWidget methods
 
 //-----------------------------------------------------------------------------
-qSlicerShortCutCoreModuleWidget::qSlicerShortCutCoreModuleWidget(QWidget* _parent)
+qSlicerShortCutModuleWidget::qSlicerShortCutModuleWidget(QWidget* _parent)
   : Superclass( _parent )
-  , d_ptr( new qSlicerShortCutCoreModuleWidgetPrivate )
+  , d_ptr( new qSlicerShortCutModuleWidgetPrivate )
 {
 }
 
 //-----------------------------------------------------------------------------
-qSlicerShortCutCoreModuleWidget::~qSlicerShortCutCoreModuleWidget()
+qSlicerShortCutModuleWidget::~qSlicerShortCutModuleWidget()
 {
 }
 
 //-----------------------------------------------------------------------------
-void qSlicerShortCutCoreModuleWidget::setup()
+void qSlicerShortCutModuleWidget::setup()
 {
-  Q_D(qSlicerShortCutCoreModuleWidget);
+  Q_D(qSlicerShortCutModuleWidget);
   d->setupUi(this);
   this->Superclass::setup();
 }

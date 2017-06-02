@@ -15,15 +15,15 @@ set(${KIT}_INCLUDE_DIRECTORIES
 set(${KIT}_WRAP_EXCLUDE_SRCS
   ShortCut.h
   ShortCut.cpp
-  ShortCutCoreSegmenter.h
-  ShortCutCoreSegmenter.cxx
+  ShortCutSegmenter.h
+  ShortCutSegmenter.cxx
   )
 
 set(${KIT}_SRCS
   vtkSlicer${MODULE_NAME}Logic.cxx
   vtkSlicer${MODULE_NAME}Logic.h
-  vtkShortCutCore.cxx
-  vtkShortCutCore.h
+  vtkShortCut.cxx
+  vtkShortCut.h
   ${${KIT}_WRAP_EXCLUDE_SRCS}
   )
 

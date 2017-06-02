@@ -15,14 +15,14 @@
 
 ==============================================================================*/
 
-// .NAME vtkSlicerShortCutCoreLogic - slicer logic class for volumes manipulation
+// .NAME vtkSlicerShortCutLogic - slicer logic class for volumes manipulation
 // .SECTION Description
 // This class manages the logic associated with reading, saving,
 // and changing propertied of the volumes
 
 
-#ifndef __vtkSlicerShortCutCoreLogic_h
-#define __vtkSlicerShortCutCoreLogic_h
+#ifndef __vtkSlicerShortCutLogic_h
+#define __vtkSlicerShortCutLogic_h
 
 // Slicer includes
 #include "vtkSlicerModuleLogic.h"
@@ -32,22 +32,22 @@
 // STD includes
 #include <cstdlib>
 
-#include "vtkSlicerShortCutCoreModuleLogicExport.h"
+#include "vtkSlicerShortCutModuleLogicExport.h"
 
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class VTK_SLICER_SHORTCUTCORE_MODULE_LOGIC_EXPORT vtkSlicerShortCutCoreLogic :
+class VTK_SLICER_SHORTCUT_MODULE_LOGIC_EXPORT vtkSlicerShortCutLogic :
   public vtkSlicerModuleLogic
 {
 public:
 
-  static vtkSlicerShortCutCoreLogic *New();
-  vtkTypeMacro(vtkSlicerShortCutCoreLogic, vtkSlicerModuleLogic);
+  static vtkSlicerShortCutLogic *New();
+  vtkTypeMacro(vtkSlicerShortCutLogic, vtkSlicerModuleLogic);
   void PrintSelf(ostream& os, vtkIndent indent);
 
 protected:
-  vtkSlicerShortCutCoreLogic();
-  virtual ~vtkSlicerShortCutCoreLogic();
+  vtkSlicerShortCutLogic();
+  virtual ~vtkSlicerShortCutLogic();
 
   virtual void SetMRMLSceneInternal(vtkMRMLScene* newScene);
   /// Register MRML Node classes to Scene. Gets called automatically when the MRMLScene is attached to this logic class.
@@ -57,8 +57,8 @@ protected:
   virtual void OnMRMLSceneNodeRemoved(vtkMRMLNode* node);
 private:
 
-  vtkSlicerShortCutCoreLogic(const vtkSlicerShortCutCoreLogic&); // Not implemented
-  void operator=(const vtkSlicerShortCutCoreLogic&);               // Not implemented
+  vtkSlicerShortCutLogic(const vtkSlicerShortCutLogic&); // Not implemented
+  void operator=(const vtkSlicerShortCutLogic&);               // Not implemented
 };
 
 #endif
