@@ -9,13 +9,11 @@
 #define PIXELOPERATIONS_H_
 
 #include "opencv2/opencv.hpp"
-
 /*
 #ifdef WITH_CUDA
 #include "opencv2/gpu/gpu.hpp"
 #endif
 */
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,11 +26,13 @@
 */
 
 using namespace cv;
+
 /*
 #ifdef WITH_CUDA
 using namespace cv::gpu;
 #endif
  */
+
 using namespace std;
 
 namespace nscale {
@@ -49,7 +49,6 @@ namespace nscale {
         static ::cv::Mat mod(::cv::Mat &img, T mod);
 
         //static void ColorDeconv( const Mat& image, const Mat& M, const Mat& b, Mat& H, Mat& E, bool BGR2RGB=true);
-
         static ::cv::Mat ComputeInverseStainMatrix(const Mat &M, const Mat &b);
 
         static ::std::vector<float> ComputeLookupTable();
