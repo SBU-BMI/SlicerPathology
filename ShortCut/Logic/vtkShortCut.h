@@ -1,5 +1,5 @@
-#ifndef VTKShortCut_H
-#define VTKShortCut_H
+#ifndef VTKSHORTCUT_H
+#define VTKSHORTCUT_H
 
 #include "vtkSlicerShortCutModuleLogicExport.h"
 #include "vtkImageData.h"

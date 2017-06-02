@@ -27,7 +27,7 @@ class qSlicerShortCutModuleWidgetPrivate;
 class vtkMRMLNode;
 
 /// \ingroup Slicer_QtModules_ExtensionTemplate
-class Q_SLICER_QTMODULES_ShortCut_EXPORT qSlicerShortCutModuleWidget :
+class Q_SLICER_QTMODULES_SHORTCUT_EXPORT qSlicerShortCutModuleWidget :
   public qSlicerAbstractModuleWidget
 {
   Q_OBJECT
