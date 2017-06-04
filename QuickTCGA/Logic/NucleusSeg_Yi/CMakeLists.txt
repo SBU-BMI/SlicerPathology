@@ -8,7 +8,7 @@ find_package(OpenCV 3.1 REQUIRED)
 #-----------------------------------------------------------------------------
 set(NucleiSegSrc
         BinaryMaskAnalysisFilter.cxx
-        Logger.cpp
+        ### Logger.cpp
         Normalization.cpp
         HistologicalEntities.cpp
         PixelOperations.cpp

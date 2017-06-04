@@ -10,6 +10,7 @@
 
 #include <limits>
 
+/*
 #ifdef _MSC_VER
 #include "time_win.h"
 #else
@@ -17,14 +18,15 @@
 #include <sys/time.h>
 
 #endif
+*/
 
 #include <cmath>
 #include <algorithm>
 
+
 namespace cci {
     namespace common {
         namespace type {
-
 
             const int DEVICE_CPU = 0;
             const int DEVICE_MCORE = 1;
