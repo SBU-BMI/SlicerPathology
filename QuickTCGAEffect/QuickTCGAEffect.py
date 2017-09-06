@@ -6,6 +6,7 @@ from EditorLib.EditOptions import HelpButton
 from EditorLib.EditOptions import EditOptions
 from EditorLib import EditUtil
 from EditorLib import LabelEffect
+import httplib, mimetypes
 
 # Added libs
 from EditorLib import Effect
@@ -58,10 +59,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         #                            self.frame)
         # self.frame.layout().addWidget(self.helpLabel)
 
-        # self.clearButton = qt.QPushButton(self.frame)
-        # self.clearButton.text = "Clear Selection"
-        # self.frame.layout().addWidget(self.clearButton)
-        # self.clearButton.connect('clicked()', self.clearSelection)
+        self.ParaOptButton = qt.QPushButton(self.frame)
+        self.ParaOptButton.text = "Parameter Optimization"
+        self.frame.layout().addWidget(self.ParaOptButton)
+        self.ParaOptButton.connect('clicked()', self.ParaOpt)
 
         self.setupSegmentationOptions(1)
 
@@ -330,6 +331,54 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     def clearSelection(self):
         EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,currentXYPosition")
         EditUtil.EditUtil().getParameterNode().UnsetParameter("QuickTCGAEffect,startXYPosition")
+
+    def ParaOpt3(self):
+        print "Parameter Optimization..."
+        zippath = "data.zip"
+        #url = 'http://httpbin.org/post'
+        url = 'http://vinculum.bmi.stonybrookmedicine.edu:5000/work/processfile/celery'
+        length = os.path.getsize(zippath)
+        print length
+        fdata = open(zippath, "rb")
+        request = urllib2.Request(url, data=fdata)
+        request.add_header('Cache-Control', 'no-cache')
+        request.add_header('Content-Length', '%d' % length)
+        request.add_header('Content-Type', 'application/octet-stream')
+        res = urllib2.urlopen(request).read().strip()
+        #print res
+        print "Done."
+
+    def ParaOpt2(self):
+        print "Parameter Optimization..."
+        form = MultiPartForm()
+        form.add_field('name','{"name" : \"paramopt\", \"workflow\" : {\"inpfile\" : { \"class\": \"File\", \"path\": \"data.zip\"}, \"outfile\" : \"blahboy\"}}')
+        import os
+        print os.getcwd()
+        #form.add_file('biography','bio.txt',fileHandle=StringIO('this is a file handle'))
+        fd = open('data.zip',"rb")
+        form.add_file('fdatum','data.zip',fd)
+        request = urllib2.Request('http://vinculum.bmi.stonybrookmedicine.edu:5000/work/processfile/celery')
+        request.add_header('User-agent', 'SlicerPathology (http://bmi.stonybrook.edu/)')
+        body = str(form)
+        print len(body)
+        print form.get_content_type()
+        request.add_header('Content-type', form.get_content_type())
+        request.add_header('Content-length', len(body))
+        request.add_data(body)
+        print
+        print 'OUTGOING DATA:'
+        #print request.get_data()
+        print
+        print 'SERVER RESPONSE:'
+        print urllib2.urlopen(request).read()
+
+    def ParaOpt(self):
+        print "Parameter Optimization..."
+        form = MultiPartForm2()
+        fields = [('workflow', '{"name" : \"paramopt\", \"workflow\" : {\"inpfile\" : { \"class\": \"File\", \"path\": \"data.zip\"}, \"outfile\" : \"blahboy\"}}'),]
+        files = [('file', 'data.zip', open('/home/erich/data.zip').read()),]
+        form.post_multipart('vinculum.bmi.stonybrookmedicine.edu:5000','/work/processfile/celery',fields,files)
+        #form.post_multipart('httpbin.org','/post',fields,files)
 
     def updateSliders(self):
         r = self.structuresView.currentIndex().row()
@@ -980,3 +1029,115 @@ running_lbl = "Running"
 LOGICAL_FAST = 'FAST'
 LOGICAL_MSHIFT = 'MSHIFT'
 LOGICAL_WTRSHED = 'WTRSHED'
+
+import itertools
+import mimetools
+import mimetypes
+from cStringIO import StringIO
+import urllib
+import urllib2
+class MultiPartForm(object):
+    """Accumulate the data to be used when posting a form."""
+
+    def __init__(self):
+        self.form_fields = []
+        self.files = []
+        self.boundary = mimetools.choose_boundary()
+        return
+    
+    def get_content_type(self):
+        return 'multipart/form-data; boundary=%s' % self.boundary
+
+    def add_field(self, name, value):
+        """Add a simple field to the form data."""
+        self.form_fields.append((name, value))
+        return
+
+    def add_file(self, fieldname, filename, fileHandle, mimetype=None):
+        """Add a file to be uploaded."""
+        body = fileHandle.read()
+        if mimetype is None:
+            mimetype = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+        self.files.append((fieldname, filename, mimetype, body))
+        return
+    
+    def __str__(self):
+        """Return a string representing the form data, including attached files."""
+        # Build a list of lists, each containing "lines" of the
+        # request.  Each part is separated by a boundary string.
+        # Once the list is built, return a string where each
+        # line is separated by '\r\n'.  
+        parts = []
+        part_boundary = '--' + self.boundary
+        
+        # Add the form fields
+        parts.extend(
+            [ part_boundary,
+              'Content-Disposition: form-data; name="%s"' % name,
+              '',
+              value,
+            ]
+            for name, value in self.form_fields
+            )
+        
+        # Add the files to upload
+        parts.extend(
+            [ part_boundary,
+              'Content-Disposition: file; name="%s"; filename="%s"' % \
+                 (field_name, filename),
+              'Content-Type: %s' % content_type,
+              '',
+              body,
+            ]
+            for field_name, filename, content_type, body in self.files
+            )
+        
+        # Flatten the list and add closing boundary marker,
+        # then return CR+LF separated data
+        flattened = list(itertools.chain(*parts))
+        flattened.append('--' + self.boundary + '--')
+        flattened.append('')
+        return '\r\n'.join(flattened)
+
+class MultiPartForm2(object):
+    def __init__(self):
+        self.myname = "harry"
+        print self.myname
+
+    def post_multipart(self, host, uri, fields, files):
+        content_type, body = self.encode_multipart_formdata(fields, files)
+        h = httplib.HTTPConnection(host)
+        headers = {
+            'User-Agent': 'INSERT USERAGENTNAME',
+            'Content-Type': content_type
+            }
+        h.request('POST', uri, body, headers)
+        res = h.getresponse()
+        print res.status
+        print res.reason
+        print res.read()
+        #return res.status, res.reason, res.read() 
+
+    def encode_multipart_formdata(self, fields, files):
+        BOUNDARY = '----------bound@ry_$'
+        CRLF = '\r\n'
+        L = []
+        for (key, value) in fields:
+            L.append('--' + BOUNDARY)
+            L.append('Content-Disposition: form-data; name="%s"' % key)
+            L.append('')
+            L.append(value)
+        for (key, filename, value) in files:
+            L.append('--' + BOUNDARY)
+            L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
+            L.append('Content-Type: %s' % self.get_content_type(filename))
+            L.append('')
+            L.append(value)
+        L.append('--' + BOUNDARY + '--')
+        L.append('')
+        body = CRLF.join(L)
+        content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
+        return content_type, body
+
+    def get_content_type(self, filename):
+        return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
