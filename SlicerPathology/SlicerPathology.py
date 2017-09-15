@@ -707,8 +707,13 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
         red_cn = red_logic.GetSliceCompositeNode()
+
         fgrdVolID = red_cn.GetBackgroundVolumeID()
         fgrdNode = slicer.util.getNode(fgrdVolID)
+        fgrdNode.SetSpacing(1.0, 1.0, 1.0)
+        r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
+        r.fitSliceToBackground()
+
         fMat = vtk.vtkMatrix4x4()
         fgrdNode.GetIJKToRASDirectionMatrix(fMat)
         bgrdName = fgrdNode.GetName() + '_gray'
