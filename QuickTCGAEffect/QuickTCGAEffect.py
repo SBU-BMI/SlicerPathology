@@ -61,10 +61,11 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         #                            self.frame)
         # self.frame.layout().addWidget(self.helpLabel)
 
-        self.ParaOptButton = qt.QPushButton(self.frame)
-        self.ParaOptButton.text = "Parameter Optimization"
-        self.frame.layout().addWidget(self.ParaOptButton)
-        self.ParaOptButton.connect('clicked()', self.ParaOpt)
+        # Optimize Parameters
+        # self.ParaOptButton = qt.QPushButton(self.frame)
+        # self.ParaOptButton.text = "Parameter Optimization"
+        # self.frame.layout().addWidget(self.ParaOptButton)
+        # self.ParaOptButton.connect('clicked()', self.ParaOpt)
 
         self.setupSegmentationOptions(1)
 
@@ -73,7 +74,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.frame.layout().addWidget(self.outlineButton)
         self.outlineButton.connect('clicked()', self.toggleOutline)
 
-        # REMOVED. TODO: FIX IF NEEDED.
+        # REMOVED WIPE.
         # self.wipeButton = qt.QPushButton(self.frame)
         # self.wipeButton.text = "Clear current segmentation label"
         # self.frame.layout().addWidget(self.wipeButton)
@@ -213,10 +214,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             self.segWtrShd_btn.connect('clicked()', self.RunSegmenter_WtrShd)
 
             # Button: Optimize Parameters
-            self.opt_btn = qt.QPushButton(self.frame)
-            self.opt_btn.text = opt_lbl
-            self.frame.layout().addWidget(self.opt_btn)
-            self.opt_btn.connect('clicked()', self.RunOptimizer)
+            # self.opt_btn = qt.QPushButton(self.frame)
+            # self.opt_btn.text = opt_lbl
+            # self.frame.layout().addWidget(self.opt_btn)
+            # self.opt_btn.connect('clicked()', self.RunOptimizer)
 
         else:
             # COMBO BOX
