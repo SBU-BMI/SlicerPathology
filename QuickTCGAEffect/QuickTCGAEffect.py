@@ -1,3 +1,5 @@
+import urllib
+import urllib2
 import os
 import json
 import vtk, qt, ctk, slicer
@@ -209,6 +211,13 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             self.segWtrShd_btn.text = run_lbl + " " + segWtr_lbl
             self.frame.layout().addWidget(self.segWtrShd_btn)
             self.segWtrShd_btn.connect('clicked()', self.RunSegmenter_WtrShd)
+
+            # Button: Optimize Parameters
+            self.opt_btn = qt.QPushButton(self.frame)
+            self.opt_btn.text = opt_lbl
+            self.frame.layout().addWidget(self.opt_btn)
+            self.opt_btn.connect('clicked()', self.RunOptimizer)
+
         else:
             # COMBO BOX
             self.segComboBox = qt.QComboBox()
@@ -260,6 +269,16 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.currentMessage = ""
         slicer.util.showStatusMessage(self.currentMessage)
         super(QuickTCGAEffectOptions, self).destroy()
+
+    def RunOptimizer(self):
+        print "Starting optimization"
+        import string
+        current_weburl ='http://localhost:8080/control/optimize'
+        print current_weburl
+        request = "request data specifications"
+        response = urllib2.urlopen(current_weburl, request)
+        data = json.load(response)
+        print data
 
     def RunSegmenterWO(self):
         """
@@ -1024,6 +1043,7 @@ class QuickTCGAEffectWidget:
 segno_lbl = "Segmentation No Declumping (fast)"
 seg_lbl = "Segmentation Mean Shift Declumping (slow)"
 segWtr_lbl = "Segmentation Watershed Declumping (fast)"
+opt_lbl = "Optimize Parameters"
 run_lbl = "Run"
 running_lbl = "Running"
 LOGICAL_FAST = 'FAST'

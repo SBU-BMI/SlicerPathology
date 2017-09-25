@@ -30,7 +30,6 @@ class ShortCutOptions(EditorLib.LabelEffectOptions):
     """
     ShortCut-specific gui
     """
-
     def __init__(self, parent=0):
         super(ShortCutOptions, self).__init__(parent)
 
