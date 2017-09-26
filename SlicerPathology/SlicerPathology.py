@@ -674,7 +674,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
     def Four2ThreeChannel(self, image):
         '''
-        Convert tif image
+        Remove alpha channel
         :param image:
         :return:
         '''
