@@ -269,6 +269,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         # self.WebSaveButton.connect('clicked()', self.onWebSaveButtonClicked)
 
     def QImage2vtkImage(self, image):
+        '''
+        Convert image selected from web, to Slicer-viewable image.
+        :param image:
+        :return:
+        '''
         i = vtk.vtkImageData().NewInstance()
         i.SetDimensions(image.width(), image.height(), 1)
         i.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 3)
@@ -280,22 +285,23 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
                 i.SetScalarComponentFromDouble(x, y, 0, 2, c.blue())
         return i
 
-    def onWIPButtonClicked(self):
-        import urllib2
-        reply = urllib2.urlopen('http://www.osa.sunysb.edu/erich.png')
-        byte_array = reply.read()
-        image = qt.QImage(qt.QImage.Format_RGB888)
-        image.loadFromData(byte_array)
-        imageData = self.QImage2vtkImage(image)
-        volumeNode = slicer.vtkMRMLVectorVolumeNode()
-        volumeNode.SetName("WEB")
-        volumeNode.SetAndObserveImageData(imageData)
-        displayNode = slicer.vtkMRMLVectorVolumeDisplayNode()
-        slicer.mrmlScene.AddNode(volumeNode)
-        slicer.mrmlScene.AddNode(displayNode)
-        volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
-        displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
-        self.mutate()
+    # NOT USED
+    # def onWIPButtonClicked(self):
+    #     import urllib2
+    #     reply = urllib2.urlopen('http://www.osa.sunysb.edu/erich.png')
+    #     byte_array = reply.read()
+    #     image = qt.QImage(qt.QImage.Format_RGB888)
+    #     image.loadFromData(byte_array)
+    #     imageData = self.QImage2vtkImage(image)
+    #     volumeNode = slicer.vtkMRMLVectorVolumeNode()
+    #     volumeNode.SetName("WEB")
+    #     volumeNode.SetAndObserveImageData(imageData)
+    #     displayNode = slicer.vtkMRMLVectorVolumeDisplayNode()
+    #     slicer.mrmlScene.AddNode(volumeNode)
+    #     slicer.mrmlScene.AddNode(displayNode)
+    #     volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
+    #     displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
+    #     self.mutate()
 
     def RestoreSession(self):
         import zipfile
@@ -388,7 +394,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             labelFileName = os.path.join(tempDir, labelName + '.tif')
             self.add_img_to_zip(sNode, labelFileName, label, zipObj)
 
-            # Comp
+            # Composite
             comp = self.WriteLonI(label.GetImageData(), ff.GetImageData())
             volumeNode = slicer.vtkMRMLVectorVolumeNode()
             volumeNode.SetName("COMP")
@@ -459,6 +465,12 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             print "failed writing " + file_path
 
     def WriteLonI(self, src, dest):
+        '''
+        Composite images for human viewing
+        :param src:
+        :param dest:
+        :return:
+        '''
         dim = src.GetDimensions()
         i = vtk.vtkImageData().NewInstance()
         i.SetDimensions(dim[0], dim[1], 1)
@@ -597,12 +609,18 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         self.editorWidget.helper.setMasterVolume(bgrdNode)
 
     def openTargetImage0(self):
+        '''
+        Web selection - data tables
+        '''
         self.v = qt.QWebView()
         weburl = 'http://quip1.bmi.stonybrook.edu/slicer/cancer_select.html'
         self.v.setUrl(qt.QUrl(weburl))
         self.v.show()
 
     def openTargetImage(self):
+        '''
+        Web selection - open selected image
+        '''
         import string
         try:
             p = self.v.page()
@@ -655,6 +673,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             self.openTargetImage0()
 
     def Four2ThreeChannel(self, image):
+        '''
+        Convert tif image
+        :param image:
+        :return:
+        '''
         dim = image.GetDimensions()
         imgData = vtk.vtkImageData().NewInstance()
         imgData.SetDimensions(dim[0], dim[1], 1)
