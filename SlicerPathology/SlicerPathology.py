@@ -725,7 +725,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
                 imsainode.SetAndObserveImageData(img_data)
                 imsainode.Modified()
         except AttributeError:
-            slicer.util.infoDisplay("Please select a JPG or PNG. Let's try again...")
+            slicer.util.infoDisplay("Detected - Something other than an image.\nLet's start again...")
             self.loadTCGAData()
 
         red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
