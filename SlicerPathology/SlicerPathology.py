@@ -390,10 +390,6 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         for label in labelNodes.values():
             labelName = label.GetName()
 
-            # Label
-            labelFileName = os.path.join(tempDir, labelName + '.tif')
-            self.add_img_to_zip(sNode, labelFileName, label, zipObj)
-
             # Composite
             comp = self.WriteLonI(label.GetImageData(), ff.GetImageData())
             volumeNode = slicer.vtkMRMLVectorVolumeNode()
@@ -401,6 +397,14 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             volumeNode.SetAndObserveImageData(comp)
             compFileName = os.path.join(tempDir, labelName + '-comp.tif')
             self.add_img_to_zip(sNode, compFileName, volumeNode, zipObj)
+
+            # Label
+            temp_label = self.iFix(label.GetImageData())
+            volumeNode = slicer.vtkMRMLVectorVolumeNode()
+            volumeNode.SetName("LABEL")
+            volumeNode.SetAndObserveImageData(temp_label)
+            labelFileName = os.path.join(tempDir, labelName + '.tif')
+            self.add_img_to_zip(sNode, labelFileName, label, zipObj)
 
         jstr = json.dumps(self.j, sort_keys=True, indent=4, separators=(',', ': '))
 
@@ -452,6 +456,18 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         msg.setText(str(text))
         msg.setStandardButtons(qt.QMessageBox.Ok)
         retval = msg.exec_()
+
+    # Create Photoshop-friendly binary
+    def iFix(self, src):
+        dim = src.GetDimensions()
+        i = vtk.vtkImageData().NewInstance()
+        i.SetDimensions(dim[0], dim[1], 1)
+        i.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 3)
+        for x in range(0, dim[0]):
+            for y in range(0, dim[1]):
+                i.SetScalarComponentFromDouble(x, y, 0, 0, src.GetScalarComponentAsDouble(x, y, 0, 0))
+        i.Modified()
+        return i
 
     def add_img_to_zip(self, sNode, file_path, data, zipObj):
         sNode.SetFileName(file_path)
