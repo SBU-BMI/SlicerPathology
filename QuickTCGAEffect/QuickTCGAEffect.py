@@ -62,10 +62,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.helpLabel)
 
         # Optimize Parameters
-        self.ParaOptButton = qt.QPushButton(self.frame)
-        self.ParaOptButton.text = "Parameter Optimization"
-        self.frame.layout().addWidget(self.ParaOptButton)
-        self.ParaOptButton.connect('clicked()', self.ParaOpt)
+        # self.ParaOptButton = qt.QPushButton(self.frame)
+        # self.ParaOptButton.text = "Parameter Optimization"
+        # self.frame.layout().addWidget(self.ParaOptButton)
+        # self.ParaOptButton.connect('clicked()', self.ParaOpt)
 
         self.setupSegmentationOptions(1)
 
@@ -214,10 +214,10 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
             self.segWtrShd_btn.connect('clicked()', self.RunSegmenter_WtrShd)
 
             # Button: Optimize Parameters
-            self.opt_btn = qt.QPushButton(self.frame)
-            self.opt_btn.text = opt_lbl
-            self.frame.layout().addWidget(self.opt_btn)
-            self.opt_btn.connect('clicked()', self.RunOptimizer)
+            # self.opt_btn = qt.QPushButton(self.frame)
+            # self.opt_btn.text = opt_lbl
+            # self.frame.layout().addWidget(self.opt_btn)
+            # self.opt_btn.connect('clicked()', self.RunOptimizer)
 
         else:
             # COMBO BOX
@@ -258,8 +258,8 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         self.updateParam("kernelSize", self.frameKernelSizeSlider.value)
         self.updateMRMLFromGUI()
 
-    # REMOVED.
-    # def wipeSegmentation(self):
+        # REMOVED.
+        # def wipeSegmentation(self):
         # Slice Logic: vtkMRMLSliceLogic
         # sl = slicer.app.layoutManager().sliceWidget('Red').sliceLogic()
         # QuickTCGAEffectLogic
@@ -274,7 +274,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     def RunOptimizer(self):
         print "Starting optimization"
         import string
-        current_weburl ='http://localhost:8080/control/optimize'
+        current_weburl = 'http://localhost:8080/control/optimize'
         print current_weburl
         request = "request data specifications"
         response = urllib2.urlopen(current_weburl, request)
@@ -355,7 +355,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     def ParaOpt3(self):
         print "Parameter Optimization..."
         zippath = "data.zip"
-        #url = 'http://httpbin.org/post'
+        # url = 'http://httpbin.org/post'
         url = 'http://vinculum.bmi.stonybrookmedicine.edu:5000/work/processfile/celery'
         length = os.path.getsize(zippath)
         print length
@@ -365,18 +365,19 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         request.add_header('Content-Length', '%d' % length)
         request.add_header('Content-Type', 'application/octet-stream')
         res = urllib2.urlopen(request).read().strip()
-        #print res
+        # print res
         print "Done."
 
     def ParaOpt2(self):
         print "Parameter Optimization..."
         form = MultiPartForm()
-        form.add_field('name','{"name" : \"paramopt\", \"workflow\" : {\"inpfile\" : { \"class\": \"File\", \"path\": \"data.zip\"}, \"outfile\" : \"blahboy\"}}')
+        form.add_field('name',
+                       '{"name" : \"paramopt\", \"workflow\" : {\"inpfile\" : { \"class\": \"File\", \"path\": \"data.zip\"}, \"outfile\" : \"blahboy\"}}')
         import os
         print os.getcwd()
-        #form.add_file('biography','bio.txt',fileHandle=StringIO('this is a file handle'))
-        fd = open('data.zip',"rb")
-        form.add_file('fdatum','data.zip',fd)
+        # form.add_file('biography','bio.txt',fileHandle=StringIO('this is a file handle'))
+        fd = open('data.zip', "rb")
+        form.add_file('fdatum', 'data.zip', fd)
         request = urllib2.Request('http://vinculum.bmi.stonybrookmedicine.edu:5000/work/processfile/celery')
         request.add_header('User-agent', 'SlicerPathology (http://bmi.stonybrook.edu/)')
         body = str(form)
@@ -387,7 +388,7 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         request.add_data(body)
         print
         print 'OUTGOING DATA:'
-        #print request.get_data()
+        # print request.get_data()
         print
         print 'SERVER RESPONSE:'
         print urllib2.urlopen(request).read()
@@ -395,10 +396,11 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     def ParaOpt(self):
         print "Parameter Optimization..."
         form = MultiPartForm2()
-        fields = [('workflow', '{"name" : \"paramopt\", \"workflow\" : {\"inpfile\" : { \"class\": \"File\", \"path\": \"data.zip\"}, \"outfile\" : \"blahboy\"}}'),]
-        files = [('file', 'data.zip', open('/home/erich/data.zip').read()),]
-        form.post_multipart('vinculum.bmi.stonybrookmedicine.edu:5000','/work/processfile/celery',fields,files)
-        #form.post_multipart('httpbin.org','/post',fields,files)
+        fields = [('workflow',
+                   '{"name" : \"paramopt\", \"workflow\" : {\"inpfile\" : { \"class\": \"File\", \"path\": \"data.zip\"}, \"outfile\" : \"blahboy\"}}'), ]
+        files = [('file', 'data.zip', open('/home/erich/data.zip').read()), ]
+        form.post_multipart('vinculum.bmi.stonybrookmedicine.edu:5000', '/work/processfile/celery', fields, files)
+        # form.post_multipart('httpbin.org','/post',fields,files)
 
     def updateSliders(self):
         r = self.structuresView.currentIndex().row()
@@ -409,9 +411,11 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         if ei not in self.params:
             self.params[ei] = self.cparams.copy()
             if r < 0:
-                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
+                self.params[ei][
+                    'label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
             else:
-                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 2).text()
+                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,
+                                                                                                                    2).text()
 
         jstr = json.dumps(self.params, sort_keys=True, indent=4, separators=(',', ': '))
         self.parameterNode.SetParameter("QuickTCGAEffect,erich", jstr)
@@ -428,9 +432,9 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
     def updateParam(self, p, v):
         """
         Get name of tile, build JSON object, and update global params
-        :param p: 
-        :param v: 
-        :return: 
+        :param p:
+        :param v:
+        :return:
         """
 
         # Get name of tile
@@ -444,9 +448,11 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         if ei not in self.params:
             self.params[ei] = self.cparams.copy()
             if r < 0:
-                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
+                self.params[ei][
+                    'label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.editUtil.getLabelName()
             else:
-                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r, 2).text()
+                self.params[ei]['label'] = slicer.modules.SlicerPathologyWidget.editorWidget.helper.structures.item(r,
+                                                                                                                    2).text()
 
         # Update params
         self.params[ei][p] = v
@@ -1057,6 +1063,8 @@ import mimetypes
 from cStringIO import StringIO
 import urllib
 import urllib2
+
+
 class MultiPartForm(object):
     """Accumulate the data to be used when posting a form."""
 
@@ -1065,7 +1073,7 @@ class MultiPartForm(object):
         self.files = []
         self.boundary = mimetools.choose_boundary()
         return
-    
+
     def get_content_type(self):
         return 'multipart/form-data; boundary=%s' % self.boundary
 
@@ -1081,44 +1089,45 @@ class MultiPartForm(object):
             mimetype = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
         self.files.append((fieldname, filename, mimetype, body))
         return
-    
+
     def __str__(self):
         """Return a string representing the form data, including attached files."""
         # Build a list of lists, each containing "lines" of the
         # request.  Each part is separated by a boundary string.
         # Once the list is built, return a string where each
-        # line is separated by '\r\n'.  
+        # line is separated by '\r\n'.
         parts = []
         part_boundary = '--' + self.boundary
-        
+
         # Add the form fields
         parts.extend(
-            [ part_boundary,
-              'Content-Disposition: form-data; name="%s"' % name,
-              '',
-              value,
-            ]
+            [part_boundary,
+             'Content-Disposition: form-data; name="%s"' % name,
+             '',
+             value,
+             ]
             for name, value in self.form_fields
-            )
-        
+        )
+
         # Add the files to upload
         parts.extend(
-            [ part_boundary,
-              'Content-Disposition: file; name="%s"; filename="%s"' % \
-                 (field_name, filename),
-              'Content-Type: %s' % content_type,
-              '',
-              body,
-            ]
+            [part_boundary,
+             'Content-Disposition: file; name="%s"; filename="%s"' % \
+             (field_name, filename),
+             'Content-Type: %s' % content_type,
+             '',
+             body,
+             ]
             for field_name, filename, content_type, body in self.files
-            )
-        
+        )
+
         # Flatten the list and add closing boundary marker,
         # then return CR+LF separated data
         flattened = list(itertools.chain(*parts))
         flattened.append('--' + self.boundary + '--')
         flattened.append('')
         return '\r\n'.join(flattened)
+
 
 class MultiPartForm2(object):
     def __init__(self):
@@ -1131,13 +1140,13 @@ class MultiPartForm2(object):
         headers = {
             'User-Agent': 'INSERT USERAGENTNAME',
             'Content-Type': content_type
-            }
+        }
         h.request('POST', uri, body, headers)
         res = h.getresponse()
         print res.status
         print res.reason
         print res.read()
-        #return res.status, res.reason, res.read() 
+        # return res.status, res.reason, res.read()
 
     def encode_multipart_formdata(self, fields, files):
         BOUNDARY = '----------bound@ry_$'
