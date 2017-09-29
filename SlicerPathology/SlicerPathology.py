@@ -395,16 +395,18 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
             volumeNode = slicer.vtkMRMLVectorVolumeNode()
             volumeNode.SetName("COMP")
             volumeNode.SetAndObserveImageData(comp)
+            volumeNode.Modified()
             compFileName = os.path.join(tempDir, labelName + '-comp.tif')
             self.add_img_to_zip(sNode, compFileName, volumeNode, zipObj)
 
             # Label
             temp_label = self.iFix(label.GetImageData())
-            volumeNode = slicer.vtkMRMLVectorVolumeNode()
-            volumeNode.SetName("LABEL")
-            volumeNode.SetAndObserveImageData(temp_label)
+            volumeNode1 = slicer.vtkMRMLVectorVolumeNode()
+            volumeNode1.SetName("LABEL")
+            volumeNode1.SetAndObserveImageData(temp_label)
+            volumeNode1.Modified()
             labelFileName = os.path.join(tempDir, labelName + '.tif')
-            self.add_img_to_zip(sNode, labelFileName, label, zipObj)
+            self.add_img_to_zip(sNode, labelFileName, volumeNode1, zipObj)
 
         jstr = json.dumps(self.j, sort_keys=True, indent=4, separators=(',', ': '))
 
