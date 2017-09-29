@@ -462,7 +462,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         dim = src.GetDimensions()
         i = vtk.vtkImageData().NewInstance()
         i.SetDimensions(dim[0], dim[1], 1)
-        i.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 3)
+        i.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 1)
         for x in range(0, dim[0]):
             for y in range(0, dim[1]):
                 i.SetScalarComponentFromDouble(x, y, 0, 0, src.GetScalarComponentAsDouble(x, y, 0, 0))
