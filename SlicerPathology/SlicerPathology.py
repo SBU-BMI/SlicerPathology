@@ -54,9 +54,9 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
                                           'Resources')
         self.modulePath = os.path.dirname(slicer.util.modulePath(self.moduleName))
         self.currentStep = 1
-        self.dirty = False
 
     def setup(self):
+        self.dirty = False
         # self.editUtil = EditorLib.EditUtil.EditUtil()
         self.parameterNode = EditorLib.EditUtil.EditUtil().getParameterNode()
         self.parameterNode.SetParameter("QuickTCGAEffect,erich", "reset")
@@ -243,6 +243,7 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     #    r.fitSliceToBackground()
 
     def onWIP2ButtonClicked(self):
+        print self.dirty
         if self.dirty:
             if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
                 slicer.mrmlScene.Clear(0)
@@ -321,13 +322,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
     def onSaveButtonClicked(self):
         """
         Save segmentation, mask, original tif, and metadata to zip file
-        :return: 
+        :return:
         """
 
-        logging.info("\nSAVING")
-        logging.info("is_img_loaded %s" % self.dirty)
-        # print "\nparams", slicer.modules.QuickTCGAEffectOptions.params
-
+        print "SAVING"
+        print slicer.modules.QuickTCGAEffectOptions.params
         self.dirty = False
 
         import os.path
@@ -338,11 +337,11 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
 
         bundle = EditUtil.EditUtil().getParameterNode().GetParameter('QuickTCGAEffect,erich')
         tran = json.loads(bundle)
-        logging.info("\nbundle %s" % bundle)
+        print bundle
 
         layers = []
         for key in tran:
-            logging.info("\nkey %s" % key)
+            print key
             nn = tran[key]
             nn["file"] = key + '.tif'
             layers.append(tran[key])
@@ -640,148 +639,148 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         Web selection - open selected image
         '''
         import string
-        try:
-            p = self.v.page()
-            m = p.mainFrame()
-            imageBound = m.evaluateJavaScript(
-                'viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds().x, viewer.viewport.getBounds().y, viewer.viewport.getBounds().width, viewer.viewport.getBounds().height)')
-            x = imageBound[u'x']
-            y = imageBound[u'y']
-            width = imageBound[u'width']
-            height = imageBound[u'height']
+        # try:
+        p = self.v.page()
+        m = p.mainFrame()
+        imageBound = m.evaluateJavaScript(
+            'viewer.viewport.viewportToImageRectangle(viewer.viewport.getBounds().x, viewer.viewport.getBounds().y, viewer.viewport.getBounds().width, viewer.viewport.getBounds().height)')
+        x = imageBound[u'x']
+        y = imageBound[u'y']
+        width = imageBound[u'width']
+        height = imageBound[u'height']
 
-            self.j['x'] = x
-            self.j['y'] = y
-            self.j['width'] = width
-            self.j['height'] = height
+        self.j['x'] = x
+        self.j['y'] = y
+        self.j['width'] = width
+        self.j['height'] = height
 
-            imagedata = m.evaluateJavaScript('imagedata')
-            tmpfilename = imagedata[u'metaData'][1]
-            imageFileName = string.rstrip(tmpfilename, '.dzi')
-            self.tilename = imagedata[u'imageId']
-            logging.info("\ntilename %s" % self.tilename)
+        imagedata = m.evaluateJavaScript('imagedata')
+        tmpfilename = imagedata[u'metaData'][1]
+        imageFileName = string.rstrip(tmpfilename, '.dzi')
+        self.tilename = imagedata[u'imageId']
+        print self.tilename
 
-            self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
-
-            current_weburl = 'http://quip1.uhmc.sunysb.edu/fcgi-bin/iipsrv.fcgi?IIIF=' + imageFileName + '/' + str(
-                x) + ',' + str(y) + ',' + str(width) + ',' + str(height) + '/full/0/default.jpg'
-            logging.info("\nweburl %s" % current_weburl)
-
-            self.v.setUrl(qt.QUrl(current_weburl))
-            self.v.show()
-
-            reply = urllib2.urlopen(current_weburl)
-            byte_array = reply.read()
-            image = qt.QImage(qt.QImage.Format_RGB888)
-            image.loadFromData(byte_array)
-            imageData = self.QImage2vtkImage(image)
-            volumeNode = slicer.vtkMRMLVectorVolumeNode()
-            volumeNode.SetName("WEB")
-            volumeNode.SetAndObserveImageData(imageData)
-            displayNode = slicer.vtkMRMLVectorVolumeDisplayNode()
-            slicer.mrmlScene.AddNode(volumeNode)
-            slicer.mrmlScene.AddNode(displayNode)
-            volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
-            displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
-            self.mutate()
-            self.dirty = True
-
-        except:
-            slicer.util.infoDisplay("A web image hasn't been selected yet. Let's try again...")
-            self.openTargetImage0()
-
-    def Four2ThreeChannel(self, image):
-        '''
-        Remove alpha channel
-        :param image:
-        :return:
-        '''
-        dim = image.GetDimensions()
-        imgData = vtk.vtkImageData().NewInstance()
-        imgData.SetDimensions(dim[0], dim[1], 1)
-        imgData.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 3)
-        for x in range(0, dim[0]):
-            for y in range(0, dim[1]):
-                for c in range(0, 3):
-                    imgData.SetScalarComponentFromDouble(x, y, 0, c, image.GetScalarComponentAsDouble(x, y, 0, c))
-        imgData.Modified()
-        return imgData
-
-    def loadTCGAData(self):
-        # logging.info("\nloadTCGAData")
-        # logging.info("is_img_loaded %s" % self.dirty)
-        if self.dirty:
-            if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
-                self.clear_and_open()
-        else:
-            self.clear_and_open()
-
-    def clear_and_open(self):
-        # logging.info("\nclear_and_open")
-        # logging.info("is_img_loaded %s" % self.dirty)
-        EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
-        slicer.mrmlScene.Clear(0)
-        self.dirty = False
-        sel = slicer.util.openAddVolumeDialog()  # automatically puts image in red viewer
-        if sel:
-            self.loademup()
-
-    def loademup(self):
-        # logging.info("\nloademup")
-        # logging.info("is_img_loaded %s" % self.dirty)
-        self.dirty = True
-        import EditorLib
-
-        editUtil = EditorLib.EditUtil.EditUtil()
-        imsainode = editUtil.getBackgroundVolume()
-
-        try:
-            imsai = imsainode.GetImageData()
-            if imsai.GetNumberOfScalarComponents() > 3:
-                img_data = self.Four2ThreeChannel(imsai)
-                logging.info("number of scalar comp %d" % img_data.GetNumberOfScalarComponents())
-                imsainode.SetAndObserveImageData(img_data)
-                imsainode.Modified()
-        except AttributeError:
-            slicer.util.infoDisplay("Detected - Something other than an image.\nLet's start again...")
-            self.loadTCGAData()
-
-        red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
-        red_cn = red_logic.GetSliceCompositeNode()
-
-        fgrdVolID = red_cn.GetBackgroundVolumeID()
-        fgrdNode = slicer.util.getNode(fgrdVolID)
-        fgrdNode.SetSpacing(1.0, 1.0, 1.0)
-        r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
-        r.fitSliceToBackground()
-
-        fMat = vtk.vtkMatrix4x4()
-        fgrdNode.GetIJKToRASDirectionMatrix(fMat)
-        bgrdName = fgrdNode.GetName() + '_gray'
-        self.tilename = fgrdNode.GetName() + '_gray'
         self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
 
-        # Create dummy grayscale image
-        magnitude = vtk.vtkImageMagnitude()
-        magnitude.SetInputData(fgrdNode.GetImageData())
-        magnitude.Update()
-        bgrdNode = slicer.vtkMRMLScalarVolumeNode()
-        bgrdNode.SetImageDataConnection(magnitude.GetOutputPort())
-        bgrdNode.SetName(bgrdName)
-        bgrdNode.SetIJKToRASDirectionMatrix(fMat)
-        slicer.mrmlScene.AddNode(bgrdNode)
-        bgrdVolID = bgrdNode.GetID()
-        red_cn.SetForegroundVolumeID(fgrdVolID)
-        red_cn.SetBackgroundVolumeID(bgrdVolID)
-        red_cn.SetForegroundOpacity(1)
-        self.checkAndSetLUT()
-        cv = slicer.util.getNode(bgrdName)
-        self.volumesLogic = slicer.modules.volumes.logic()
-        labelName = bgrdName + '-label'
-        refLabel = self.volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene, cv, labelName)
-        refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
-        self.editorWidget.helper.setMasterVolume(cv)
+        current_weburl = 'http://quip1.uhmc.sunysb.edu/fcgi-bin/iipsrv.fcgi?IIIF=' + imageFileName + '/' + str(
+            x) + ',' + str(y) + ',' + str(width) + ',' + str(height) + '/full/0/default.jpg'
+        print current_weburl
 
+        self.v.setUrl(qt.QUrl(current_weburl))
+        self.v.show()
+
+        reply = urllib2.urlopen(current_weburl)
+        byte_array = reply.read()
+        image = qt.QImage(qt.QImage.Format_RGB888)
+        image.loadFromData(byte_array)
+        imageData = self.QImage2vtkImage(image)
+        volumeNode = slicer.vtkMRMLVectorVolumeNode()
+        volumeNode.SetName("WEB")
+        volumeNode.SetAndObserveImageData(imageData)
+        displayNode = slicer.vtkMRMLVectorVolumeDisplayNode()
+        slicer.mrmlScene.AddNode(volumeNode)
+        slicer.mrmlScene.AddNode(displayNode)
+        volumeNode.SetAndObserveDisplayNodeID(displayNode.GetID())
+        displayNode.SetAndObserveColorNodeID('vtkMRMLColorTableNodeGrey')
+        self.dirty = True
+        self.mutate()
+
+        # except:
+        # slicer.util.infoDisplay("A web image hasn't been selected yet. Let's try again...")
+        # self.openTargetImage0()
+
+
+def Four2ThreeChannel(self, image):
+    '''
+    Remove alpha channel
+    :param image:
+    :return:
+    '''
+    dim = image.GetDimensions()
+    imgData = vtk.vtkImageData().NewInstance()
+    imgData.SetDimensions(dim[0], dim[1], 1)
+    imgData.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 3)
+    for x in range(0, dim[0]):
+        for y in range(0, dim[1]):
+            for c in range(0, 3):
+                imgData.SetScalarComponentFromDouble(x, y, 0, c, image.GetScalarComponentAsDouble(x, y, 0, c))
+    imgData.Modified()
+    return imgData
+
+
+def loadTCGAData(self):
+    print self.dirty
+
+    if self.dirty:
+        if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
+            self.clear_and_open()
+    else:
+        self.clear_and_open()
+
+
+def clear_and_open(self):
+    EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
+    slicer.mrmlScene.Clear(0)
+    self.dirty = False
+    sel = slicer.util.openAddVolumeDialog()  # automatically puts image in red viewer
+    if sel:
+        self.loademup()
+
+
+def loademup(self):
+    self.dirty = True
+    import EditorLib
+
+    editUtil = EditorLib.EditUtil.EditUtil()
+    imsainode = editUtil.getBackgroundVolume()
+
+    # try:
+    imsai = imsainode.GetImageData()
+    if imsai.GetNumberOfScalarComponents() > 3:
+        img_data = self.Four2ThreeChannel(imsai)
+        print img_data.GetNumberOfScalarComponents()
+        imsainode.SetAndObserveImageData(img_data)
+        imsainode.Modified()
+        # except AttributeError:
+        # slicer.util.infoDisplay("Detected - Something other than an image.\nLet's start again...")
+        # self.loadTCGAData()
+
+
+red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
+red_cn = red_logic.GetSliceCompositeNode()
+
+fgrdVolID = red_cn.GetBackgroundVolumeID()
+fgrdNode = slicer.util.getNode(fgrdVolID)
+fgrdNode.SetSpacing(1.0, 1.0, 1.0)
+r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
+r.fitSliceToBackground()
+
+fMat = vtk.vtkMatrix4x4()
+fgrdNode.GetIJKToRASDirectionMatrix(fMat)
+bgrdName = fgrdNode.GetName() + '_gray'
+self.tilename = fgrdNode.GetName() + '_gray'
+self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
+
+# Create dummy grayscale image
+magnitude = vtk.vtkImageMagnitude()
+magnitude.SetInputData(fgrdNode.GetImageData())
+magnitude.Update()
+bgrdNode = slicer.vtkMRMLScalarVolumeNode()
+bgrdNode.SetImageDataConnection(magnitude.GetOutputPort())
+bgrdNode.SetName(bgrdName)
+bgrdNode.SetIJKToRASDirectionMatrix(fMat)
+slicer.mrmlScene.AddNode(bgrdNode)
+bgrdVolID = bgrdNode.GetID()
+red_cn.SetForegroundVolumeID(fgrdVolID)
+red_cn.SetBackgroundVolumeID(bgrdVolID)
+red_cn.SetForegroundOpacity(1)
+self.checkAndSetLUT()
+cv = slicer.util.getNode(bgrdName)
+self.volumesLogic = slicer.modules.volumes.logic()
+labelName = bgrdName + '-label'
+refLabel = self.volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene, cv, labelName)
+refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
+self.editorWidget.helper.setMasterVolume(cv)
 
 #
 # SlicerPathologyLogic
@@ -822,7 +821,6 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
         lm = slicer.app.layoutManager()
         # switch on the type to get the requested window
         widget = 0
-        logging.info("\ntype %s" % m_type)
         if m_type == slicer.qMRMLScreenShotDialog.FullLayout:
             # full layout
             widget = lm.viewport()
@@ -843,8 +841,6 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
             widget = slicer.util.mainWindow()
             # reset the type so that the node is set correctly
             m_type = slicer.qMRMLScreenShotDialog.FullLayout
-
-        logging.info("\ntype %s" % m_type)
 
         # grab and convert to vtk image data
         qpixMap = qt.QPixmap().grabWidget(widget)
@@ -868,6 +864,7 @@ class SlicerPathologyLogic(ScriptedLoadableModuleLogic):
         self.takeScreenshot('SlicerPathology-Start', 'Start', -1)
 
         return True
+
 
 #
 # SlicerPathologyTest
