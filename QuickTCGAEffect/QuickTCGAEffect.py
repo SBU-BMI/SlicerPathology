@@ -67,6 +67,11 @@ class QuickTCGAEffectOptions(LabelEffect.LabelEffectOptions):
         # self.frame.layout().addWidget(self.ParaOptButton)
         # self.ParaOptButton.connect('clicked()', self.ParaOpt)
 
+        # self.clearButton = qt.QPushButton(self.frame)
+        # self.clearButton.text = "Clear Selection"
+        # self.frame.layout().addWidget(self.clearButton)
+        # self.clearButton.connect('clicked()', self.clearSelection)
+
         self.setupSegmentationOptions(1)
 
         self.outlineButton = qt.QPushButton(self.frame)
