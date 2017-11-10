@@ -840,8 +840,9 @@ class QuickTCGAEffectLogic(LabelEffect.LabelEffectLogic):
             startXYPosition = (int(round(startXYPosition[0])), int(round(startXYPosition[1])))
             a = startXYPosition
             b = currentXYPosition
-            # slicer.modules.SlicerPathologyWidget.SaveButton.setEnabled(0)
+            # PTF:
             slicer.modules.SlicerPathologyWidget.SaveButton.setEnabled(1)
+            # slicer.modules.SlicerPathologyWidget.SaveButton.setEnabled(0)
         BB = self.GetTile(AA, a[0], a[1], b[0], b[1])
         LL = self.GetTile(LL, a[0], a[1], b[0], b[1])
         self.qTCGAMod.SetSourceVol(BB)
