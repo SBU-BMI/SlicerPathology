@@ -690,100 +690,94 @@ class SlicerPathologyWidget(ScriptedLoadableModuleWidget, ModuleWidgetMixin):
         # self.openTargetImage0()
 
 
-def Four2ThreeChannel(self, image):
-    '''
-    Remove alpha channel
-    :param image:
-    :return:
-    '''
-    dim = image.GetDimensions()
-    imgData = vtk.vtkImageData().NewInstance()
-    imgData.SetDimensions(dim[0], dim[1], 1)
-    imgData.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 3)
-    for x in range(0, dim[0]):
-        for y in range(0, dim[1]):
-            for c in range(0, 3):
-                imgData.SetScalarComponentFromDouble(x, y, 0, c, image.GetScalarComponentAsDouble(x, y, 0, c))
-    imgData.Modified()
-    return imgData
+    def Four2ThreeChannel(self, image):
+        '''
+        Remove alpha channel
+        :param image:
+        :return:
+        '''
+        dim = image.GetDimensions()
+        imgData = vtk.vtkImageData().NewInstance()
+        imgData.SetDimensions(dim[0], dim[1], 1)
+        imgData.AllocateScalars(vtk.VTK_UNSIGNED_CHAR, 3)
+        for x in range(0, dim[0]):
+            for y in range(0, dim[1]):
+                for c in range(0, 3):
+                    imgData.SetScalarComponentFromDouble(x, y, 0, c, image.GetScalarComponentAsDouble(x, y, 0, c))
+        imgData.Modified()
+        return imgData
 
 
-def loadTCGAData(self):
-    print self.dirty
+    def loadTCGAData(self):
+        print self.dirty
 
-    if self.dirty:
-        if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
+        if self.dirty:
+            if slicer.util.confirmYesNoDisplay("Proceeding will flush any unsaved work.  Do you wish to continue?"):
+                self.clear_and_open()
+        else:
             self.clear_and_open()
-    else:
-        self.clear_and_open()
 
 
-def clear_and_open(self):
-    EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
-    slicer.mrmlScene.Clear(0)
-    self.dirty = False
-    sel = slicer.util.openAddVolumeDialog()  # automatically puts image in red viewer
-    if sel:
-        self.loademup()
+    def clear_and_open(self):
+        EditUtil.EditUtil().getParameterNode().SetParameter('QuickTCGAEffect,erich', "reset")
+        slicer.mrmlScene.Clear(0)
+        self.dirty = False
+        sel = slicer.util.openAddVolumeDialog()  # automatically puts image in red viewer
+        if sel:
+            self.loademup()
 
 
-def loademup(self):
-    self.dirty = True
-    import EditorLib
+    def loademup(self):
+        self.dirty = True
+        import EditorLib
 
-    editUtil = EditorLib.EditUtil.EditUtil()
-    imsainode = editUtil.getBackgroundVolume()
+        editUtil = EditorLib.EditUtil.EditUtil()
+        imsainode = editUtil.getBackgroundVolume()
 
-    # try:
-    imsai = imsainode.GetImageData()
-    if imsai.GetNumberOfScalarComponents() > 3:
-        img_data = self.Four2ThreeChannel(imsai)
-        print img_data.GetNumberOfScalarComponents()
-        imsainode.SetAndObserveImageData(img_data)
-        imsainode.Modified()
-        # except AttributeError:
-        # slicer.util.infoDisplay("Detected - Something other than an image.\nLet's start again...")
-        # self.loadTCGAData()
+        # try:
+        imsai = imsainode.GetImageData()
+        if imsai.GetNumberOfScalarComponents() > 3:
+            img_data = self.Four2ThreeChannel(imsai)
+            print img_data.GetNumberOfScalarComponents()
+            imsainode.SetAndObserveImageData(img_data)
+            imsainode.Modified()
+            # except AttributeError:
+            # slicer.util.infoDisplay("Detected - Something other than an image.\nLet's start again...")
+            # self.loadTCGAData()
+        red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
+        red_cn = red_logic.GetSliceCompositeNode()
+        fgrdVolID = red_cn.GetBackgroundVolumeID()
+        fgrdNode = slicer.util.getNode(fgrdVolID)
+        fgrdNode.SetSpacing(1.0, 1.0, 1.0)
+        r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
+        r.fitSliceToBackground()
+        fMat = vtk.vtkMatrix4x4()
+        fgrdNode.GetIJKToRASDirectionMatrix(fMat)
+        bgrdName = fgrdNode.GetName() + '_gray'
+        self.tilename = fgrdNode.GetName() + '_gray'
+        self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
 
+        # Create dummy grayscale image
+        magnitude = vtk.vtkImageMagnitude()
+        magnitude.SetInputData(fgrdNode.GetImageData())
+        magnitude.Update()
+        bgrdNode = slicer.vtkMRMLScalarVolumeNode()
+        bgrdNode.SetImageDataConnection(magnitude.GetOutputPort())
+        bgrdNode.SetName(bgrdName)
+        bgrdNode.SetIJKToRASDirectionMatrix(fMat)
+        slicer.mrmlScene.AddNode(bgrdNode)
+        bgrdVolID = bgrdNode.GetID()
+        red_cn.SetForegroundVolumeID(fgrdVolID)
+        red_cn.SetBackgroundVolumeID(bgrdVolID)
+        red_cn.SetForegroundOpacity(1)
+        self.checkAndSetLUT()
+        cv = slicer.util.getNode(bgrdName)
+        self.volumesLogic = slicer.modules.volumes.logic()
+        labelName = bgrdName + '-label'
+        refLabel = self.volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene, cv, labelName)
+        refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
+        self.editorWidget.helper.setMasterVolume(cv)
 
-red_logic = slicer.app.layoutManager().sliceWidget("Red").sliceLogic()
-red_cn = red_logic.GetSliceCompositeNode()
-
-fgrdVolID = red_cn.GetBackgroundVolumeID()
-fgrdNode = slicer.util.getNode(fgrdVolID)
-fgrdNode.SetSpacing(1.0, 1.0, 1.0)
-r = slicer.app.layoutManager().sliceWidget("Red").sliceController()
-r.fitSliceToBackground()
-
-fMat = vtk.vtkMatrix4x4()
-fgrdNode.GetIJKToRASDirectionMatrix(fMat)
-bgrdName = fgrdNode.GetName() + '_gray'
-self.tilename = fgrdNode.GetName() + '_gray'
-self.parameterNode.SetParameter("SlicerPathology,tilename", self.tilename)
-
-# Create dummy grayscale image
-magnitude = vtk.vtkImageMagnitude()
-magnitude.SetInputData(fgrdNode.GetImageData())
-magnitude.Update()
-bgrdNode = slicer.vtkMRMLScalarVolumeNode()
-bgrdNode.SetImageDataConnection(magnitude.GetOutputPort())
-bgrdNode.SetName(bgrdName)
-bgrdNode.SetIJKToRASDirectionMatrix(fMat)
-slicer.mrmlScene.AddNode(bgrdNode)
-bgrdVolID = bgrdNode.GetID()
-red_cn.SetForegroundVolumeID(fgrdVolID)
-red_cn.SetBackgroundVolumeID(bgrdVolID)
-red_cn.SetForegroundOpacity(1)
-self.checkAndSetLUT()
-cv = slicer.util.getNode(bgrdName)
-self.volumesLogic = slicer.modules.volumes.logic()
-labelName = bgrdName + '-label'
-refLabel = self.volumesLogic.CreateAndAddLabelVolume(slicer.mrmlScene, cv, labelName)
-refLabel.GetDisplayNode().SetAndObserveColorNodeID(self.SlicerPathologyColorNode.GetID())
-self.editorWidget.helper.setMasterVolume(cv)
-
-#
-# SlicerPathologyLogic
 # Helper class
 # Implementation of algorithms and helper functions
 #
